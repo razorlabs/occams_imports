@@ -1,0 +1,57 @@
+from pyramid.security import Allow, Authenticated, ALL_PERMISSIONS
+from sqlalchemy import orm
+from sqlalchemy.ext.declarative import declared_attr
+import sqlalchemy as sa
+from sqlalchemy import orm
+from sqlalchemy.orm.collections import attribute_mapped_collection
+
+from occams_datastore.models import *  # flake8: noqa
+from occams_studies.models import *   # flake8: noqa
+
+from . import Session
+
+
+Base = ModelClass('Base')
+
+
+class groups:
+
+    @staticmethod
+    def principal(location=None, group=None):
+        """
+        Generates the principal name used internally by this application
+        Supported keyword parameters are:
+            site --  The site code
+            group -- The group name
+        """
+        return location.name + ':' + group if location else group
+
+    @staticmethod
+    def administrator():
+        return groups.principal(group='administrator')
+
+    @staticmethod
+    def manager(location=None):
+        return groups.principal(location=location, group='manager')
+
+    @staticmethod
+    def worker(location=None):
+        return groups.principal(location=location, group='worker')
+
+    @staticmethod
+    def member(location=None):
+        return groups.principal(location=location, group='member')
+
+
+class Resource(object):
+
+    def __init__(self, request):
+        self.request = request
+
+
+
+class RootFactory(Resource):
+
+    __acl__ = [
+        (Allow, Authenticated, 'view')
+        ]
