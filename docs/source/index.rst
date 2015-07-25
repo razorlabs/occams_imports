@@ -17,6 +17,8 @@ Contents:
    narr/roster_translation
 
 
+.. include:: ../../README.rst
+
 Indices and tables
 ==================
 
