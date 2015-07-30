@@ -1,0 +1,7 @@
+<html metal:use-macro="load: ../master.pt">
+  <metal:content-slot fill-slot="content-slot">
+
+    Welcome to the uploads page!!!
+
+  </metal:content-slot>
+</html>
