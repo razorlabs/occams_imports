@@ -14,3 +14,23 @@ def test_is_true():
 def test_remove_system_entries():
     records = [{'is_system': True}, {'is_system': False}]
     assert parse.remove_system_entries(records) == [{'is_system': False}]
+
+
+def test_parse():
+    from datetime import date
+    records = parse.parse('codebook.csv')
+    assert len(records) == 27
+    assert records[0]['schema_name'] == u'ClinicalAssessment595vitd'
+    assert records[0]['name'] == u'id'
+    assert records[0]['is_system'] is True
+    assert records[0]['is_collection'] is False
+    assert records[13]['name'] == u'cont'
+    assert records[13]['is_required'] is True
+    assert records[13]['is_system'] is False
+    assert records[13]['is_collection'] is False
+    assert records[13]['is_private'] is False
+    assert records[13]['choices'] == [
+        ['0', 'No'],
+        ['1', 'Yes (Week 36, continuing to Week 48)'],
+        ['2', 'Yes (Week 48, continuing post study)']]
+    assert records[13]['publish_date'] == date(2014, 10, 23)
