@@ -15,8 +15,8 @@ def includeme(config):
 
     config.add_route('imports.main',                        '/imports',                    factory=models.RootFactory)
 
-    config.add_route('imports.codebooks_iforms',            '/imports/codebooks-iform',    factory=models.RootFactory)
+    config.add_route('imports.codebooks_iform',            '/imports/codebooks/iform',    factory=models.RootFactory)
 
-    config.add_route('imports.codebooks_occams',            '/imports/codebooks-occams',   factory=models.RootFactory)
+    config.add_route('imports.codebooks_occams',            '/imports/codebooks/occams',   factory=models.RootFactory)
 
     log.debug('Routes configured')
