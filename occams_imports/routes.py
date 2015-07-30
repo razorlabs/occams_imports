@@ -15,4 +15,6 @@ def includeme(config):
 
     config.add_route('imports.main',                        '/imports',                              factory=models.RootFactory)
 
+    config.add_route('imports.upload',                      '/imports/upload',                       factory=models.RootFactory)
+
     log.debug('Routes configured')
