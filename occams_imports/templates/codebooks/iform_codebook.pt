@@ -4,7 +4,7 @@
     <br />
 
     <div class="jumbotron">
-      <h1 i18n:translate="">Schema/Attribute Data Import Tool</h1>
+      <h1 i18n:translate="">Upload iForm Codebook</h1>
       <p i18n:translate="">
         This service was designed so you can upload the structure of your eCRF's
         into the Occams system.
@@ -47,20 +47,6 @@
         </div>
       </p>
       <br />
-
-      <p>
-        <div class="dropdown">
-          <button class="btn btn-primary dropdown-toggle"
-                  type="button"
-                  data-toggle="dropdown"
-                  i18n:translate="">Codebook Type
-          <span class="caret"></span></button>
-          <ul class="dropdown-menu">
-            <li><a href="#" i18n:translate="">iForm</a></li>
-            <li><a href="#" i18n:translate="">Occams</a></li>
-          </ul>
-        </div>
-      </p>
 
       <br />
         <p>
