@@ -1,0 +1,62 @@
+<html metal:use-macro="load: ../master.pt">
+  <metal:content-slot fill-slot="content-slot">
+
+    <br />
+
+    <div class="jumbotron">
+      <h1 i18n:translate="">Upload Occams Codebook</h1>
+      <p i18n:translate="">
+        This service was designed so you can upload the structure of your eCRF's
+        into the Occams system.
+      </p>
+      <p>
+        <span class="glyphicon glyphicon-ok"></span>
+        <strong i18n:translate="">
+          All private data will be de-identified.
+        </strong>
+        <a href="${request.route_path('studies.exports_faq', _anchor='private')}"
+          ><span class="glyphicon glyphicon-info-sign"></span></a>
+
+      </p>
+
+      <br />
+      <p i18n:translate="">Select an upload mode: </p>
+      <p>
+        <div class="radio">
+          <label><input type="radio"
+                        name="optradio"
+                        i18n:translate="">Dry - Data not saved to db</label>
+        </div>
+      </p>
+
+      <p>
+        <div class="radio">
+          <label><input type="radio"
+                        name="optradio"
+                        i18n:translate="">Force - Save validated records</label>
+        </div>
+      </p>
+
+      <p>
+        <div class="radio">
+          <label>
+            <input type="radio"
+                   name="optradio"
+                   i18n:translate="">Only upload forms if all records validate
+          </label>
+        </div>
+      </p>
+      <br />
+
+      <br />
+        <p>
+          <a class="btn btn-primary btn-lg"
+              role="button"
+              href="${request.route_path('studies.exports_checkout')}"
+              i18n:translate="">Upload csv file</a>
+        </p>
+
+    </div>
+
+  </metal:content-slot>
+</html>
