@@ -61,7 +61,7 @@ def get_choices(raw_choices):
 @view_config(
     route_name='imports.upload',
     permission='view',
-    renderer='../templates/main/main.pt')
+    renderer='../templates/upload/upload.pt')
 def insert(context, request):
     import sys
     import argparse
@@ -83,6 +83,10 @@ def insert(context, request):
               these are the records not inserted
     """
     # records, force, dry
+
+    if request.method == 'GET':
+        return {}
+
     codebook = '/Users/jkrooskos/Documents/occams/src/occams_imports/occams_imports/views/output.csv'
     records = parse.parse(codebook)
     records = parse.remove_system_entries(records)
