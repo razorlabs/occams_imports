@@ -1,0 +1,28 @@
+table,form,publish_date,field,title,description,is_required,is_system,is_collection,is_private,type,choices,order
+ClinicalAssessment595vitd,,,id,,,True,True,False,False,numeric,,
+ClinicalAssessment595vitd,,,pid,,,True,True,False,False,string,,
+ClinicalAssessment595vitd,,,site,,,True,True,False,False,string,,
+ClinicalAssessment595vitd,,,enrollment,,,False,True,True,False,numeric,,
+ClinicalAssessment595vitd,,,enrollment_ids,,,False,True,True,False,numeric,,
+ClinicalAssessment595vitd,,,visit_cycles,,,False,True,True,False,string,,
+ClinicalAssessment595vitd,,,visit_date,,,False,True,False,False,date,,
+ClinicalAssessment595vitd,,,visit_id,,,False,True,False,False,numeric,,
+ClinicalAssessment595vitd,,,form_name,,,True,True,False,False,string,,
+ClinicalAssessment595vitd,,,form_publish_date,,,True,True,False,False,string,,
+ClinicalAssessment595vitd,,,state,,,True,True,False,False,string,,
+ClinicalAssessment595vitd,,,collect_date,,,True,True,False,False,date,,
+ClinicalAssessment595vitd,,,not_done,,,True,True,False,False,boolean,,
+ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,cont,Will the subject continue taking Vitamin D?,,True,False,False,False,choice,"0=No;1=Yes (Week 36, continuing to Week 48);2=Yes (Week 48, continuing post study)",3001
+ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,drugtox,Has the subject experienced any drug-related toxicities since the last visit?,,True,False,False,False,choice,0=No;1=Yes,2000
+ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,frac,Has the subject had any fractures since the visit?,,True,False,False,False,choice,0=No;1=Yes,2002
+ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,kidstones,Has the subject developed a kidney stone since the last visit?,,True,False,False,False,choice,0=No;1=Yes,2001
+ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,lastdose,"If No, last dose",(mm/dd/yyyy)(hh:mm),False,False,False,False,datetime,,3002
+ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,prepdisc,Has the subject discontinued PrEP since the last visit?,,True,False,False,False,choice,0=No;1=Yes,1000
+ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,s_fld1,PrEP Use,,False,False,False,False,section,,1000000000
+ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,,Adverse Events,,False,False,False,False,section,,1000000001
+ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,s_fld3,Vitamin D Adherence,,False,False,False,False,section,,1000000002
+ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,vitdad,What proportion of Vitamin D doses has the subject estimate he has been taking?,,True,False,False,False,choice,1=> 90% (all or nearly all);2=75 - 90% (most doses);3=50 - 74% (frequently missed but taking at least half);4=25 - 49% (less than half the time);5=< 25% (have missed most doses),3000
+ClinicalAssessment595vitd,,,create_date,,,True,True,False,False,date,,
+ClinicalAssessment595vitd,,,create_user,,,True,True,False,False,string,,
+ClinicalAssessment595vitd,,,modify_date,,,True,True,False,False,date,,
+ClinicalAssessment595vitd,,,modify_user,,,True,True,False,False,string,,
