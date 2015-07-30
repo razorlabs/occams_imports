@@ -1,7 +1,7 @@
 <html metal:use-macro="load: ../master.pt">
   <metal:content-slot fill-slot="content-slot">
 
-    Hello World!
+    Welcome to the imports homepage!
 
   </metal:content-slot>
 </html>
