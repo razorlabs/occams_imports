@@ -48,7 +48,7 @@ def parse(codebook, delimiter=','):
 
     records = []
 
-    with open(codebook, 'rb') as csvfile:
+    with codebook as csvfile:
         reader = csv.DictReader(csvfile, encoding='utf-8', delimiter=delimiter)
 
         for row in reader:
