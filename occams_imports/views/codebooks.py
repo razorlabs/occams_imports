@@ -62,7 +62,7 @@ def get_choices(raw_choices):
     route_name='imports.codebooks_occams',
     permission='view',
     renderer='../templates/codebooks/occams_codebook.pt')
-def insert_occams(context, request):
+def occams(context, request):
     import sys
     import argparse
 
@@ -170,7 +170,7 @@ def insert_occams(context, request):
     route_name='imports.codebooks_iform',
     permission='view',
     renderer='../templates/codebooks/iform_codebook.pt')
-def insert_iform(context, request):
+def iform(context, request):
     import sys
     import argparse
 
