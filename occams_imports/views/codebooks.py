@@ -170,7 +170,7 @@ def insert_occams(context, request):
     route_name='imports.codebooks_iform',
     permission='view',
     renderer='../templates/codebooks/iform_codebook.pt')
-def insert(context, request):
+def insert_iform(context, request):
     import sys
     import argparse
 
