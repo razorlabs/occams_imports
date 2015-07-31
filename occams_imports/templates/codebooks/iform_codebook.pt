@@ -19,12 +19,45 @@
 
       </p>
 
+    <form
+        role="form"
+        name="upload_iform"
+        method="POST"
+        autocomplete="on"
+        enctype="multipart/form-data"
+        action="${request.route_path('imports.codebooks_iform_status')}">
+
+      <input class="form-control"
+             name="schema_name"
+             placeholder="Schema Name" required></input>
       <br />
+      <input class="form-control"
+             name="schema_title"
+             placeholder="Schema Title" required></input>
+
+      <br />
+      <p i18n:translate="">Schema Publish Date: </p>
+      <input type="date"
+             class="form-control"
+             id="publish_date"
+             name="publish_date"
+             placeholder="publish_date"
+             data-rule-dateiso="" required>
+
+      <br />
+
+      <p i18n:translate="">Select codebook to upload: </p>
+      <input type="file" name="codebook" required>
+
+      <br />
+
       <p i18n:translate="">Select an upload mode: </p>
+
       <p>
         <div class="radio">
           <label><input type="radio"
-                        name="optradio"
+                        name="mode"
+                        value="dry"
                         i18n:translate="">Dry - Data not saved to db</label>
         </div>
       </p>
@@ -32,7 +65,8 @@
       <p>
         <div class="radio">
           <label><input type="radio"
-                        name="optradio"
+                        name="mode"
+                        value="force"
                         i18n:translate="">Force - Save validated records</label>
         </div>
       </p>
@@ -41,7 +75,9 @@
         <div class="radio">
           <label>
             <input type="radio"
-                   name="optradio"
+                   name="mode"
+                   value="default"
+                   checked="checked"
                    i18n:translate="">Only upload forms if all records validate
           </label>
         </div>
@@ -49,14 +85,14 @@
       <br />
 
       <br />
-        <p>
-          <a class="btn btn-primary btn-lg"
-              role="button"
-              href="${request.route_path('imports.codebooks_iform_status')}"
-              i18n:translate="">Upload csv file</a>
-        </p>
 
-    </div>
+      <button
+          type="submit"
+          name="submit"
+          class="btn btn-lg btn-primary"
+          i18n:translate="">Upload csv file</button>
+
+    </form>
 
   </metal:content-slot>
 </html>
