@@ -9,6 +9,7 @@ Parsing assumptions made:
 """
 
 import sys
+import six
 import argparse
 
 import unicodecsv as csv
@@ -98,62 +99,70 @@ def convert(schema_name, schema_title, publish_date, codebook, delimiter=','):
     :param delimiter:
     :return:
     """
-    with open(codebook, 'rb') as csvfile:
-        reader = csv.reader(csvfile, encoding='utf-8', delimiter=delimiter)
+#    with open(codebook, 'rb') as csvfile:
+    reader = csv.reader(codebook, encoding='utf-8', delimiter=delimiter)
 
-        # Remove headers from file
-        headers = reader.next()
+    # Remove headers from file
+    headers = reader.next()
 
-        output_csv = open('output.csv', 'wb')
-        writer = csv.writer(output_csv, encoding='utf-8')
+   #output_csv = open('output.csv', 'wb')
+    output_csv = six.StringIO()
+    writer = csv.writer(output_csv, encoding='utf-8')
 
-        row = {}
+    row = {}
 
-        row['is_required'] = u'False'
-        row['is_system'] = u'False'
-        row['is_collection'] = u'False'
-        row['is_private'] = u'False'
-        row['schema_name'] = schema_name
-        row['schema_title'] = schema_title
-        row['publish_date'] = publish_date
-        row['order'] = 0
+    row['is_required'] = u'False'
+    row['is_system'] = u'False'
+    row['is_collection'] = u'False'
+    row['is_private'] = u'False'
+    row['schema_name'] = schema_name
+    row['schema_title'] = schema_title
+    row['publish_date'] = publish_date
+    row['order'] = 0
 
-        output_headers(writer)
+    output_headers(writer)
 
-        choices = []
-        in_choice = False
+    choices = []
+    in_choice = False
 
-        for field in reader:
-            # this is a question row, not a choice row
-            if field[0]:
-                if in_choice:
-                    row['choices_string'] = convert_choices(choices)
-                    writerow(writer, row)
-                    in_choice = False
-                    choices = []
-                row['order'] += 1
-                row['variable'] = field[0].strip()
-                row['title'] = field[1].strip()
-                row['field_type'] = TYPES_MAP[field[2].strip()]
-                row['description'] = u''
-                if row['field_type'] not in [u'choice']:
-                    writerow(writer, row)
+    for field in reader:
+        # this is a question row, not a choice row
+        if field[0]:
+            if in_choice:
+                row['choices_string'] = convert_choices(choices)
+                writerow(writer, row)
+                in_choice = False
+                choices = []
+            row['order'] += 1
+            row['variable'] = field[0].strip()
+            row['title'] = field[1].strip()
+            row['field_type'] = TYPES_MAP[field[2].strip()]
+            row['description'] = u''
+            if row['field_type'] not in [u'choice']:
+                writerow(writer, row)
 
-                else:
-                    in_choice = True
-
-            # this is a choice row
             else:
-                choice_label = field[3].strip()
-                choice_order = field[4].strip()
-                choices.append([choice_order, choice_label])
+                in_choice = True
 
-        # process last record
-        if in_choice:
-            row['choices_string'] = convert_choices(choices)
-            writerow(writer, row)
+        # this is a choice row
+        else:
+            choice_label = field[3].strip()
+            choice_order = field[4].strip()
+            choices.append([choice_order, choice_label])
 
-        output_csv.close()
+    # process last record
+    if in_choice:
+        row['choices_string'] = convert_choices(choices)
+        writerow(writer, row)
+
+    codebook.close()
+
+    output_csv.flush()
+    output_csv.seek(0)
+    #from pdb import set_trace; set_trace()
+
+    return output_csv
+  #  output_csv.close()
 
 
 def main():
