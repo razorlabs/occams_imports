@@ -8,7 +8,9 @@
       <p i18n:translate="">
         This is where you see the status of your upload.
       </p>
-
+      <p i18n:translate="">
+        Records processed:  ${record_count}
+      </p>
     </div>
 
   </metal:content-slot>
