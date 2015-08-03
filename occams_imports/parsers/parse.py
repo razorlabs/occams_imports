@@ -48,67 +48,68 @@ def parse(codebook, delimiter=','):
 
     records = []
 
-    with codebook as csvfile:
-        reader = csv.DictReader(csvfile, encoding='utf-8', delimiter=delimiter)
+    reader = csv.DictReader(codebook, encoding='utf-8', delimiter=delimiter)
 
-        for row in reader:
-            is_system = is_true(row['is_system'])
+    for row in reader:
+        is_system = is_true(row['is_system'])
 
-            schema_name = row['table'].strip()
-            schema_title = row['form'].strip()
+        schema_name = row['table'].strip()
+        schema_title = row['form'].strip()
 
-            date_string = row['publish_date'].strip()
+        date_string = row['publish_date'].strip()
 
-            try:
-                publish_date = datetime.strptime(
-                    date_string, '%Y-%m-%d').date()
-            except ValueError:
-                publish_date = None
+        try:
+            publish_date = datetime.strptime(
+                date_string, '%Y-%m-%d').date()
+        except ValueError:
+            publish_date = None
 
-            field_name = row['field'].strip()
-            field_title = row['title'].strip()
-            description = row['description'].strip()
+        field_name = row['field'].strip()
+        field_title = row['title'].strip()
+        description = row['description'].strip()
 
-            is_required = is_true(row['is_required'])
+        is_required = is_true(row['is_required'])
 
-            is_collection = is_true(row['is_collection'])
+        is_collection = is_true(row['is_collection'])
 
-            is_private = is_true(row['is_private'])
+        is_private = is_true(row['is_private'])
 
-            field_type = row['type'].strip()
+        field_type = row['type'].strip()
 
-            if row['choices'] is not None and row['choices'].strip() != u'':
-                choices = []
-                raw_choices = re.split(r';(?=\s*\d+\=)', row['choices'])
-                for raw_choice in raw_choices:
-                    code, label = raw_choice.split('=', 1)
-                    code = code.strip()
-                    label = label.strip()
-                    choices.append([code, label])
-            else:
-                choices = []
+        if row['choices'] is not None and row['choices'].strip() != u'':
+            choices = []
+            raw_choices = re.split(r';(?=\s*\d+\=)', row['choices'])
+            for raw_choice in raw_choices:
+                code, label = raw_choice.split('=', 1)
+                code = code.strip()
+                label = label.strip()
+                choices.append([code, label])
+        else:
+            choices = []
 
-            try:
-                order = int(row['order'])
-            except ValueError:
-                order = None
+        try:
+            order = int(row['order'])
+        except ValueError:
+            order = None
 
-            records.append({
-                'name': field_name,
-                'title': field_title,
-                'description': description,
-                'is_required': is_required,
-                'is_system': is_system,
-                'is_collection': is_collection,
-                'is_private': is_private,
-                'type': field_type,
-                'order': order,
-                'schema_name': schema_name,
-                'schema_title': schema_title,
-                'publish_date': publish_date,
-                'choices': choices
-            }
-            )
+        records.append({
+            'name': field_name,
+            'title': field_title,
+            'description': description,
+            'is_required': is_required,
+            'is_system': is_system,
+            'is_collection': is_collection,
+            'is_private': is_private,
+            'type': field_type,
+            'order': order,
+            'schema_name': schema_name,
+            'schema_title': schema_title,
+            'publish_date': publish_date,
+            'choices': choices
+        }
+        )
+
+    codebook.close()
 
     return records
 
