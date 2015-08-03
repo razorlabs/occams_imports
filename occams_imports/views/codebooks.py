@@ -89,6 +89,7 @@ def insert_occams(context, request):
     from occams_forms.views.field import FieldFormFactory
     from occams.utils.forms import wtferrors
     from occams_imports.parsers import parse
+
     """
     Insert appropriate records to the database
 
@@ -187,11 +188,12 @@ def insert_occams(context, request):
 def insert_iform(context, request):
     from datetime import datetime
 
-    from occams import Session
+    #from occams import Session
     from occams_datastore import models as datastore
     from occams_forms.views.field import FieldFormFactory
     from occams.utils.forms import wtferrors
     from occams_imports.parsers import parse
+    from occams_imports.parsers import convert_iform_to_occams as iform
     """
     Insert appropriate records to the database
 
@@ -205,6 +207,8 @@ def insert_iform(context, request):
     """
     force = None
     dry = None
+
+    #from pdb import set_trace; set_trace()
 
     if request.POST['mode'] == u'dry':
         dry = True
@@ -221,15 +225,14 @@ def insert_iform(context, request):
     codebook_filename = request.POST['codebook'].filename
     codebook = request.POST['codebook'].file
 
+    converted_codebook = iform.convert(schema_name, schema_title, publish_date, codebook)
+   # from pdb import set_trace; set_trace()
 
     # codebook = '/Users/jkrooskos/Documents/occams/src/occams_imports/occams_imports/views/output.csv'
-    records = parse.parse(codebook)
+    records = parse.parse(converted_codebook)
     records = parse.remove_system_entries(records)
 
     # from pdb import set_trace; set_trace()
-
-    # force = True
-    # dry = None
 
     schemas = {}
     errors = []
@@ -306,4 +309,9 @@ def insert_iform(context, request):
         else:
             Session.flush()
 
-    return {}
+    if records:
+        record_count = len(records)
+    else:
+        record_count = 0
+
+    return {'record_count': record_count}
