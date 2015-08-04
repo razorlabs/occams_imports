@@ -205,7 +205,6 @@ def insert_iform(context, request):
     :return:  errors dictionary of invalid form datastore.
               these are the records not inserted
     """
-    force = None
     dry = None
 
     #from pdb import set_trace; set_trace()
@@ -302,8 +301,6 @@ def insert_iform(context, request):
 
         if dry:
             Session.rollback()
-        elif force:
-            Session.flush()
         elif errors:
             Session.rollback()
         else:
