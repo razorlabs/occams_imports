@@ -64,15 +64,6 @@
 
       <p>
         <div class="radio">
-          <label><input type="radio"
-                        name="mode"
-                        value="force"
-                        i18n:translate="">Force - Save validated records</label>
-        </div>
-      </p>
-
-      <p>
-        <div class="radio">
           <label>
             <input type="radio"
                    name="mode"
