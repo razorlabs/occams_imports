@@ -248,7 +248,10 @@ def insert_iform(context, request):
         if not form.validate():
             output = {}
             output['errors'] = wtferrors(form)
-            output['form'] = record
+            output['schema_name'] = record['schema_name']
+            output['schema_title'] = record['schema_title']
+            output['name'] = record['name']
+            output['title'] = record['title']
             errors.append(output)
 
         attributes.append(datastore.Attribute(
@@ -312,5 +315,11 @@ def insert_iform(context, request):
     else:
         record_count = 0
 
+    if errors:
+        error_count = len(errors)
+    else:
+        error_count = 0
+
     return {'record_count': record_count,
-            'errors': errors}
+            'errors': errors,
+            'error_count': error_count}
