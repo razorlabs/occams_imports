@@ -180,6 +180,7 @@ def insert_occams(context, request):
 
     return {}
 
+
 @view_config(
     route_name='imports.codebooks_iform_status',
     permission='view',
@@ -188,10 +189,8 @@ def insert_occams(context, request):
 def insert_iform(context, request):
     from datetime import datetime
 
-    #from occams import Session
     from occams_datastore import models as datastore
     from occams_forms.views.field import FieldFormFactory
-    from occams.utils.forms import wtferrors
     from occams_imports.parsers import parse
     from occams_imports.parsers import convert_iform_to_occams as iform
     """
@@ -207,8 +206,6 @@ def insert_iform(context, request):
     """
     dry = None
 
-    #from pdb import set_trace; set_trace()
-
     if request.POST['mode'] == u'dry':
         dry = True
 
@@ -218,89 +215,96 @@ def insert_iform(context, request):
     publish_date = request.POST['publish_date']
     publish_date = datetime.strptime(publish_date, '%Y-%m-%d').date()
 
-    codebook_filename = request.POST['codebook'].filename
     codebook = request.POST['codebook'].file
 
-    converted_codebook = iform.convert(schema_name, schema_title, publish_date, codebook)
-   # from pdb import set_trace; set_trace()
+    converted_codebook = iform.convert(
+        schema_name, schema_title, publish_date, codebook)
 
-    # codebook = '/Users/jkrooskos/Documents/occams/src/occams_imports/occams_imports/views/output.csv'
     records = parse.parse(converted_codebook)
     records = parse.remove_system_entries(records)
 
-    # from pdb import set_trace; set_trace()
-
-    schemas = {}
     errors = []
+    attributes = []
+
     for record in records:
-        # if it's not a system entry, cache and insert into db
-        # from pdb import set_trace; set_trace()
-        if (
-            record['schema_name'],
-            record['schema_title'],
-            record['publish_date']
-        ) not in schemas:
-            schema_id = Session.query(datastore.Schema.id).filter(
-                datastore.Schema.name == schema_name and
-                datastore.Schema.publish_date == publish_date and
-                datastore.Schema.title == schema_title).scalar()
-            if not schema_id:
-                # create schema object
-                schema = datastore.Schema(
-                    name=record['schema_name'],
-                    title=record['schema_title'],
-                    publish_date=record['publish_date']
-                )
-                Session.add(schema)
-                Session.flush()
-
-                # add schema to cache
-                schemas[(record['schema_name'],
-                        record['schema_title'],
-                        record['publish_date'])] = schema
-
-        else:
-            # get schemas from the cache
-            schema = schemas[(record['schema_name'],
-                              record['schema_title'],
-                              record['publish_date'])]
-
         # convert boolean type to choice type
         # occams doesn't support boolean form attribute types
+        # this feels like it should be in the parse module
         if record['type'] == u'boolean':
             record['type'] = u'choice'
 
         choices = get_choices(record['choices'])
         record['choices'] = choices
 
+        schema = datastore.Schema(
+            name=record['schema_name'],
+            title=record['schema_title'],
+            publish_date=record['publish_date']
+        )
+
         FieldForm = FieldFormFactory(context=schema, dbsession=Session)
         form = FieldForm.from_json(record)
 
-        if form.validate():
-            Session.add(datastore.Attribute(
-                name=record['name'],
-                title=record['title'],
-                description=record['description'],
-                is_required=record['is_required'],
-                is_collection=record['is_collection'],
-                is_private=record['is_private'],
-                type=record['type'],
-                order=record['order'],
-                schema=schema,
-                choices=choices
-            ))
-
-        else:
+        if not form.validate():
             output = {}
             output['errors'] = wtferrors(form)
             output['form'] = record
             errors.append(output)
 
-        if dry:
-            Session.rollback()
-        elif errors:
-            Session.rollback()
-        else:
+        attributes.append(datastore.Attribute(
+            name=record['name'],
+            title=record['title'],
+            description=record['description'],
+            is_required=record['is_required'],
+            is_collection=record['is_collection'],
+            is_private=record['is_private'],
+            type=record['type'],
+            order=record['order'],
+            schema=schema,
+            choices=choices
+        ))
+
+    # get the first schema from the list
+    schema = attributes[0].schema
+
+    if not dry and not errors:
+        attr_dict = {}
+        for attribute in attributes:
+            flushed = False
+            if attribute.schema.name == schema.name:
+                # remove unnecessary schema attr
+                del(attribute.schema)
+
+                attr_dict[attribute.name] = attribute
+            else:
+                Session.add(datastore.Schema(
+                    name=schema.name,
+                    title=schema.title,
+                    publish_date=schema.publish_date,
+                    attributes=attr_dict
+                ))
+
+                Session.flush()
+
+                flushed = True
+
+                schema = attribute.schema
+
+                attr_dict = {}
+
+                # remove unnecessary schema attr
+                del(attribute.schema)
+
+                attr_dict[attribute.name] = attribute
+
+        if not flushed:
+            Session.add(datastore.Schema(
+                name=schema.name,
+                title=schema.title,
+                publish_date=schema.publish_date,
+                attributes=attr_dict
+            ))
+
             Session.flush()
 
     if records:
