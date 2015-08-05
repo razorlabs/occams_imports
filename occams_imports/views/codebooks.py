@@ -212,9 +212,6 @@ def insert_iform(context, request):
     if request.POST['mode'] == u'dry':
         dry = True
 
-    elif request.POST['mode'] == u'force':
-        force = True
-
     schema_name = request.POST['schema_name']
     schema_title = request.POST['schema_title']
 
