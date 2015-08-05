@@ -6,11 +6,32 @@
     <div class="jumbotron">
       <h1 i18n:translate="">iForm Codebook Status</h1>
       <p i18n:translate="">
-        Records processed:  ${record_count}
+        Records processed:  ${record_count} <br />
+        Errors: ${error_count}
       </p>
       <p i18n:translate="" tal:condition="errors">
-        Errors:  ${errors}
+        <br />
+        <table class="table-bordered">
+          <thead>
+            <tr>
+              <th>Schema Name</th>
+              <th>Schema Title</th>
+              <th>Name</th>
+              <th>Title</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+            <tr tal:repeat="error errors">
+              <th>${error.schema_name}</th>
+              <th>${error.schema_title}</th>
+              <th>${error.name}</th>
+              <th>${error.title}</th>
+              <th>${error.errors}</th>
+            </tr>
+        </table>
+
       </p>
+
     </div>
 
   </metal:content-slot>
