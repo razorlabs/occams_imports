@@ -6,10 +6,10 @@
     <div class="jumbotron">
       <h1 i18n:translate="">iForm Codebook Status</h1>
       <p i18n:translate="">
-        This is where you see the status of your upload.
-      </p>
-      <p i18n:translate="">
         Records processed:  ${record_count}
+      </p>
+      <p i18n:translate="" tal:condition="errors">
+        Errors:  ${errors}
       </p>
     </div>
 
