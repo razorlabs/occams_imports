@@ -108,16 +108,17 @@ def insert_iform(context, request):
     if request.POST['mode'] == u'dry':
         dry = True
 
-    schema_name = request.POST['schema_name']
-    schema_title = request.POST['schema_title']
+    if request.path_info == u'/imports/codebooks/iform/status':
+        schema_name = request.POST['schema_name']
+        schema_title = request.POST['schema_title']
 
-    publish_date = request.POST['publish_date']
-    publish_date = datetime.strptime(publish_date, '%Y-%m-%d').date()
+        publish_date = request.POST['publish_date']
+        publish_date = datetime.strptime(publish_date, '%Y-%m-%d').date()
 
-    codebook = request.POST['codebook'].file
+        codebook = request.POST['codebook'].file
 
-    converted_codebook = iform.convert(
-        schema_name, schema_title, publish_date, codebook)
+        converted_codebook = iform.convert(
+            schema_name, schema_title, publish_date, codebook)
 
     records = parse.parse(converted_codebook)
     records = parse.remove_system_entries(records)
