@@ -6,6 +6,7 @@ collected data
 """
 
 from pyramid.httpexceptions import HTTPBadRequest, HTTPOk
+from pyramid.renderers import render_to_response
 from pyramid.session import check_csrf_token
 from pyramid.view import view_config
 import sqlalchemy as sa
@@ -184,8 +185,7 @@ def insert_occams(context, request):
 @view_config(
     route_name='imports.codebooks_iform_status',
     permission='view',
-    request_method='POST',
-    renderer='../templates/codebooks/status.pt')
+    request_method='POST')
 def insert_iform(context, request):
     from datetime import datetime
 
@@ -320,6 +320,9 @@ def insert_iform(context, request):
     else:
         error_count = 0
 
-    return {'record_count': record_count,
-            'errors': errors,
-            'error_count': error_count}
+    return render_to_response(
+        '../templates/codebooks/status.pt',
+        {'record_count': record_count,
+         'errors': errors,
+         'error_count': error_count},
+         request=request)
