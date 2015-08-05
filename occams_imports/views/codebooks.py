@@ -312,4 +312,5 @@ def insert_iform(context, request):
     else:
         record_count = 0
 
-    return {'record_count': record_count}
+    return {'record_count': record_count,
+            'errors': errors}
