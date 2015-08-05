@@ -185,7 +185,7 @@ def insert_occams(context, request):
     route_name='imports.codebooks_iform_status',
     permission='view',
     request_method='POST',
-    renderer='../templates/codebooks/iform_status.pt')
+    renderer='../templates/codebooks/status.pt')
 def insert_iform(context, request):
     from datetime import datetime
 
