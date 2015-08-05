@@ -99,13 +99,11 @@ def convert(schema_name, schema_title, publish_date, codebook, delimiter=','):
     :param delimiter:
     :return:
     """
-#    with open(codebook, 'rb') as csvfile:
     reader = csv.reader(codebook, encoding='utf-8', delimiter=delimiter)
 
     # Remove headers from file
     headers = reader.next()
 
-   #output_csv = open('output.csv', 'wb')
     output_csv = six.StringIO()
     writer = csv.writer(output_csv, encoding='utf-8')
 
@@ -159,10 +157,8 @@ def convert(schema_name, schema_title, publish_date, codebook, delimiter=','):
 
     output_csv.flush()
     output_csv.seek(0)
-    #from pdb import set_trace; set_trace()
 
     return output_csv
-  #  output_csv.close()
 
 
 def main():
