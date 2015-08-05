@@ -4,7 +4,7 @@
     <br />
 
     <div class="jumbotron">
-      <h1 i18n:translate="">iForm Codebook Status</h1>
+      <h1 i18n:translate="">Codebook Import Status</h1>
       <p i18n:translate="">
         Records processed:  ${record_count} <br />
         Errors: ${error_count}
