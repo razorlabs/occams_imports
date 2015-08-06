@@ -30,7 +30,7 @@
               <th>${error.schema_title}</th>
               <th>${error.name}</th>
               <th>${error.title}</th>
-              <th>${error.errors}</th>
+              <th class="text-danger">${error.errors}</th>
             </tr>
         </table>
 
