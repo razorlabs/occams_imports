@@ -44,6 +44,30 @@
       </p>
       <br />
 
+      <p i18n:translate="">Select a delimiter: </p>
+      <p>
+        <div class="radio">
+          <label><input type="radio"
+                        name="delimiter"
+                        value="comma"
+                        checked="checked"
+                        i18n:translate="">Comma</label>
+        </div>
+      </p>
+
+      <p>
+        <div class="radio">
+          <label>
+            <input type="radio"
+                   name="delimiter"
+                   value="tab"
+                   i18n:translate="">Tab
+          </label>
+        </div>
+      </p>
+
+
+      <br />
       <br />
         <p>
           <a class="btn btn-primary btn-lg"
