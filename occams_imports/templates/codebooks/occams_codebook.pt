@@ -81,10 +81,11 @@
       <br />
       <br />
         <p>
-          <a class="btn btn-primary btn-lg"
-              role="button"
-              href="${request.route_path('imports.codebooks_occams_status')}"
-              i18n:translate="">Upload csv file</a>
+      <button
+          type="submit"
+          name="submit"
+          class="btn btn-lg btn-primary"
+          i18n:translate="">Upload csv file</button>
         </p>
 
     </form>
