@@ -181,6 +181,7 @@ def insert_iform(context, request):
     schema = attributes[0].schema
 
     inserted_count = 0
+    form_count = 0
     if not dry and not errors:
         attr_dict = {}
         for attribute in attributes:
@@ -201,6 +202,8 @@ def insert_iform(context, request):
                 ))
 
                 Session.flush()
+
+                form_count += 1
 
                 flushed = True
 
@@ -223,6 +226,8 @@ def insert_iform(context, request):
 
             Session.flush()
 
+            form_count += 1
+
     if records:
         record_count = len(records)
     else:
@@ -238,5 +243,6 @@ def insert_iform(context, request):
         {'record_count': record_count,
          'errors': errors,
          'error_count': error_count,
-         'inserted_count': inserted_count},
+         'inserted_count': inserted_count,
+         'form_count': form_count},
          request=request)

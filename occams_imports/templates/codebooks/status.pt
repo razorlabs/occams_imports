@@ -7,6 +7,7 @@
       <h1 i18n:translate="">Codebook Import Status</h1>
       <p i18n:translate="">
         Records processed:  ${record_count} <br />
+        Forms inserted: ${form_count} <br />
         Records inserted:  ${inserted_count} <br />
         Errors: ${error_count}
       </p>
