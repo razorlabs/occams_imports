@@ -28,7 +28,8 @@
       <p>
         <div class="radio">
           <label><input type="radio"
-                        name="optradio"
+                        name="mode"
+                        value="dry"
                         i18n:translate="">Dry - Data not saved to db</label>
         </div>
       </p>
@@ -37,7 +38,9 @@
         <div class="radio">
           <label>
             <input type="radio"
-                   name="optradio"
+                   name="mode"
+                   value="default"
+                   checked="checked"
                    i18n:translate="">Only upload forms if all records validate
           </label>
         </div>
