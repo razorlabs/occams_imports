@@ -27,15 +27,27 @@
         enctype="multipart/form-data"
         action="${request.route_path('imports.codebooks_iform_status')}">
 
+      <div class="row">
+      <div class="col-md-4">
       <input class="form-control"
              name="schema_name"
              placeholder="Schema Name" required></input>
+      </div>
+      </div>
       <br />
+
+      <div class="row">
+      <div class="col-md-4">
       <input class="form-control"
              name="schema_title"
              placeholder="Schema Title" required></input>
+      </div>
+      </div>
 
       <br />
+
+      <div class="row">
+      <div class="col-md-4">
       <p i18n:translate="">Schema Publish Date: </p>
       <input type="date"
              class="form-control"
@@ -43,6 +55,8 @@
              name="publish_date"
              placeholder="publish_date"
              data-rule-dateiso="" required>
+      </div>
+      </div>
 
       <br />
 
