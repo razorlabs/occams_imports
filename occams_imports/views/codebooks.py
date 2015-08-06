@@ -180,6 +180,7 @@ def insert_iform(context, request):
     # get the first schema from the list
     schema = attributes[0].schema
 
+    inserted_count = 0
     if not dry and not errors:
         attr_dict = {}
         for attribute in attributes:
@@ -189,6 +190,8 @@ def insert_iform(context, request):
                 del(attribute.schema)
 
                 attr_dict[attribute.name] = attribute
+
+                inserted_count += 1
             else:
                 Session.add(datastore.Schema(
                     name=schema.name,
@@ -234,5 +237,6 @@ def insert_iform(context, request):
         '../templates/codebooks/status.pt',
         {'record_count': record_count,
          'errors': errors,
-         'error_count': error_count},
+         'error_count': error_count,
+         'inserted_count': inserted_count},
          request=request)
