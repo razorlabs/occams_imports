@@ -87,9 +87,9 @@
               i18n:translate="">Upload csv file</a>
         </p>
 
-    </div>
-
     </form>
+
+    </div>
 
   </metal:content-slot>
 </html>
