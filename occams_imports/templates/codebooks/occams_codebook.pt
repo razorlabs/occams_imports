@@ -19,7 +19,11 @@
 
       </p>
 
+      <p i18n:translate="">Select codebook to upload: </p>
+      <input type="file" name="codebook" required>
+
       <br />
+
       <p i18n:translate="">Select an upload mode: </p>
       <p>
         <div class="radio">
