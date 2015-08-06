@@ -228,15 +228,8 @@ def insert_iform(context, request):
 
             forms_inserted += 1
 
-    if records:
-        fields_evaluated = len(records)
-    else:
-        fields_evaluated = 0
-
-    if errors:
-        error_count = len(errors)
-    else:
-        error_count = 0
+    fields_evaluated = len(records)
+    error_count = len(errors)
 
     return render_to_response(
         '../templates/codebooks/status.pt',
