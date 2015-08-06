@@ -85,5 +85,7 @@
 
     </form>
 
+    </div>
+
   </metal:content-slot>
 </html>
