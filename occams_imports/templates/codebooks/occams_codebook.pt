@@ -19,6 +19,14 @@
 
       </p>
 
+    <form
+        role="form"
+        name="upload_iform"
+        method="POST"
+        autocomplete="on"
+        enctype="multipart/form-data"
+        action="${request.route_path('imports.codebooks_occams_status')}">
+
       <p i18n:translate="">Select codebook to upload: </p>
       <input type="file" name="codebook" required>
 
