@@ -78,11 +78,11 @@ def iform(context, request):
 
 
 @view_config(
-    route_name='imports.codebooks_iform_status',
+    route_name='imports.codebooks_occams_status',
     permission='view',
     request_method='POST')
 @view_config(
-    route_name='imports.codebooks_occams_status',
+    route_name='imports.codebooks_iform_status',
     permission='view',
     request_method='POST')
 def insert_iform(context, request):
@@ -108,6 +108,8 @@ def insert_iform(context, request):
     if request.POST['mode'] == u'dry':
         dry = True
 
+    codebook = request.POST['codebook'].file
+
     if request.path_info == u'/imports/codebooks/iform/status':
         schema_name = request.POST['schema_name']
         schema_title = request.POST['schema_title']
@@ -115,12 +117,20 @@ def insert_iform(context, request):
         publish_date = request.POST['publish_date']
         publish_date = datetime.strptime(publish_date, '%Y-%m-%d').date()
 
-        codebook = request.POST['codebook'].file
-
         converted_codebook = iform.convert(
             schema_name, schema_title, publish_date, codebook)
 
-    records = parse.parse(converted_codebook)
+        records = parse.parse(converted_codebook)
+
+    elif request.path_info == u'/imports/codebooks/occams/status':
+        if request.POST['delimiter'] == u'comma':
+            delimiter = ','
+
+        elif request.POST['delimiter'] == u'tab':
+            delimiter = '\t'
+
+        records = parse.parse(codebook, delimiter=delimiter)
+
     records = parse.remove_system_entries(records)
 
     errors = []
