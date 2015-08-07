@@ -88,6 +88,29 @@ def output_headers(writer):
     writer.writerow(output_headers)
 
 
+def init_row(schema_name, schema_title, publish_date, count):
+    """
+    Init a row dict but keep incrementing the order count
+    """
+    row = {}
+
+    if count != 0:
+        order = count + 1
+    else:
+        order = 0
+
+    row['is_required'] = u'False'
+    row['is_system'] = u'False'
+    row['is_collection'] = u'False'
+    row['is_private'] = u'False'
+    row['schema_name'] = schema_name
+    row['schema_title'] = schema_title
+    row['publish_date'] = publish_date
+    row['order'] = order
+
+    return row
+
+
 def convert(schema_name, schema_title, publish_date, codebook, delimiter=','):
     """
     Convert iForm file to occams format
@@ -107,21 +130,12 @@ def convert(schema_name, schema_title, publish_date, codebook, delimiter=','):
     output_csv = six.StringIO()
     writer = csv.writer(output_csv, encoding='utf-8')
 
-    row = {}
-
-    row['is_required'] = u'False'
-    row['is_system'] = u'False'
-    row['is_collection'] = u'False'
-    row['is_private'] = u'False'
-    row['schema_name'] = schema_name
-    row['schema_title'] = schema_title
-    row['publish_date'] = publish_date
-    row['order'] = 0
-
     output_headers(writer)
 
     choices = []
     in_choice = False
+
+    row = init_row(schema_name, schema_title, publish_date, 0)
 
     for field in reader:
         # this is a question row, not a choice row
@@ -129,8 +143,11 @@ def convert(schema_name, schema_title, publish_date, codebook, delimiter=','):
             if in_choice:
                 row['choices_string'] = convert_choices(choices)
                 writerow(writer, row)
+                row = init_row(
+                    schema_name, schema_title, publish_date, row['order'])
                 in_choice = False
                 choices = []
+                continue
             row['order'] += 1
             row['variable'] = field[0].strip()
             row['title'] = field[1].strip()
@@ -139,6 +156,8 @@ def convert(schema_name, schema_title, publish_date, codebook, delimiter=','):
             if row['field_type'] not in [u'choice']:
                 row['choices_string'] = None
                 writerow(writer, row)
+                row = init_row(
+                    schema_name, schema_title, publish_date, row['order'])
 
             else:
                 in_choice = True
