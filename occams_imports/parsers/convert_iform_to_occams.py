@@ -14,7 +14,7 @@ import argparse
 
 import unicodecsv as csv
 
-TYPES_MAP = {u'NUMBER': u'numeric',
+TYPES_MAP = {u'NUMBER': u'number',
              u'TEXT': u'text',
              u'SUBFORM': None,
              u'PICKLIST': u'choice',
