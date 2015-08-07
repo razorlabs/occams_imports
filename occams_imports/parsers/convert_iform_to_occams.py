@@ -147,7 +147,7 @@ def convert(schema_name, schema_title, publish_date, codebook, delimiter=','):
                     schema_name, schema_title, publish_date, row['order'])
                 in_choice = False
                 choices = []
-                continue
+
             row['order'] += 1
             row['variable'] = field[0].strip()
             row['title'] = field[1].strip()
