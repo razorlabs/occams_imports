@@ -13,6 +13,25 @@
         Fields inserted:  ${fields_inserted} <br />
         Errors: ${error_count}
       </p>
+
+      <p i18n:translate="" tal:condition="forms">
+        <br />
+        <table class="table-bordered">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Title</th>
+              <th>Publish Date</th>
+            </tr>
+          </thead>
+            <tr tal:repeat="form forms">
+              <th>${form.name}</th>
+              <th>${form.title}</th>
+              <th>${form.publish_date}</th>
+            </tr>
+        </table>
+      </p>
+
       <p i18n:translate="" tal:condition="errors">
         <br />
         <table class="table-bordered">
@@ -33,7 +52,6 @@
               <th class="text-danger">${error.errors}</th>
             </tr>
         </table>
-
       </p>
 
     </div>
