@@ -137,6 +137,7 @@ def convert(schema_name, schema_title, publish_date, codebook, delimiter=','):
             row['field_type'] = TYPES_MAP[field[2].strip()]
             row['description'] = u''
             if row['field_type'] not in [u'choice']:
+                row['choices_string'] = None
                 writerow(writer, row)
 
             else:
