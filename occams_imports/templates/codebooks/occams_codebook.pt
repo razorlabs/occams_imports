@@ -37,7 +37,7 @@
           <label><input type="radio"
                         name="mode"
                         value="dry"
-                        i18n:translate="">Dry - Data not saved to db</label>
+                        i18n:translate="">Validate - Data not saved to db</label>
         </div>
       </p>
 
