@@ -3,8 +3,6 @@
 
     <br />
 
-
-    <div class="jumbotron">
       <h1 i18n:translate="">Codebook Import Status</h1>
       <br />
       <p i18n:translate="">
@@ -53,8 +51,6 @@
             </tr>
         </table>
       </p>
-
-    </div>
 
   </metal:content-slot>
 </html>
