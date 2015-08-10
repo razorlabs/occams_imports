@@ -1,20 +1,33 @@
 <html metal:use-macro="load: ../master.pt">
   <metal:content-slot fill-slot="content-slot">
-
+    <br />
+    <h1 i18n:translate="">Codebook Import Status</h1>
     <br />
 
-      <h1 i18n:translate="">Codebook Import Status</h1>
-      <br />
-      <p i18n:translate="">
-        Fields evaluated:  ${fields_evaluated} <br />
-        Forms inserted: ${forms_inserted} <br />
-        Fields inserted:  ${fields_inserted} <br />
-        Errors: ${error_count}
-      </p>
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Fields evaluated</th>
+            <th>Forms inserted</th>
+            <th>Fields inserted</th>
+            <th>Errors</th>
+          </tr>
+        </thead>
+          <tr>
+            <td>${fields_evaluated}</td>
+            <td>${forms_inserted}</td>
+            <td>${fields_inserted}</td>
+            <td>${error_count}</td>
+          </tr>
+      </table>
+    </div>
 
-      <p i18n:translate="" tal:condition="forms">
-        <br />
-        <table class="table-bordered">
+    <p i18n:translate="" tal:condition="forms">
+      <br />
+      <h2>Forms</h2>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
           <thead>
             <tr>
               <th>Name</th>
@@ -23,16 +36,19 @@
             </tr>
           </thead>
             <tr tal:repeat="form forms">
-              <th>${form.name}</th>
-              <th>${form.title}</th>
-              <th>${form.publish_date}</th>
+              <td>${form.name}</td>
+              <td>${form.title}</td>
+              <td>${form.publish_date}</td>
             </tr>
         </table>
-      </p>
+      </div>
+    </p>
 
-      <p i18n:translate="" tal:condition="errors">
-        <br />
-        <table class="table-bordered">
+    <p i18n:translate="" tal:condition="errors">
+      <br />
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <h2 class="text-danger">Errors</h2>
           <thead>
             <tr>
               <th>Schema Name</th>
@@ -43,14 +59,14 @@
             </tr>
           </thead>
             <tr tal:repeat="error errors">
-              <th>${error.schema_name}</th>
-              <th>${error.schema_title}</th>
-              <th>${error.name}</th>
-              <th>${error.title}</th>
-              <th class="text-danger">${error.errors}</th>
+              <td>${error.schema_name}</td>
+              <td>${error.schema_title}</td>
+              <td>${error.name}</td>
+              <td>${error.title}</td>
+              <td class="text-danger">${error.errors}</td>
             </tr>
         </table>
-      </p>
-
+      </div>
+    </p>
   </metal:content-slot>
 </html>

@@ -3,19 +3,10 @@
 
     <br />
 
-      <h1 i18n:translate="">Upload Occams Codebooks</h1>
-      <p i18n:translate="">
+      <h1 i18n:translate="">Upload OCCAMS Codebooks</h1>
+      <p i18n:translate="" class="lead">
         This service was designed so you can upload the structure of your eCRF's
-        into the Occams system.
-      </p>
-      <p>
-        <span class="glyphicon glyphicon-ok"></span>
-        <strong i18n:translate="">
-          All private data will be de-identified.
-        </strong>
-        <a href="${request.route_path('studies.exports_faq', _anchor='private')}"
-          ><span class="glyphicon glyphicon-info-sign"></span></a>
-
+        into the OCCAMS system.
       </p>
 
     <form
@@ -26,11 +17,17 @@
         enctype="multipart/form-data"
         action="${request.route_path('imports.codebooks_occams_status')}">
 
-      <p i18n:translate="">Select codebook to upload: </p>
-      <input type="file" name="codebook" required>
+      <div class="form-group">
+        <h3>Step 1</h3>
+        <p i18n:translate="">Select codebook to upload: </p>
+        <input type="file" name="codebook" required>
+      </div>
 
       <br />
 
+      <hr>
+      <div class="form-group">
+      <h3>Step 2</h3>
       <p i18n:translate="">Select an upload mode: </p>
       <p>
         <div class="radio">
@@ -39,7 +36,7 @@
                         value="dry"
                         i18n:translate="">Validate - Data not saved to db</label>
         </div>
-      </p>
+      </div>
 
       <p>
         <div class="radio">
@@ -54,6 +51,9 @@
       </p>
       <br />
 
+      <hr>
+      <div class="form_group">
+      <h3>Step 3</h3>
       <p i18n:translate="">Select a delimiter: </p>
       <p>
         <div class="radio">
@@ -63,7 +63,7 @@
                         checked="checked"
                         i18n:translate="">Comma</label>
         </div>
-      </p>
+      </div>
 
       <p>
         <div class="radio">
@@ -86,7 +86,6 @@
           class="btn btn-lg btn-primary"
           i18n:translate="">Upload csv file</button>
         </p>
-
     </form>
 
 
