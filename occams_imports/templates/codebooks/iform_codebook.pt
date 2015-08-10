@@ -3,7 +3,6 @@
 
     <br />
 
-    <div class="jumbotron">
       <h1 i18n:translate="">Upload iForm Codebook</h1>
       <p i18n:translate="">
         This service was designed so you can upload the structure of your eCRF's
@@ -98,8 +97,6 @@
           i18n:translate="">Upload csv file</button>
 
     </form>
-
-    </div>
 
   </metal:content-slot>
 </html>
