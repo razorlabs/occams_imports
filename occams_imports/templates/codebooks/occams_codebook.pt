@@ -3,7 +3,6 @@
 
     <br />
 
-    <div class="jumbotron">
       <h1 i18n:translate="">Upload Occams Codebooks</h1>
       <p i18n:translate="">
         This service was designed so you can upload the structure of your eCRF's
@@ -90,7 +89,6 @@
 
     </form>
 
-    </div>
 
   </metal:content-slot>
 </html>
