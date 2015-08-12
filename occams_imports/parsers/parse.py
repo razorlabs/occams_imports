@@ -74,7 +74,7 @@ def parse(codebook, delimiter=','):
 
         is_private = is_true(row['is_private'])
 
-        field_type = row['type'].strip()
+        field_type = row['type'].strip().lower()
 
         if row['choices'] is not None and row['choices'].strip() != u'':
             choices = []
