@@ -172,18 +172,19 @@ def insert_iform(context, request):
             output['title'] = record['title']
             errors.append(output)
 
-        attributes.append(datastore.Attribute(
-            name=record['name'],
-            title=record['title'],
-            description=record['description'],
-            is_required=record['is_required'],
-            is_collection=record['is_collection'],
-            is_private=record['is_private'],
-            type=record['type'],
-            order=record['order'],
-            schema=schema,
-            choices=choices
-        ))
+        else:
+            attributes.append(datastore.Attribute(
+                name=record['name'],
+                title=record['title'],
+                description=record['description'],
+                is_required=record['is_required'],
+                is_collection=record['is_collection'],
+                is_private=record['is_private'],
+                type=record['type'],
+                order=record['order'],
+                schema=schema,
+                choices=choices
+            ))
 
     # get the first schema from the list
     schema = attributes[0].schema
