@@ -160,7 +160,7 @@ def insert_iform(context, request):
             publish_date=record['publish_date']
         )
 
-        FieldForm = FieldFormFactory(context=schema, dbsession=Session)
+        FieldForm = FieldFormFactory(context=schema)
         form = FieldForm.from_json(record)
 
         if not form.validate():
