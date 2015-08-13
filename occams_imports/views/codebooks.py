@@ -94,6 +94,10 @@ def qds(context, request):
     route_name='imports.codebooks_iform_status',
     permission='view',
     request_method='POST')
+@view_config(
+    route_name='imports.codebooks_qds_status',
+    permission='view',
+    request_method='POST')
 def insert_iform(context, request):
     from datetime import datetime
 
