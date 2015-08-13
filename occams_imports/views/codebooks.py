@@ -78,6 +78,15 @@ def iform(context, request):
 
 
 @view_config(
+    route_name='imports.codebooks_qds',
+    permission='view',
+    request_method='GET',
+    renderer='../templates/codebooks/qds_codebook.pt')
+def qds(context, request):
+    return {}
+
+
+@view_config(
     route_name='imports.codebooks_occams_status',
     permission='view',
     request_method='POST')
