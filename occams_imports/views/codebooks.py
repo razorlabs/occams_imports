@@ -101,6 +101,7 @@ def insert_iform(context, request):
     from occams_forms.views.field import FieldFormFactory
     from occams_imports.parsers import parse
     from occams_imports.parsers import convert_iform_to_occams as iform
+    from occams_imports.parsers import convert_qds_to_occams as qds
     """
     Insert appropriate records to the database
 
@@ -147,6 +148,18 @@ def insert_iform(context, request):
             delimiter = '\t'
 
         records = parse.parse(codebook, delimiter=delimiter)
+
+    elif request.path_info == u'/imports/codebooks/qds/status':
+        if request.POST['delimiter'] == u'comma':
+            delimiter = ','
+
+        elif request.POST['delimiter'] == u'tab':
+            delimiter = '\t'
+
+        converted_codebook = qds.convert(
+            schema_name, schema_title, publish_date, codebook)
+
+        records = parse.parse(converted_codebook)
 
     records = parse.remove_system_entries(records)
 
