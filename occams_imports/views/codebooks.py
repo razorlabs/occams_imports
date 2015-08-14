@@ -5,21 +5,11 @@ This data is the structure of the schemas and attributes for forms not the
 collected data
 """
 
-from pyramid.httpexceptions import HTTPBadRequest, HTTPOk
 from pyramid.renderers import render_to_response
-from pyramid.session import check_csrf_token
 from pyramid.view import view_config
-import sqlalchemy as sa
-from sqlalchemy import orm
-import wtforms
-from wtforms.ext.dateutil.fields import DateField
 
-from occams.utils.forms import wtferrors, ModelField, Form
-from occams_forms.renderers import \
-    make_form, render_form, entity_data, \
-    form2json, version2json
-
-from .. import _, models, Session
+from occams.utils.forms import wtferrors
+from .. import Session
 
 
 def get_choices(raw_choices):
