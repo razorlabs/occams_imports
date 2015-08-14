@@ -6,8 +6,6 @@ collected data
 """
 
 import re
-import sys
-import argparse
 from datetime import datetime
 
 import six
@@ -114,24 +112,3 @@ def parse(codebook, delimiter=','):
     codebook.close()
 
     return records
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('codebook', help='path of codebook to parse')
-
-    args = parser.parse_args()
-
-    codebook = args.codebook
-
-    if args.delimeter:
-        delimeter = args.delimeter
-        records = parse(codebook, delimeter)
-    else:
-        records = parse(codebook)
-
-    records = remove_system_entries(records)
-
-
-if __name__ == '__main__':
-    sys.exit(main())
