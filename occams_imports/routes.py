@@ -25,4 +25,6 @@ def includeme(config):
 
     config.add_route('imports.codebooks_occams_status',     '/imports/codebooks/occams/status',   factory=models.RootFactory)
 
+    config.add_route('imports.codebooks_qds_status',        '/imports/codebooks/qds/status',      factory=models.RootFactory)
+
     log.debug('Routes configured')
