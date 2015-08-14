@@ -7,10 +7,7 @@ Parsing assumptions made:
 * If the row ends in a choice datatype, the next rows are the choices
 * All the datatypes are in the TYPES_MAP...do more research here
 """
-
-import sys
 import six
-import argparse
 
 import unicodecsv as csv
 
@@ -179,29 +176,3 @@ def convert(schema_name, schema_title, publish_date, codebook, delimiter=','):
     output_csv.seek(0)
 
     return output_csv
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('codebook', help='path of codebook to parse')
-    parser.add_argument('schema_name', help='path of codebook to parse')
-    parser.add_argument('schema_title', help='path of codebook to parse')
-    parser.add_argument('publish_date', help='Date in the form yyyy-mm-dd')
-    parser.add_argument('-d', '--delimeter',
-                        help='delimeter...not required for comma delimeter')
-
-    args = parser.parse_args()
-
-    codebook = args.codebook
-    schema_name = args.schema_name
-    schema_title = args.schema_title
-    publish_date = args.publish_date
-
-    if args.delimeter:
-        delimeter = args.delimeter
-        convert(schema_name, schema_title, publish_date, codebook, delimeter)
-    else:
-        convert(schema_name, schema_title, publish_date, codebook)
-
-if __name__ == '__main__':
-    sys.exit(main())
