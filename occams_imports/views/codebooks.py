@@ -160,8 +160,7 @@ def insert_iform(context, request):
         elif request.POST['delimiter'] == u'tab':
             delimiter = '\t'
 
-        converted_codebook = qds.convert(
-            schema_name, schema_title, publish_date, codebook)
+        converted_codebook = qds.convert(codebook, delimiter=delimiter)
 
         records = parse.parse(converted_codebook)
 
