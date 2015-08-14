@@ -8,33 +8,29 @@ import six
 
 import unicodecsv as csv
 
-
-def convert_choices(choices):
-    """
-    Convert choices to occams choices string
-
-    :param choices: list of choices, ie. [[u'0', 'label1'], [u'1', 'label2']]
-    :return: choices string, i.e. '0=label1;1=label2'
-    """
-    choice_string = u';'.join(['{}={}'for choice in choices])
-    choice_list = []
-
-    for choice in choices:
-        choice_list.append(choice[0])
-        choice_list.append(choice[1])
-
-    return choice_string.format(*choice_list)
+from convert_iform_to_occams import output_headers
 
 
-def convert(schema_name, schema_title, publish_date, codebook, delimiter=','):
+def convert(codebook, delimiter=','):
     """
     Convert QDS file to occams format
 
-    :param schema_name:
-    :param schema_title:
-    :param publish_date:
     :param codebook:
     :param delimiter:
     :return:
     """
-    pass
+    reader = csv.reader(codebook, encoding='utf-8', delimiter=delimiter)
+
+    # Remove headers from file
+    headers = reader.next()
+
+    output_csv = six.StringIO()
+    writer = csv.writer(output_csv, encoding='utf-8')
+
+    output_headers(writer)
+    from pdb import set_trace; set_trace()
+    codebook.close()
+
+    output_csv.flush()
+    output_csv.seek(0)
+    output_csv.close()
