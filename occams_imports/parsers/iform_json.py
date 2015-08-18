@@ -50,7 +50,8 @@ import unicodecsv as csv
 DATA_TYPE_MAP = {
     2: u'number',
     7: u'choice',
-    8: u'choice'
+    8: u'choice',
+    9: u'choice'
 }
 
 
