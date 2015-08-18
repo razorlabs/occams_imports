@@ -183,6 +183,9 @@ def convert(codebook):
             except KeyError:
                 continue
 
+            if question[u'data_type'] == 16:
+                continue
+
             row['field_type'] = DATA_TYPE_MAP[question[u'data_type']]
             try:
                 optionlist_id = question['optionlist_id']
