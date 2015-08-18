@@ -114,23 +114,9 @@ def insert_iform(context, request):
 
     codebook = request.POST['codebook'].file
 
-    forms = []
-
     if request.path_info == u'/imports/codebooks/iform/status':
-        # schema_name = request.POST['schema_name']
-        # schema_title = request.POST['schema_title']
 
-        # publish_date = request.POST['publish_date']
-        # publish_date = datetime.strptime(publish_date, '%Y-%m-%d').date()
-
-        form = {'name': u'test',
-                'title': u'test',
-                'publish_date': u'test'
-                }
-
-        forms.append(form)
-        converted_codebook = iform.convert(codebook)
-        #from pdb import set_trace; set_trace()
+        converted_codebook, forms = iform.convert(codebook)
 
         records = parse.parse(converted_codebook)
 
