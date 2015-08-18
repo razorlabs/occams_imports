@@ -48,6 +48,7 @@ import unicodecsv as csv
 
 # maps iFormBuilder data_type code to OCCAMS datastore datatype
 DATA_TYPE_MAP = {
+    2: u'number',
     7: u'choice',
     8: u'choice'
 }
