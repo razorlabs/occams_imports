@@ -94,7 +94,7 @@ def insert_iform(context, request):
     from occams_datastore import models as datastore
     from occams_forms.views.field import FieldFormFactory
     from occams_imports.parsers import parse
-    from occams_imports.parsers import convert_iform_to_occams as iform
+    from occams_imports.parsers import iform_json as iform
     from occams_imports.parsers import convert_qds_to_occams as qds
     """
     Insert appropriate records to the database
@@ -117,20 +117,20 @@ def insert_iform(context, request):
     forms = []
 
     if request.path_info == u'/imports/codebooks/iform/status':
-        schema_name = request.POST['schema_name']
-        schema_title = request.POST['schema_title']
+        # schema_name = request.POST['schema_name']
+        # schema_title = request.POST['schema_title']
 
-        publish_date = request.POST['publish_date']
-        publish_date = datetime.strptime(publish_date, '%Y-%m-%d').date()
+        # publish_date = request.POST['publish_date']
+        # publish_date = datetime.strptime(publish_date, '%Y-%m-%d').date()
 
-        form = {'name': schema_name,
-                'title': schema_title,
-                'publish_date': publish_date
+        form = {'name': u'test',
+                'title': u'test',
+                'publish_date': u'test'
                 }
 
         forms.append(form)
-        converted_codebook = iform.convert(
-            schema_name, schema_title, publish_date, codebook)
+        converted_codebook = iform.convert(codebook)
+        #from pdb import set_trace; set_trace()
 
         records = parse.parse(converted_codebook)
 
