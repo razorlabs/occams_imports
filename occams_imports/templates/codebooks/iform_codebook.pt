@@ -18,45 +18,11 @@
         action="${request.route_path('imports.codebooks_iform_status')}">
 
       <h3>Step 1</h3>
-      <p i18n:translate="">Enter Form Data: </p>
-        <div class="row">
-          <div class="col-md-4">
-            <input class="form-control"
-                   name="schema_name"
-                   placeholder="Schema Name" required></input>
-          </div>
-        </div>
-      <br />
-
-      <div class="row">
-        <div class="col-md-4">
-          <input class="form-control"
-                 name="schema_title"
-                 placeholder="Schema Title" required></input>
-        </div>
-      </div>
-
-      <br />
-
-      <div class="row">
-        <div class="col-md-4">
-        <p i18n:translate="">Schema Publish Date: </p>
-          <input type="date"
-                 class="form-control"
-                 id="publish_date"
-                 name="publish_date"
-                 placeholder="publish_date"
-                 data-rule-dateiso="" required>
-        </div>
-      </div>
-      <hr>
-
-      <h3>Step 2</h3>
       <p i18n:translate="">Select codebook to upload: </p>
       <input type="file" name="codebook" required>
       <hr>
 
-      <h3>Step 3</h3>
+      <h3>Step 2</h3>
       <p i18n:translate="">Select an upload mode: </p>
 
       <p>
@@ -87,7 +53,7 @@
           type="submit"
           name="submit"
           class="btn btn-lg btn-primary"
-          i18n:translate="">Upload csv file</button>
+          i18n:translate="">Upload json file</button>
 
     </form>
 
