@@ -129,15 +129,14 @@ def populate_options(options, optionlist_id):
     :return: list of lists of key and label, i.e. [[key, label],[0:u'value']]
     """
     option_list = []
-    if unicode(optionlist_id) in options:
-        for options in options[unicode(optionlist_id)]['options']:
+    if six.text_type(optionlist_id) in options:
+        for options in options[six.text_type(optionlist_id)]['options']:
             option_list.append([options['key_value'], options['label']])
 
     return option_list
 
 
 def convert(codebook):
-    #jfile = open(codebook, 'r')
     data = codebook.read()
     jdata = json.loads(data)
 
@@ -148,15 +147,21 @@ def convert(codebook):
 
     options = jdata['assets_map']['option_list']
 
-    # from pdb import set_trace; set_trace()
+    forms = []
 
     for pages in jdata['assets_map']['pages']:
         page = jdata['assets_map']['pages'][pages]['elements']
         schema_name = jdata['assets_map']['pages'][pages]['page_level']['name']
         schema_title = schema_name
         publish_date = jdata['assets_map']['pages'][pages]['page_level']['created_date'][0:10]
-        # from pdb import set_trace; set_trace()
-        print schema_name, schema_title, publish_date
+
+        forms.append(
+            {
+                'name': schema_name,
+                'title': schema_title,
+                'publish_date': publish_date
+            })
+
         for question in page:
             row = {
                 u'schema_name': schema_name,
@@ -184,7 +189,7 @@ def convert(codebook):
 
             base_string = '_'.join(schema_name.split('_')[2:-1])
             row['variable'] = '{}_{}'.format(base_string, question[u'name'])
-            # print question['name'], question['label'], question['created_date']
+
             if optionlist_id:
                 choices = populate_options(options, optionlist_id)
                 row['choices_string'] = convert_choices(choices)
@@ -197,5 +202,4 @@ def convert(codebook):
     output_csv.flush()
     output_csv.seek(0)
 
-    return output_csv
-
+    return output_csv, forms
