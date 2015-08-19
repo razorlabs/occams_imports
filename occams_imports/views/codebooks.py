@@ -117,7 +117,7 @@ def insert_iform(context, request):
 
     if request.path_info == u'/imports/codebooks/iform/status':
 
-        converted_codebook, forms = iform.convert(codebook)
+        converted_codebook = iform.convert(codebook)
 
         records = parse.parse(converted_codebook)
 
@@ -161,6 +161,13 @@ def insert_iform(context, request):
             title=record['schema_title'],
             publish_date=record['publish_date']
         )
+
+        form_data = {'name': record['schema_name'],
+                     'title': record['schema_title'],
+                     'publish_date': record['publish_date']}
+
+        if form_data not in forms:
+            forms.append(form_data)
 
         FieldForm = FieldFormFactory(context=schema)
         form = FieldForm.from_json(record)
