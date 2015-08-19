@@ -108,6 +108,7 @@ def insert_iform(context, request):
               these are the records not inserted
     """
     dry = None
+    forms = []
 
     if request.POST['mode'] == u'dry':
         dry = True
