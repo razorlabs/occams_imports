@@ -152,20 +152,11 @@ def convert(codebook):
 
     options = jdata['assets_map']['option_list']
 
-    forms = []
-
     for pages in jdata['assets_map']['pages']:
         page = jdata['assets_map']['pages'][pages]['elements']
         schema_name = jdata['assets_map']['pages'][pages]['page_level']['name']
         schema_title = schema_name
         publish_date = jdata['assets_map']['pages'][pages]['page_level']['created_date'][0:10]
-
-        forms.append(
-            {
-                'name': schema_name,
-                'title': schema_title,
-                'publish_date': publish_date
-            })
 
         for question in page:
             row = {
@@ -210,4 +201,4 @@ def convert(codebook):
     output_csv.flush()
     output_csv.seek(0)
 
-    return output_csv, forms
+    return output_csv
