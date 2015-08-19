@@ -62,6 +62,13 @@ def parse(codebook, delimiter=','):
         except ValueError:
             publish_date = None
 
+        if publish_date is None:
+            try:
+                publish_date = datetime.strptime(
+                    date_string, '%m/%d/%Y').date()
+            except ValueError:
+                publish_date = None
+
         field_name = row['field'].strip()
         field_title = row['title'].strip()
         description = row['description'].strip()
