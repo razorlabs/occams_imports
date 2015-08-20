@@ -92,7 +92,7 @@ def parse(codebook, delimiter=','):
 
         if row['choices'] is not None and row['choices'].strip() != u'':
             choices = []
-            raw_choices = re.split(r';(?=\s*\d+\s*\=)', row['choices'])
+            raw_choices = re.split(r';(?=\s*-*\d+\s*\=)', row['choices'])
             for raw_choice in raw_choices:
                 code, label = raw_choice.split('=', 1)
                 code = code.strip()
