@@ -69,6 +69,13 @@ def parse(codebook, delimiter=','):
             except ValueError:
                 publish_date = None
 
+        if publish_date is None:
+            try:
+                publish_date = datetime.strptime(
+                    date_string, '%m/%d/%y').date()
+            except ValueError:
+                publish_date = None
+
         field_name = row['field'].strip()
         field_title = row['title'].strip()
         description = row['description'].strip()
@@ -85,7 +92,7 @@ def parse(codebook, delimiter=','):
 
         if row['choices'] is not None and row['choices'].strip() != u'':
             choices = []
-            raw_choices = re.split(r';(?=\s*\d+\=)', row['choices'])
+            raw_choices = re.split(r';(?=\s*\d+\s*\=)', row['choices'])
             for raw_choice in raw_choices:
                 code, label = raw_choice.split('=', 1)
                 code = code.strip()
