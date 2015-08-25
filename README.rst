@@ -49,3 +49,25 @@ Add as an occams plugin via::
 
   occams.apps = occams_imports
 
+
+Testing
+-------
+
+Ensure you've installed the app with the [test] setting and run::
+
+
+  py.test --db=postgresql://USER:PASS@/yourtestdb --cov occams_imports tests/
+
+
+Documenting
+-----------
+
+Run::
+
+  sphinx-build -b html docs/source docs/build
+
+
+And then using a lightweight serving application such as NPM's serve::
+
+  serve -p 8080 docs/build
+
