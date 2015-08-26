@@ -89,6 +89,7 @@ def convert(codebook, delimiter=','):
             last_order_number = row['order']
             row['choices_string'] = convert_choices(choices)
             row['field_type'] = u'choice'
+            choices = []
             writerow(writer, row)
             row = init_row(schema_name, schema_title, publish_date)
 
