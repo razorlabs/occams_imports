@@ -49,7 +49,9 @@ def convert(codebook, delimiter=','):
 
     first_row = True
     choices = []
-    in_choice = False
+    last_row = {}
+    first_choice_row = True
+    # in_choice = False
     last_order_number = -1
 
     for field in reader:
@@ -76,26 +78,66 @@ def convert(codebook, delimiter=','):
 
         # not sure what to do with these, skip for now
         if variable2 == u'Calculated':
+            last_order_number = row['order']
             continue
 
-        if row['order'] != last_order_number and not in_choice:
+        #from pdb import set_trace; set_trace()
+
+        if row['order'] == last_order_number:
+            last_row = dict(row)
+            choices.append([choice_order, choice_label])
+            last_order_number = row['order']
+            first_choice_row = False
+
+        elif row['order'] != last_order_number and choice_label == u'':
+            if choices:
+                # this would happen for a one choice row
+                # flush last row
+                last_row['choices_string'] = convert_choices(choices)
+                last_order_number = row['order']
+                # choices.append([choice_order, choice_label])
+
+                last_row['field_type'] = u'choice'
+                writerow(writer, last_row)
+                # row = init_row(schema_name, schema_title, publish_date)
+                choices = []
+                first_choice_row = True
+
             row['choices_string'] = u''
             writerow(writer, row)
             last_order_number = row['order']
+            last_row = dict(row)
             row = init_row(schema_name, schema_title, publish_date)
+            first_choice_row = True
 
-        elif row['order'] != last_order_number and in_choice:
-            in_choice = False
-            last_order_number = row['order']
-            row['choices_string'] = convert_choices(choices)
-            row['field_type'] = u'choice'
-            choices = []
-            writerow(writer, row)
-            row = init_row(schema_name, schema_title, publish_date)
+        elif row['order'] != last_order_number and choice_label != u'':
+            if choices:
+                last_row['choices_string'] = convert_choices(choices)
+                last_order_number = row['order']
+                # choices.append([choice_order, choice_label])
 
-        elif row['order'] == last_order_number:
-            choices.append([choice_order, choice_label])
-            in_choice = True
+                last_row['field_type'] = u'choice'
+                writerow(writer, last_row)
+                # row = init_row(schema_name, schema_title, publish_date)
+                choices = []
+                first_choice_row = True
+            # in_choice = False
+            if first_choice_row:
+                last_row = dict(row)
+                choices.append([choice_order, choice_label])
+                first_choice_row = False
+                last_order_number = row['order']
+            else:
+                last_order_number = row['order']
+                choices.append([choice_order, choice_label])
+                row['choices_string'] = convert_choices(choices)
+                row['field_type'] = u'choice'
+                last_row = dict(row)
+                writerow(writer, row)
+                row = init_row(schema_name, schema_title, publish_date)
+                choices = []
+                first_choice_row = True
+
 
     codebook.close()
 
