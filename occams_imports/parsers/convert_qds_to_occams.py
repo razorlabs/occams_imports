@@ -154,6 +154,11 @@ def convert(codebook, delimiter=','):
 
                 choices = []
 
+    if choices:
+        row['choices_string'] = convert_choices(choices)
+        row['field_type'] = u'choice'
+        last_order_number, last_row, row, first_choice_row = flush_row(
+            writer, row, schema_name, schema_title, publish_date)
 
     codebook.close()
 
