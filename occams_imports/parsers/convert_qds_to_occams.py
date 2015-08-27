@@ -15,6 +15,10 @@ from convert_iform_to_occams import output_headers, writerow, convert_choices
 def init_row(schema_name, schema_title, publish_date):
     """
     Init a row dict but keep incrementing the order count
+
+    :schema_name: system name of the schema
+    :schema_title: human readable name of the schema
+    :publish_date: publish date of the schema
     """
     row = {}
 
@@ -29,6 +33,41 @@ def init_row(schema_name, schema_title, publish_date):
     return row
 
 
+def flush_last_row(writer, row, last_row, choices):
+    """
+    :writer:  csv writer
+    :row: dictionary of row data
+    :last_row: dictionary of data from the last row
+    :choices: list of choices
+    :return: last_order_number, choices
+    """
+    last_row['choices_string'] = convert_choices(choices)
+    last_order_number = row['order']
+    last_row['field_type'] = u'choice'
+    writerow(writer, last_row)
+    choices = []
+
+    return last_order_number, choices
+
+
+def flush_row(writer, row, schema_name, schema_title, publish_date):
+    """
+    :writer:  csv writer
+    :row: dictionary of row data
+    :schema_name: system name of the schema
+    :schema_title: human readable name of the schema
+    :publish_date: publish date of the schema
+    :return: last_order_number, last_row, row, first_choice_row
+    """
+    writerow(writer, row)
+    last_order_number = row['order']
+    last_row = dict(row)
+    row = init_row(schema_name, schema_title, publish_date)
+    first_choice_row = True
+
+    return last_order_number, last_row, row, first_choice_row
+
+
 def convert(codebook, delimiter=','):
     """
     Convert QDS file to occams format
@@ -39,7 +78,6 @@ def convert(codebook, delimiter=','):
     """
     reader = csv.reader(codebook, encoding='utf-8', delimiter=delimiter)
 
-    # Remove headers from file
     headers = reader.next()
 
     output_csv = six.StringIO()
@@ -51,7 +89,6 @@ def convert(codebook, delimiter=','):
     choices = []
     last_row = {}
     first_choice_row = True
-    # in_choice = False
     last_order_number = -1
 
     for field in reader:
@@ -81,8 +118,6 @@ def convert(codebook, delimiter=','):
             last_order_number = row['order']
             continue
 
-        #from pdb import set_trace; set_trace()
-
         if row['order'] == last_order_number:
             last_row = dict(row)
             choices.append([choice_order, choice_label])
@@ -91,52 +126,33 @@ def convert(codebook, delimiter=','):
 
         elif row['order'] != last_order_number and choice_label == u'':
             if choices:
-                # this would happen for a one choice row
-                # flush last row
-                last_row['choices_string'] = convert_choices(choices)
-                last_order_number = row['order']
-                # choices.append([choice_order, choice_label])
-
-                last_row['field_type'] = u'choice'
-                writerow(writer, last_row)
-                # row = init_row(schema_name, schema_title, publish_date)
-                choices = []
-                first_choice_row = True
+                last_order_number, choices = flush_last_row(
+                    writer, row, last_row, choices)
 
             row['choices_string'] = u''
-            writerow(writer, row)
-            last_order_number = row['order']
-            last_row = dict(row)
-            row = init_row(schema_name, schema_title, publish_date)
-            first_choice_row = True
+            last_order_number, last_row, row, first_choice_row = flush_row(
+                writer, row, schema_name, schema_title, publish_date)
 
         elif row['order'] != last_order_number and choice_label != u'':
             if choices:
-                last_row['choices_string'] = convert_choices(choices)
-                last_order_number = row['order']
-                # choices.append([choice_order, choice_label])
-
-                last_row['field_type'] = u'choice'
-                writerow(writer, last_row)
-                # row = init_row(schema_name, schema_title, publish_date)
-                choices = []
+                last_order_number, choices = flush_last_row(
+                    writer, row, last_row, choices)
                 first_choice_row = True
-            # in_choice = False
+
             if first_choice_row:
                 last_row = dict(row)
                 choices.append([choice_order, choice_label])
                 first_choice_row = False
                 last_order_number = row['order']
             else:
-                last_order_number = row['order']
                 choices.append([choice_order, choice_label])
                 row['choices_string'] = convert_choices(choices)
                 row['field_type'] = u'choice'
-                last_row = dict(row)
-                writerow(writer, row)
-                row = init_row(schema_name, schema_title, publish_date)
+
+                last_order_number, last_row, row, first_choice_row = flush_row(
+                    writer, row, schema_name, schema_title, publish_date)
+
                 choices = []
-                first_choice_row = True
 
 
     codebook.close()
