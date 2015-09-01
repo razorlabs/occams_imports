@@ -90,7 +90,7 @@ def parse(codebook, delimiter=','):
         if field_type == u'integer':
             field_type = u'number'
 
-        if row['choices'] is not None and row['choices'].strip() != u'':
+        if row['choices'] is not None and row['choices'].strip() != u'' and field_type == u'choice':
             choices = []
             raw_choices = re.split(r';(?=\s*-*\d+\s*\=)', row['choices'])
             for raw_choice in raw_choices:
