@@ -113,11 +113,6 @@ def convert(codebook, delimiter=','):
             row['field_type'] = u'number'
         row['description'] = u''
 
-        # not sure what to do with these, skip for now
-        if variable2 == u'Calculated':
-            last_order_number = row['order']
-            continue
-
         if row['order'] == last_order_number:
             last_row = dict(row)
             choices.append([choice_order, choice_label])
