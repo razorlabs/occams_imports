@@ -115,3 +115,14 @@ def test_populate_objects():
 
     assert actual == expected
 
+
+def test_convert():
+    codebook = open('iform_input_fixture.json', 'r')
+
+    converted = iform_json.convert(codebook)
+
+    reader = csv.DictReader(converted, encoding='utf-8', delimiter=',')
+
+    for row in reader:
+        assert row['form'] == u'test_name'
+        assert row['title'] == u'Test label.'
