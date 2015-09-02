@@ -9,7 +9,7 @@ import six
 
 import unicodecsv as csv
 
-from convert_iform_to_occams import output_headers, writerow, convert_choices
+from iform_json import output_headers, writerow, convert_choices
 
 
 def init_row(schema_name, schema_title, publish_date):
