@@ -1,3 +1,5 @@
+# flake8: noqa
+
 from occams_imports.parsers import iform_json
 import unicodecsv as csv
 
@@ -69,3 +71,47 @@ def test_convert_choices():
     expected = u'0=label1;1=label2'
 
     assert actual == expected
+
+
+def test_populate_objects():
+
+    options = {u'1140231': {u'options': [{u'condition_value': u'',
+                            u'global_id': u'',
+                            u'id': 101,
+                            u'key_value': u'0',
+                            u'label': u'TRUE',
+                            u'localizations': [],
+                            u'score': 0,
+                            u'sort_order': 0},
+                           {u'condition_value': u'',
+                            u'global_id': u'',
+                            u'id': 101,
+                            u'key_value': u'1',
+                            u'label': u'FALSE',
+                            u'localizations': [],
+                            u'score': 0,
+                            u'sort_order': 1},
+                           {u'condition_value': u'',
+                            u'global_id': u'',
+                            u'id': u'',
+                            u'key_value': u'2',
+                            u'label': u"Don't know",
+                            u'localizations': [],
+                            u'score': 0,
+                            u'sort_order': 2}],
+               u'page_level': {u'created_by': u'test@ucsd.edu',
+                               u'created_date': u'2013-10-21T15:53:29+00:00',
+                               u'global_id': u'',
+                               u'id': u'',
+                               u'modified_by': u'test@ucsd.edu',
+                               u'modified_date': u'2013-11-23T00:27:48+00:00',
+                               u'name': u'test',
+                               u'option_icons': u'',
+                               u'reference_id': None,
+                               u'version': 2}}}
+
+    expected = [[u'0', u'TRUE'], [u'1', u'FALSE'], [u'2', u"Don't know"]]
+    actual = iform_json.populate_options(options, u'1140231')
+
+    assert actual == expected
+
