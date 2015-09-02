@@ -53,7 +53,7 @@
           type="submit"
           name="submit"
           class="btn btn-lg btn-primary"
-          i18n:translate="">Upload json file</button>
+          i18n:translate="">Upload file</button>
 
     </form>
 
