@@ -161,7 +161,7 @@
       <div class="container">
         <p class="text-muted credit">
           <span i18n:translate="">Developed by </span>
-          <a href="https://bitcore.ucsd.edu" i18n:translate="">The Young Labs at UCSD</a>.
+          <a href="https://bitcore.ucsd.edu" i18n:translate="">The YoungLabs at UCSD</a>.
         </p>
       </div>
     </footer>
