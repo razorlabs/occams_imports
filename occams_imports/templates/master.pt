@@ -88,7 +88,7 @@
                 <span class="caret"></span></a>
                   <ul class="dropdown-menu">
                     <li><a href="${request.route_path('imports.codebooks_iform')}">iForm</a></li>
-                    <li><a href="${request.route_path('imports.codebooks_occams')}">Occams</a></li>
+                    <li><a href="${request.route_path('imports.codebooks_occams')}">OCCAMS</a></li>
                     <li><a href="${request.route_path('imports.codebooks_qds')}">QDS</a></li>
                 </ul>
               </li>
