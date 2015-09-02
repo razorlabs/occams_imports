@@ -170,13 +170,13 @@ def convert(codebook):
                 u'is_collection': u'False',
                 u'is_private': u'False'
             }
-            # skip questions with no sort order or data_type 16
-            # these are instrucitons...this is an assumption
+            # only question data with a sort order are valid
             try:
                 row[u'order'] = question[u'sort_order']
             except KeyError:
                 continue
 
+            # skip instructions
             if question[u'data_type'] == 16:
                 continue
 
