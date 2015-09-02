@@ -18,7 +18,8 @@ def test_remove_system_entries():
 
 def test_parse():
     from datetime import date
-    records = parse.parse('codebook.csv')
+    codebook = open('codebook.csv', 'rb')
+    records = parse.parse(codebook)
     assert len(records) == 27
     assert records[0]['schema_name'] == u'ClinicalAssessment595vitd'
     assert records[0]['name'] == u'id'
