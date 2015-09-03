@@ -13,13 +13,16 @@ def test_is_true():
 
 def test_remove_system_entries():
     records = [{'is_system': True}, {'is_system': False}]
+
     assert parse.remove_system_entries(records) == [{'is_system': False}]
 
 
 def test_parse():
     from datetime import date
+
     codebook = open('codebook.csv', 'rb')
     records = parse.parse(codebook)
+
     assert len(records) == 27
     assert records[0]['schema_name'] == u'ClinicalAssessment595vitd'
     assert records[0]['name'] == u'id'
