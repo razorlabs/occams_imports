@@ -101,3 +101,27 @@ def test_flush_row():
     output_csv.close()
     os.remove('output.csv')
 
+def test_convert():
+    codebook = open('qds_input_fixture.csv', 'r')
+
+    converted = cqo.convert(codebook)
+
+    reader = csv.DictReader(converted, encoding='utf-8', delimiter=',')
+
+    row1 = reader.next()
+    row2 = reader.next()
+    row3 = reader.next()
+
+    assert row1['field'] == u'TODAY'
+    assert row1['table'] == u'Test_Schema_Title'
+    assert row1['type'] == u'string'
+
+    assert row2['field'] == u'GENDER'
+    assert row2['table'] == u'Test_Schema_Title'
+    assert row2['type'] == u'choice'
+
+    assert row3['field'] == u'BIRTHSEX'
+    assert row3['table'] == u'Test_Schema_Title'
+    assert row3['type'] == u'choice'
+
+    converted.close()
