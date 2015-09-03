@@ -66,3 +66,17 @@ def test_parse():
         ['1', 'Yes (Week 36, continuing to Week 48)'],
         ['2', 'Yes (Week 48, continuing post study)']]
     assert records[13]['publish_date'] == date(2014, 10, 23)
+
+
+def test_get_choices():
+    raw_choices = [[u'0', u'label'], [u'1', u'label2']]
+
+    choices = parse.get_choices(raw_choices)
+
+    assert choices['0'].name == u'0'
+    assert choices['0'].title == u'label'
+    assert choices['0'].order == 0
+
+    assert choices['1'].name == u'1'
+    assert choices['1'].title == u'label2'
+    assert choices['1'].order == 1
