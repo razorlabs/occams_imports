@@ -35,6 +35,26 @@ def remove_system_entries(records):
     return [record for record in records if record['is_system'] is False]
 
 
+def parse_choice_string(row):
+    """
+    Parse choice string, e.g.:
+
+    '0=MyLabel;1=KeySeparatedByEquals;3=DelimitedBySemiColon'
+
+    :param row: A csv DictReader row from codebook
+    :return: list of choices in the form[[code, label], [code, label]]
+    """
+    choices = []
+    raw_choices = re.split(r';(?=\s*-*\d+\s*\=)', row['choices'])
+    for raw_choice in raw_choices:
+        code, label = raw_choice.split('=', 1)
+        code = code.strip()
+        label = label.strip()
+        choices.append([code, label])
+
+    return choices
+
+
 def parse(codebook, delimiter=','):
     """
     Parse codebook csv
@@ -91,13 +111,8 @@ def parse(codebook, delimiter=','):
             field_type = u'number'
 
         if row['choices'] is not None and row['choices'].strip() != u'' and field_type == u'choice':
-            choices = []
-            raw_choices = re.split(r';(?=\s*-*\d+\s*\=)', row['choices'])
-            for raw_choice in raw_choices:
-                code, label = raw_choice.split('=', 1)
-                code = code.strip()
-                label = label.strip()
-                choices.append([code, label])
+            choices = parse_choice_string(row)
+
         else:
             choices = []
 
