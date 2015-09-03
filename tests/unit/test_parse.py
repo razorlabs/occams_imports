@@ -1,3 +1,5 @@
+# flake8: noqa
+
 from occams_imports.parsers import parse
 
 
@@ -15,6 +17,12 @@ def test_remove_system_entries():
     records = [{'is_system': True}, {'is_system': False}]
 
     assert parse.remove_system_entries(records) == [{'is_system': False}]
+
+
+def test_parse_choice_string():
+    row = {
+        'choices': '0=MyLabel;1=KeySeparatedByEquals;3=DelimitedBySemiColon'
+    }
 
 
 def test_parse():
