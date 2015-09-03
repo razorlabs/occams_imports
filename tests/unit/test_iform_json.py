@@ -126,3 +126,5 @@ def test_convert():
     for row in reader:
         assert row['form'] == u'test_name'
         assert row['title'] == u'Test label.'
+
+    converted.close()
