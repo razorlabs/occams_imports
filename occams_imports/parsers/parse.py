@@ -55,6 +55,43 @@ def parse_choice_string(row):
     return choices
 
 
+def get_choices(raw_choices):
+    from occams_datastore import models as datastore
+    """
+    sample input = [[u'0', label], [u'1': label2]]
+
+    sample output = {
+        u'0': models.Choice(
+            name=u'1',
+            title=u'label',
+            order=0
+            )
+        u'1': models.Choice(
+            name=u'1',
+            title=u'label2',
+            order=1
+            )
+    }
+
+    :param raw_choices: a dict of choices...key is option, value is label
+
+    :return: a dictionary of choice datastore objects
+    """
+    choices = {}
+    if raw_choices:
+
+        for i, item in enumerate(raw_choices):
+            code = item[0]
+            label = item[1]
+            choices[code] = datastore.Choice(
+                name=code.strip(),
+                title=label.strip(),
+                order=i
+            )
+
+    return choices
+
+
 def parse(codebook, delimiter=','):
     """
     Parse codebook csv
