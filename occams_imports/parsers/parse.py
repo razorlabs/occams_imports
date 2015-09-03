@@ -1,5 +1,5 @@
 """
-Parse a codebook and insert records to schema and attribute tables.
+Parse an occams codebook
 
 This data is the structure of the schemas and attributes for forms not the
 collected data
