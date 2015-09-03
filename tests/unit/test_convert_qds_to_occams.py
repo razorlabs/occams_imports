@@ -62,3 +62,42 @@ def test_flush_last_row():
     output_csv.close()
     os.remove('output.csv')
 
+
+def test_flush_row():
+    import os
+
+    output_csv = open('output.csv', 'w')
+    writer = csv.writer(output_csv, encoding='utf-8')
+
+    row = {}
+    row['schema_name'] = u'test_schema_name2'
+    row['schema_title'] = u'test_schema_title2'
+    row['publish_date'] = u'2015-01-01'
+    row['variable'] = u'test_var2'
+    row['title'] = u'test_title2'
+    row['description'] = u'test_desc2'
+    row['is_required'] = False
+    row['is_system'] = False
+    row['is_collection'] = False
+    row['is_private'] = False
+    row['field_type'] = False
+    row['choices_string'] = u'0=test2;1=test3'
+    row['order'] = 7
+
+    schema_name = u'test_schema_name'
+    schema_title = u'test_schema_title'
+    publish_date = u'2015-01-01'
+
+    last_order_number, last_row, row, first_choice_row = cqo.flush_row(
+        writer, row, schema_name, schema_title, publish_date)
+
+    assert last_order_number == 7
+    assert last_row['title'] == u'test_title2'
+    assert last_row['order'] == 7
+    assert row['schema_name']  == u'test_schema_name'
+    assert row['schema_title'] == u'test_schema_title'
+    assert first_choice_row is True
+
+    output_csv.close()
+    os.remove('output.csv')
+
