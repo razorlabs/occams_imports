@@ -52,8 +52,6 @@ def qds(context, request):
     permission='view',
     request_method='POST')
 def insert_iform(context, request):
-    from datetime import datetime
-
     from occams_datastore import models as datastore
     from occams_forms.views.field import FieldFormFactory
     from occams_imports.parsers import parse
