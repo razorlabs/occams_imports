@@ -24,6 +24,26 @@ def test_parse_choice_string():
         'choices': '0=MyLabel;1=KeySeparatedByEquals;3=DelimitedBySemiColon'
     }
 
+    choices = parse.parse_choice_string(row)
+    expected = [
+        ['0', 'MyLabel'],
+        ['1', 'KeySeparatedByEquals'],
+        ['3', 'DelimitedBySemiColon']]
+
+    assert choices == expected
+
+    row = {
+        'choices': '0=MyLabel;1= TestWhiteSpace'
+    }
+
+    choices = parse.parse_choice_string(row)
+    expected = [
+        ['0', 'MyLabel'],
+        ['1', 'TestWhiteSpace']]
+
+    assert choices == expected
+
+
 
 def test_parse():
     from datetime import date
