@@ -85,10 +85,11 @@ def config(request):
 
     testconfig = testing.setUp()
 
-    blame = models.User(key=USERID)
-    Session.add(blame)
-    Session.flush()
-    Session.info['blame'] = blame
+    with transaction.manager:
+        blame = models.User(key=USERID)
+        Session.add(blame)
+        Session.flush()
+        Session.info['blame'] = blame
 
     yield testconfig
 
