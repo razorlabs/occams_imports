@@ -14,7 +14,7 @@ from .. import Session
 
 @view_config(
     route_name='imports.codebooks_occams',
-    permission='view',
+    permission='import',
     request_method='GET',
     renderer='../templates/codebooks/occams_codebook.pt')
 def occams(context, request):
@@ -23,7 +23,7 @@ def occams(context, request):
 
 @view_config(
     route_name='imports.codebooks_iform',
-    permission='view',
+    permission='import',
     request_method='GET',
     renderer='../templates/codebooks/iform_codebook.pt')
 def iform(context, request):
@@ -32,7 +32,7 @@ def iform(context, request):
 
 @view_config(
     route_name='imports.codebooks_qds',
-    permission='view',
+    permission='import',
     request_method='GET',
     renderer='../templates/codebooks/qds_codebook.pt')
 def qds(context, request):
