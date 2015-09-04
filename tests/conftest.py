@@ -78,14 +78,14 @@ def create_tables(request):
 
 
 @pytest.yield_fixture
-def config():
+def config(request):
     from pyramid import testing
     import transaction
-    from occams_forms import models, Session
+    from occams_imports import models, Session
 
     testconfig = testing.setUp()
 
-    blame = models.User(key=u'tester')
+    blame = models.User(key=USERID)
     Session.add(blame)
     Session.flush()
     Session.info['blame'] = blame
@@ -132,7 +132,7 @@ def app(request):
         'debugtoolbar.enabled': True,
         'pyramid.debug_all': True,
 
-        'webassets.debug': False,
+        'webassets.debug': True,
         'webassets.auto_build': False,
 
         'occams.apps': 'occams_imports',
