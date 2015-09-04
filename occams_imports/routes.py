@@ -15,11 +15,11 @@ def includeme(config):
 
     config.add_route('imports.main',                        '/imports',                           factory=models.RootFactory)
 
-    config.add_route('imports.codebooks_iform',             '/imports/codebooks/iform',           factory=models.RootFactory)
+    config.add_route('imports.codebooks_iform',             '/imports/codebooks/iform',           factory=models.ImportFactory)
 
-    config.add_route('imports.codebooks_occams',            '/imports/codebooks/occams',          factory=models.RootFactory)
+    config.add_route('imports.codebooks_occams',            '/imports/codebooks/occams',          factory=models.ImportFactory)
 
-    config.add_route('imports.codebooks_qds',               '/imports/codebooks/qds',             factory=models.RootFactory)
+    config.add_route('imports.codebooks_qds',               '/imports/codebooks/qds',             factory=models.ImportFactory)
 
     config.add_route('imports.codebooks_iform_status',      '/imports/codebooks/iform/status',    factory=models.RootFactory)
 
