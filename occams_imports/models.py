@@ -58,5 +58,6 @@ class RootFactory(Resource):
 
 class ImportFactory(Resource):
     __acl__ = [
-        (Allow, 'administrator', 'import')
+        (Allow, 'administrator', 'import'),
+        (Allow, 'manager', 'import')
         ]
