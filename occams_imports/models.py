@@ -55,3 +55,8 @@ class RootFactory(Resource):
     __acl__ = [
         (Allow, Authenticated, 'view')
         ]
+
+class ImportFactory(Resource):
+    __acl__ = [
+        (Allow, 'administrator', 'import')
+        ]

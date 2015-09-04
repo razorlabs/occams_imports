@@ -150,8 +150,6 @@ def app(request):
         # http://stackoverflow.com/a/11423886/148781
         # We also have to do this as a raw query becuase SA does
         # not have a way to invoke server-side cascade
-        Session.execute('DELETE FROM "patient" CASCADE')
-        Session.execute('DELETE FROM "study" CASCADE')
         Session.execute('DELETE FROM "user" CASCADE')
         mark_changed(Session())
     Session.remove()
