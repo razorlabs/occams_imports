@@ -41,15 +41,15 @@ def qds(context, request):
 
 @view_config(
     route_name='imports.codebooks_occams_status',
-    permission='view',
+    permission='import',
     request_method='POST')
 @view_config(
     route_name='imports.codebooks_iform_status',
-    permission='view',
+    permission='import',
     request_method='POST')
 @view_config(
     route_name='imports.codebooks_qds_status',
-    permission='view',
+    permission='import',
     request_method='POST')
 def insert_iform(context, request):
     from occams_datastore import models as datastore
