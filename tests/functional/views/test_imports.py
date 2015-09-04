@@ -27,6 +27,14 @@ def test_imports_occams_not_allowed(group, config, app):
     assert response.status_code == 403
 
 
+def test_not_authenticated_imports_occams(app):
+    url = '/imports/codebooks/occams'
+
+    response = app.get(url, expect_errors=True)
+
+    assert response.status_code == 401
+
+
 @pytest.mark.parametrize('group', ALLOWED)
 def test_imports_qds(group, config, app):
     url = '/imports/codebooks/qds'
@@ -47,6 +55,14 @@ def test_imports_qds_not_allowed(group, config, app):
     assert response.status_code == 403
 
 
+def test_not_authenticated_imports_qds(app):
+    url = '/imports/codebooks/qds'
+
+    response = app.get(url, expect_errors=True)
+
+    assert response.status_code == 401
+
+
 @pytest.mark.parametrize('group', ALLOWED)
 def test_imports_iform(group, config, app):
     url = '/imports/codebooks/iform'
@@ -65,3 +81,11 @@ def test_imports_iform_not_allowed(group, config, app):
     response = app.get(url, extra_environ=environ, expect_errors=True)
 
     assert response.status_code == 403
+
+
+def test_not_authenticated_imports_iform(app):
+    url = '/imports/codebooks/iform'
+
+    response = app.get(url, expect_errors=True)
+
+    assert response.status_code == 401
