@@ -7,6 +7,7 @@ collected data
 
 from pyramid.renderers import render_to_response
 from pyramid.view import view_config
+from pyramid.session import check_csrf_token
 
 from occams.utils.forms import wtferrors
 from .. import Session
@@ -68,6 +69,8 @@ def insert_iform(context, request):
     :return:  errors dictionary of invalid form datastore.
               these are the records not inserted
     """
+    check_csrf_token(request)
+
     dry = None
     forms = []
 
