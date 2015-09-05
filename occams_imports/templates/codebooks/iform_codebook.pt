@@ -17,6 +17,8 @@
         enctype="multipart/form-data"
         action="${request.route_path('imports.codebooks_iform_status')}">
 
+      <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
+
       <h3>Step 1</h3>
       <p i18n:translate="">Select codebook to upload: </p>
       <input type="file" name="codebook" required>

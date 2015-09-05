@@ -17,6 +17,7 @@
         enctype="multipart/form-data"
         action="${request.route_path('imports.codebooks_qds_status')}">
 
+      <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
       <div class="form-group">
         <h3>Step 1</h3>
         <p i18n:translate="">Select codebook to upload: </p>
