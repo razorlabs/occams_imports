@@ -186,6 +186,9 @@ def convert(codebook):
             except KeyError:
                 optionlist_id = None
 
+            # prepend schema name to variable
+            # excluding version number
+            # this provides meaningful var names as opposed to q1, etc.
             base_string = '_'.join(schema_name.split('_')[2:-1])
             row['variable'] = '{}_{}'.format(base_string, question[u'name'])
 
