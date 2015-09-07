@@ -52,7 +52,7 @@ def qds(context, request):
     route_name='imports.codebooks_qds_status',
     permission='import',
     request_method='POST')
-def insert_iform(context, request):
+def insert_codebooks(context, request):
     from occams_datastore import models as datastore
     from occams_forms.views.field import FieldFormFactory
     from occams_imports.parsers import parse
