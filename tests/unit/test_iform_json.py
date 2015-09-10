@@ -124,7 +124,7 @@ def test_convert():
     reader = csv.DictReader(converted, encoding='utf-8', delimiter=',')
 
     for row in reader:
-        assert row['form'] == u'test_name'
+        assert row['form'] == u'test_595_hiv_test_v04'
         assert row['title'] == u'Test label.'
 
     converted.close()
