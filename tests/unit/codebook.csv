@@ -19,7 +19,7 @@ ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,kidston
 ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,lastdose,"If No, last dose",(mm/dd/yyyy)(hh:mm),False,False,False,False,datetime,,3002
 ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,prepdisc,Has the subject discontinued PrEP since the last visit?,,True,False,False,False,choice,0=No;1=Yes,1000
 ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,s_fld1,PrEP Use,,False,False,False,False,section,,1000000000
-ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,,Adverse Events,,False,False,False,False,section,,1000000001
+ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,test,Adverse Events,,False,False,False,False,section,,1000000001
 ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,s_fld3,Vitamin D Adherence,,False,False,False,False,section,,1000000002
 ClinicalAssessment595vitd,595 Vitamin D - Clinical Assessment,2014-10-23,vitdad,What proportion of Vitamin D doses has the subject estimate he has been taking?,,True,False,False,False,choice,1=> 90% (all or nearly all);2=75 - 90% (most doses);3=50 - 74% (frequently missed but taking at least half);4=25 - 49% (less than half the time);5=< 25% (have missed most doses),3000
 ClinicalAssessment595vitd,,,create_date,,,True,True,False,False,date,,
