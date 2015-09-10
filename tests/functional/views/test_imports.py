@@ -190,7 +190,7 @@ def test_occams_upload(group, config, app):
         url,
         extra_environ=environ,
         expect_errors=True,
-        upload_files=[('codebook', 'test.json', csv_data)],
+        upload_files=[('codebook', 'test.csv', csv_data)],
         headers={
             'X-CSRF-Token': csrf_token,
         },
@@ -224,7 +224,7 @@ def test_occams_upload_not_allowed(group, config, app):
         url,
         extra_environ=environ,
         expect_errors=True,
-        upload_files=[('codebook', 'test.json', csv_data)],
+        upload_files=[('codebook', 'test.csv', csv_data)],
         headers={
             'X-CSRF-Token': csrf_token,
         },
@@ -268,7 +268,7 @@ def test_qds_upload_codebook(group, config, app):
         url,
         extra_environ=environ,
         expect_errors=True,
-        upload_files=[('codebook', 'test.json', qds_data)],
+        upload_files=[('codebook', 'test.csv', qds_data)],
         headers={
             'X-CSRF-Token': csrf_token,
         },
@@ -302,7 +302,7 @@ def test_qds_upload_codebook_not_allowed(group, config, app):
         url,
         extra_environ=environ,
         expect_errors=True,
-        upload_files=[('codebook', 'test.json', qds_data)],
+        upload_files=[('codebook', 'test.csv', qds_data)],
         headers={
             'X-CSRF-Token': csrf_token,
         },
