@@ -63,10 +63,10 @@ class ImportFactory(Resource):
         ]
 
 class Import(Base, Referenceable, Modifiable):
-    __tablename__ == 'import'
+    __tablename__ = 'import'
 
-    site = Column(
-    String(10),
+    site = sa.Column(
+    sa.String(10),
     nullable=False,
     doc='A string distinguishing a site(ucsd, ucla, etc.)')
 
@@ -77,4 +77,4 @@ class Import(Base, Referenceable, Modifiable):
         foreign_keys=[schema_id],
         backref=orm.backref(
         name='import',
-        cascade='all, delete-orphan')))
+        cascade='all, delete-orphan'))
