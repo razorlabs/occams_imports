@@ -74,6 +74,7 @@ class Import(Base, Referenceable, Modifiable):
 
     schema = orm.relationship(
         Schema,
+        primaryjoin=(schema_id == Schema.id),
         foreign_keys=[schema_id],
         backref=orm.backref(
         name='import',
