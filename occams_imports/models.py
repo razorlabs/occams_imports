@@ -11,7 +11,7 @@ from occams_studies.models import *   # flake8: noqa
 from . import Session
 
 
-Base = ModelClass('Base')
+Base = ModelClass(u'Base')
 
 
 class groups:
