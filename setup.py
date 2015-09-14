@@ -91,6 +91,6 @@ setup(
     cmdclass={'develop': _custom_develop},
     entry_points="""\
     [console_scripts]
-    oi_initdb = occams_datastore.scripts.initdb:main
+    oi_initdb = occams_imports.scripts.initdb:main
     """
 )
