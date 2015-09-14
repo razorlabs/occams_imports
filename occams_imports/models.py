@@ -1,6 +1,7 @@
 from pyramid.security import Allow, Authenticated
 import sqlalchemy as sa
 from sqlalchemy import orm
+from sqlalchemy.dialects.postgresql import JSON
 
 from occams_datastore.models import (
     ModelClass,
@@ -76,3 +77,19 @@ class Import(Base, Referenceable, Modifiable):
         backref=orm.backref(
             name='import',
             cascade='all, delete-orphan'))
+
+
+class Mapper(Base, Referenceable, Modifiable):
+    __tablename__ = 'mapper'
+
+    schema_id = sa.Column(sa.Integer())
+
+    schema = orm.relationship(
+        Schema,
+        primaryjoin=(schema_id == Schema.id),
+        foreign_keys=[schema_id],
+        backref=orm.backref(
+            name='mapped',
+            cascade='all, delete-orphan'))
+
+    mapped = sa.Column(JSON)
