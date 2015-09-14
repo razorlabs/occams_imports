@@ -61,3 +61,20 @@ class ImportFactory(Resource):
         (Allow, 'administrator', 'import'),
         (Allow, 'manager', 'import')
         ]
+
+class Import(Base, Referenceable, Modifiable):
+    __tablename__ == 'import'
+
+    site = Column(
+    String(10),
+    nullable=False,
+    doc='A string distinguishing a site(ucsd, ucla, etc.)')
+
+    schema_id = sa.Column(sa.Integer())
+
+    schema = orm.relationship(
+        Schema,
+        foreign_keys=[schema_id],
+        backref=orm.backref(
+        name='import',
+        cascade='all, delete-orphan')))
