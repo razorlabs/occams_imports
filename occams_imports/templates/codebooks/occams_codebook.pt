@@ -20,18 +20,18 @@
       <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
 
       <h3>Step 1</h3>
-      <div class="dropdown">
-        <button class="btn btn-primary dropdown-toggle"
-                type="button"
-                data-toggle="dropdown">Select Site
-        <span class="caret"></span></button>
-        <ul class="dropdown-menu">
-          <li><a href="#">DRSC</a></li>
-          <li><a href="#">EBAC</a></li>
-          <li><a href="#">LAC</a></li>
-          <li><a href="#">UCLA</a></li>
-          <li><a href="#">UCSD</a></li>
-        </ul>
+
+      <div class="row">
+        <div class="form-group col-lg-3">
+            <p i18n:translate="">Select site:</p>
+            <select class="form-control" id="site">
+              <option>DRSC</option>
+              <option>EBAC</option>
+              <option>LAC</option>
+              <option>UCLA</option>
+              <option>UCSD</option>
+            </select>
+        </div>
       </div>
       <hr>
 
