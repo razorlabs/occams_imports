@@ -255,3 +255,40 @@ def test_iform_insert(group, config, app):
     assert attributes[0].choices['2'].name == u'2'
     assert attributes[0].choices['2'].title == u'Dont know'
     assert attributes[0].choices['2'].order == 2
+
+
+@pytest.mark.parametrize('group', ['administrator'])
+def test_iform_insert_import_table(group, config, app):
+    from pkg_resources import resource_filename
+    from occams import Session
+    from occams_imports import models
+
+    url = '/imports/codebooks/iform/status'
+
+    environ = make_environ(userid=USERID, groups=[group])
+    csrf_token = get_csrf_token(app, environ)
+
+    data = {
+        'mode': None,
+        'site': u'DRSC'
+    }
+
+    iform = open(resource_filename('tests', 'iform_input_fixture.json'), 'r')
+    json_data = iform.read()
+
+    app.post(
+        url,
+        extra_environ=environ,
+        expect_errors=True,
+        upload_files=[('codebook', 'test.json', json_data)],
+        headers={
+            'X-CSRF-Token': csrf_token,
+        },
+        params=data)
+
+    iform.close()
+
+    import_data = Session.query(models.Import).one()
+
+    assert import_data.site == u'DRSC'
+    assert import_data.schema.name == u'test_595_hiv_test_v04'
