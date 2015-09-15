@@ -54,6 +54,7 @@ def qds(context, request):
     request_method='POST')
 def insert_codebooks(context, request):
     from occams_datastore import models as datastore
+    from occams_imports import models
     from occams_forms.views.field import FieldFormFactory
     from occams_imports.parsers import parse
     from occams_imports.parsers import iform_json as iform
@@ -73,6 +74,8 @@ def insert_codebooks(context, request):
 
     dry = None
     forms = []
+
+    site = request.POST['site']
 
     if request.POST['mode'] == u'dry':
         dry = True
@@ -176,12 +179,19 @@ def insert_codebooks(context, request):
 
                 fields_inserted += 1
             else:
-                Session.add(datastore.Schema(
+                schema = datastore.Schema(
                     name=schema.name,
                     title=schema.title,
                     publish_date=schema.publish_date,
                     attributes=attr_dict
-                ))
+                )
+
+                imported = models.Import(
+                    site=site,
+                    schema=schema
+                )
+
+                Session.add(imported)
 
                 Session.flush()
 
@@ -199,12 +209,19 @@ def insert_codebooks(context, request):
                 attr_dict[attribute.name] = attribute
 
         if not flushed:
-            Session.add(datastore.Schema(
+            schema = datastore.Schema(
                 name=schema.name,
                 title=schema.title,
                 publish_date=schema.publish_date,
                 attributes=attr_dict
-            ))
+            )
+
+            imported = models.Import(
+                site=site,
+                schema=schema
+            )
+
+            Session.add(imported)
 
             Session.flush()
 
