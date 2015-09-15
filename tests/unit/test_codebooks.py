@@ -14,7 +14,8 @@ def test_qds_upload_validate(group, config, app):
 
     data = {
         'mode': u'dry',
-        'delimiter': u'comma'
+        'delimiter': u'comma',
+        'site': u'DRSC'
     }
 
     qds = open(resource_filename('tests', 'qds_input_fixture.csv'), 'rb')
@@ -51,7 +52,8 @@ def test_occams_upload_validate(group, config, app):
 
     data = {
         'mode': u'dry',
-        'delimiter': u'comma'
+        'delimiter': u'comma',
+        'site': u'DRSC'
     }
 
     codebook = open(resource_filename('tests', 'codebook.csv'), 'rb')
@@ -86,7 +88,8 @@ def test_iform_upload_validate(group, config, app):
     csrf_token = get_csrf_token(app, environ)
 
     data = {
-        'mode': u'dry'
+        'mode': u'dry',
+        'site': u'DRSC'
     }
 
     iform = open(resource_filename('tests', 'iform_input_fixture.json'), 'r')
@@ -124,6 +127,7 @@ def test_qds_insert(group, config, app):
 
     data = {
         'mode': None,
+        'site': u'DRSC',
         'delimiter': u'comma'
     }
 
@@ -172,6 +176,7 @@ def test_occams_codebook_insert(group, config, app):
 
     data = {
         'mode': None,
+        'site': u'DRSC',
         'delimiter': u'comma'
     }
 
@@ -220,7 +225,8 @@ def test_iform_insert(group, config, app):
     csrf_token = get_csrf_token(app, environ)
 
     data = {
-        'mode': None
+        'mode': None,
+        'site': u'DRSC'
     }
 
     iform = open(resource_filename('tests', 'iform_input_fixture.json'), 'r')
