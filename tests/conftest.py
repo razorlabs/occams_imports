@@ -81,7 +81,8 @@ def create_tables(request):
 def config(request):
     from pyramid import testing
     import transaction
-    from occams_imports import models, Session
+    from occams_datastore import models
+    from occams_imports import Session
 
     testconfig = testing.setUp()
 
