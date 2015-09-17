@@ -1,0 +1,10 @@
+<html metal:use-macro="load: ../master.pt">
+  <metal:content-slot fill-slot="content-slot">
+    <br />
+      <h1 i18n:translate="">Mapping Tool</h1>
+      <br />
+      <p i18n:translate="" class="lead">
+        This service was designed so you can map variables from existing eCRF's.
+      </p>
+  </metal:content-slot>
+</html>
