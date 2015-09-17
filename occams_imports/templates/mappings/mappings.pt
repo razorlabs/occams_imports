@@ -20,7 +20,9 @@
           <div class="col-md-6">
             <div class="panel panel-primary">
               <div class="panel-heading">Site variable selection</div>
-              <div class="panel-body">Stuff goes here</div>
+              <div class="panel-body">
+                <p>Impute stuff here</p>
+              </div>
             </div>
           </div>
 
@@ -41,7 +43,38 @@
           <div class="col-md-6">
             <div class="panel panel-primary">
               <div class="panel-heading">Select and/or convert</div>
-              <div class="panel-body">Select and convert</div>
+              <div class="panel-body">
+                <button class="btn btn-default btn-md pull-right" type="button">Add variable</button>
+                <br />
+                <br />
+                <br />
+                <div class="row">
+                <div class="col-md-6">
+                  <select class="form-control" id="forms">
+                    <option>Form A</option>
+                    <option>Form B</option>
+                    <option>Form C</option>
+                    <option>Form D</option>
+                  </select>
+                </div>
+                </div>
+                <div class="row">
+                <div class="col-md-6">
+                  <select class="form-control" id="publish_date">
+                    <option>2015-01-01</option>
+                    <option>2015-01-02</option>
+                  </select>
+                </div>
+                </div>
+                <div class="row">
+                <div class="col-md-6">
+                  <select class="form-control" id="variable">
+                    <option>alcohol_use</option>
+                    <option>drug_use</option>
+                  </select>
+                </div>
+                </div>
+            </div>
             </div>
           </div>
 
