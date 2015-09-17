@@ -82,7 +82,32 @@
             <div class="panel panel-primary">
               <div class="panel-heading">Impuation</div>
               <div class="panel-body">
-                <p>Impute stuff here</p>
+                <form class="form-inline">
+                  <div class="form-group">
+                    <label for="drsc_form">Form:</label>
+                     <select class="form-control" id="drsc_form">
+                        <option>drsc_form_a</option>
+                        <option>drsc_form_b</option>
+                    </select>
+                  </div>
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                  <div class="form-group">
+                    <label for="drsc_variable">Variable:</label>
+                     <select class="form-control" id="drsc_form">
+                        <option>alcohol_use</option>
+                        <option>drug_use</option>
+                    </select>
+                  </div>
+                  </form>
+                <br />
+                <br />
+                <button class="btn btn-default btn-md pull-left" type="button">Add conditional operator</button>
+                <br />
+                <br />
+                <button class="btn btn-default btn-md pull-left" type="button">Add logical operator</button>
+                <br />
+                <br />
+                <br />
                 <button class="btn btn-default btn-lg pull-right" type="button">Map</button>
               </div>
             </div>
