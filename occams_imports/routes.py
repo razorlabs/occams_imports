@@ -27,4 +27,6 @@ def includeme(config):
 
     config.add_route('imports.codebooks_qds_status',        '/imports/codebooks/qds/status',      factory=models.ImportFactory)
 
+    config.add_route('imports.mappings',                    '/imports/mappings',                  factory=models.RootFactory)
+
     log.debug('Routes configured')
