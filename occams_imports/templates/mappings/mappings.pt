@@ -1,10 +1,51 @@
 <html metal:use-macro="load: ../master.pt">
   <metal:content-slot fill-slot="content-slot">
     <br />
-      <h1 i18n:translate="">Mapping Tool</h1>
-      <br />
-      <p i18n:translate="" class="lead">
+    <h1 i18n:translate="">Mapping Tool</h1>
+    <br />
+    <p i18n:translate="" class="lead">
         This service was designed so you can map variables from existing eCRF's.
-      </p>
+    </p>
+    <br />
+    <br />
+
+    <ul class="nav nav-tabs">
+      <li class="active"><a data-toggle="tab" href="#direct">Direct Mapping</a></li>
+      <li><a data-toggle="tab" href="#imputation">Imputation</a></li>
+    </ul>
+
+    <div class="tab-content">
+      <div id="direct" class="tab-pane fade in active">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="panel panel-default">
+              <div class="panel-body">Site variable selection</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="panel panel-default">
+              <div class="panel-body">DRSC variable selection</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="imputation" class="tab-pane fade">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="panel panel-default">
+              <div class="panel-body">Select and convert</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="panel panel-default">
+              <div class="panel-body">Imputation</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </metal:content-slot>
 </html>
