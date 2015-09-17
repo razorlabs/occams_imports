@@ -18,14 +18,19 @@
       <div id="direct" class="tab-pane fade in active">
         <div class="row">
           <div class="col-md-6">
-            <div class="panel panel-default">
-              <div class="panel-body">Site variable selection</div>
+            <div class="panel panel-primary">
+              <div class="panel-heading">Site variable selection</div>
+              <div class="panel-body">Stuff goes here</div>
             </div>
           </div>
 
           <div class="col-md-6">
-            <div class="panel panel-default">
-              <div class="panel-body">DRSC variable selection</div>
+            <div class="panel panel-primary">
+              <div class="panel-heading">DRSC variable selection</div>
+              <div class="panel-body">
+                <p>Stuff goes here</p>
+                <button class="btn btn-default btn-lg pull-right" type="button">Map</button>
+              </div>
             </div>
           </div>
         </div>
@@ -34,14 +39,19 @@
       <div id="imputation" class="tab-pane fade">
         <div class="row">
           <div class="col-md-6">
-            <div class="panel panel-default">
+            <div class="panel panel-primary">
+              <div class="panel-heading">Select and/or convert</div>
               <div class="panel-body">Select and convert</div>
             </div>
           </div>
 
           <div class="col-md-6">
-            <div class="panel panel-default">
-              <div class="panel-body">Imputation</div>
+            <div class="panel panel-primary">
+              <div class="panel-heading">Impuation</div>
+              <div class="panel-body">
+                <p>Impute stuff here</p>
+                <button class="btn btn-default btn-lg pull-right" type="button">Map</button>
+              </div>
             </div>
           </div>
         </div>
