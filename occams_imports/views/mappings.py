@@ -30,7 +30,7 @@ def get_schemas(context, request):
     from occams_datastore import models as datastore
 
     schemas = Session.query(datastore.Schema).options(
-        joinedload('attributes')).all()
+        joinedload('attributes')).order_by(datastore.Schema.name).all()
 
     data = {}
     data['forms'] = []
