@@ -26,9 +26,11 @@ def occams(context, request):
     renderer='json')
 def get_schemas(context, request):
     import json
+    from sqlalchemy.orm import joinedload
     from occams_datastore import models as datastore
 
-    schemas = Session.query(datastore.Schema).all()
+    schemas = Session.query(datastore.Schema).options(
+        joinedload('attributes')).all()
 
     data = {}
     data['forms'] = []
