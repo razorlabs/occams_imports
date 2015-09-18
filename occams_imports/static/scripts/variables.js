@@ -3,5 +3,20 @@ function Variable(){
 
   var self = this;
 
-  self.forms = ko.observableArray(['PATHPrEP_Form_CM', 'cctg_596_alcohol_use_v02']);
+  $.ajax({
+    url: '/imports/schemas',
+    method: 'GET',
+   /* headers: {'X-CSRF-Token': $.cookie('csrf_token')},*/
+    beforeSend: function(){
+    },
+    success: function(data, textStatus, jqXHR){
+      var json = $.parseJSON(data)
+
+      $.each(json.forms, function(){
+        self.forms.push(this.name)
+      });
+  }
+  });
+
+  self.forms = ko.observableArray();
 }
