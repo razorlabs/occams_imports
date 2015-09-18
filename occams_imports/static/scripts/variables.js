@@ -1,3 +1,13 @@
+function FormData(name, publish_date, variables){
+  'use strict'
+
+  var self = this;
+
+  self.name = name;
+  self.publish_date = publish_date;
+  self.variables = variables;
+}
+
 function Variable(){
   'use strict';
 
