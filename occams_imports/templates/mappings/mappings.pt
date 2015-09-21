@@ -24,18 +24,20 @@
 
                 <form class="form-horizontal" role="form">
                   <div class="form-group">
-                    <label class="control-label col-sm-3" for="sel1">Form:</label>
+                    <label class="control-label col-sm-3" for="direct_forms">Form:</label>
                     <div class="col-sm-6">
                       <select data-bind="options: forms,
                                          optionsText: 'name',
                                          value: selectedForm,
                                          optionsCaption: 'Select a form...'"
-                              class="form-control" id="sel1"></select>
+                              class="form-control"
+                              id="direct_forms"
+                              name="direct_forms"></select>
                     </div>
                   </div>
 
                   <div class="form-group">
-                    <label class="control-label col-sm-3" for="sel1">Version:</label>
+                    <label class="control-label col-sm-3" for="direct_version">Version:</label>
                     <div class="col-sm-6">
                       <div data-bind="ifnot: selectedForm">
                         <input type="text"
@@ -47,14 +49,15 @@
                         <input data-bind="value: publish_date"
                                readonly="readonly"
                                type="text"
-                               id="sell1"
+                               id="direct_version"
+                               name="direct_version"
                                class="form-control"></input>
                       </div>
                     </div>
                   </div>
 
                   <div class="form-group">
-                    <label class="control-label col-sm-3" for="sel1">Variable:</label>
+                    <label class="control-label col-sm-3" for="direct_variables">Variable:</label>
                       <div data-bind="ifnot: selectedForm">
                         <div class="col-sm-6">
                          <input type="text"
@@ -68,7 +71,8 @@
                         <select data-bind="options: variables,
                                          optionsText: $data"
                                 class="form-control"
-                                id="sel1"></select>
+                                id="direct_variables"
+                                name="direct_variables"></select>
                      </div>
                     </div>
                   </div>
