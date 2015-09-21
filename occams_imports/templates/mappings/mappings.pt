@@ -37,6 +37,12 @@
                   <div class="form-group">
                     <label class="control-label col-sm-3" for="sel1">Version:</label>
                     <div class="col-sm-6">
+                      <div data-bind="ifnot: selectedForm">
+                        <input type="text"
+                               readonly="readonly"
+                               class="form-control"
+                               placeholder="YYYY-MM-DD"></input>
+                      </div>
                       <div data-bind="with: selectedForm">
                         <input data-bind="value: publish_date"
                                readonly="readonly"
