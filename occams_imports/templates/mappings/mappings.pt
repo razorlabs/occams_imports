@@ -115,34 +115,58 @@
                 <form class="form-horizontal" role="form">
                   <div class="form-group">
                     <label class="control-label col-sm-3"
-                           for="sel1">Form:</label>
+                           for="direct_forms">Form:</label>
                     <div class="col-sm-6">
-                      <select data-bind="options: forms"
+                      <select data-bind="options: forms,
+                                         optionsText: 'name',
+                                         value: selectedForm,
+                                         optionsCaption: 'Select a form...'"
                               class="form-control"
-                              id="sel1">
-                      </select>
+                              id="imputation_forms"
+                              name="imputation_forms"></select>
                     </div>
                   </div>
 
                   <div class="form-group">
                     <label class="control-label col-sm-3"
-                           for="sel1">Version:</label>
+                           for="direct_version">Version:</label>
                     <div class="col-sm-6">
-                      <select class="form-control" id="sel1">
-                        <option>2015-01-01</option>
-                        <option>2015-01-02</option>
-                      </select>
+                      <div data-bind="ifnot: selectedForm">
+                        <input type="text"
+                               readonly="readonly"
+                               class="form-control"
+                               placeholder="Publish date of the form"></input>
+                      </div>
+                      <div data-bind="with: selectedForm">
+                        <input data-bind="value: publish_date"
+                               readonly="readonly"
+                               type="text"
+                               id="imputation_version"
+                               name="imputation_version"
+                               class="form-control"></input>
+                      </div>
                     </div>
                   </div>
 
                   <div class="form-group">
                     <label class="control-label col-sm-3"
-                           for="sel1">Variable:</label>
+                           for="direct_variables">Variable:</label>
+                      <div data-bind="ifnot: selectedForm">
+                        <div class="col-sm-6">
+                         <input type="text"
+                               readonly="readonly"
+                               class="form-control"
+                               placeholder="Variable to be mapped"></input>
+                        </div>
+                      </div>
+                    <div data-bind="with: selectedForm">
                     <div class="col-sm-6">
-                      <select class="form-control" id="sel1">
-                        <option>alcohol_use</option>
-                        <option>drug_use</option>
-                      </select>
+                        <select data-bind="options: variables,
+                                         optionsText: $data"
+                                class="form-control"
+                                id="imputation_variables"
+                                name="imputation_variables"></select>
+                     </div>
                     </div>
                   </div>
                 </form>
