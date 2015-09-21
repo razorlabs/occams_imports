@@ -169,7 +169,7 @@
     <script type="text/javascript">
       $(function(){
         'use strict';
-        ko.applyBindings(new Variable());
+        ko.applyBindings(new formViewModel());
       });
 
     </script>
