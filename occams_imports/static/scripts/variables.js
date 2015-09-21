@@ -1,16 +1,25 @@
-function formModel(name, publish_date, variables){
+function attributeModel(variable, label){
+  'use strict'
+
+  var self = this;
+
+  self.variable = ko.observable(variable);
+  self.label = ko.observable(label);
+}
+
+function formModel(name, publish_date, attributes){
   'use strict'
 
   var self = this;
 
   self.name = ko.observable(name);
   self.publish_date = ko.observable(publish_date);
-  self.variables = ko.observableArray([])
+  self.attributes = ko.observableArray([])
 
-  var variableLength = variables.length;
+  var attributeLength = attributes.length;
 
-  for (var i = 0; i < variableLength; i++){
-    self.variables.push(variables[i])
+  for (var i = 0; i < attributeLength; i++){
+    self.attributes.push(new attributeModel(attributes[i].variable, attributes[i].label))
   }
 }
 
@@ -29,7 +38,7 @@ function formViewModel(){
       var json = $.parseJSON(data)
 
       $.each(json.forms, function(){
-        var form = new formModel(this.name, this.publish_date, this.variables)
+        var form = new formModel(this.name, this.publish_date, this.attributes)
         self.forms.push(form)
       });
   }

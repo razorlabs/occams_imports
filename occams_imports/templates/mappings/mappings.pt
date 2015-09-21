@@ -72,8 +72,8 @@
                       </div>
                     <div data-bind="with: selectedForm">
                     <div class="col-sm-6">
-                        <select data-bind="options: variables,
-                                         optionsText: $data"
+                        <select data-bind="options: attributes,
+                                         optionsText: 'variable'"
                                 class="form-control"
                                 id="direct_variables"
                                 name="direct_variables"></select>
@@ -161,8 +161,8 @@
                       </div>
                     <div data-bind="with: selectedForm">
                     <div class="col-sm-6">
-                        <select data-bind="options: variables,
-                                         optionsText: $data"
+                        <select data-bind="options: attributes,
+                                         optionsText: 'variable'"
                                 class="form-control"
                                 id="imputation_variables"
                                 name="imputation_variables"></select>
