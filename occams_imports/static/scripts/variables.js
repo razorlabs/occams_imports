@@ -1,14 +1,20 @@
-function FormData(name, publish_date, variables){
+function formModel(name, publish_date, variables){
   'use strict'
 
   var self = this;
 
   self.name = name;
   self.publish_date = publish_date;
-  self.variables = variables;
+  self.variables = ko.observableArray([])
+
+  var variableLength = variables.length;
+
+  for (var i = 0; i < variableLength; i++){
+    self.variables.push(variables[i])
+  }
 }
 
-function Variable(){
+function formViewModel(){
   'use strict';
 
   var self = this;
@@ -23,7 +29,8 @@ function Variable(){
       var json = $.parseJSON(data)
 
       $.each(json.forms, function(){
-        self.forms.push(this.name)
+        var form = new formModel(this.name, this.publish_date, this.variables)
+        self.forms.push(this.form)
       });
   }
   });
