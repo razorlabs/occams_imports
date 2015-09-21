@@ -3,8 +3,8 @@ function formModel(name, publish_date, variables){
 
   var self = this;
 
-  self.name = name;
-  self.publish_date = publish_date;
+  self.name = ko.observable(name);
+  self.publish_date = ko.observable(publish_date);
   self.variables = ko.observableArray([])
 
   var variableLength = variables.length;
@@ -36,5 +36,5 @@ function formViewModel(){
   });
 
   self.forms = ko.observableArray();
-  selectedForm = ko.observable()
+  self.selectedForm = ko.observable()
 }
