@@ -41,24 +41,30 @@
                         <input type="text"
                                readonly="readonly"
                                class="form-control"
-                               placeholder="YYYY-MM-DD"></input>
+                               placeholder="Publish date of the form"></input>
                       </div>
                       <div data-bind="with: selectedForm">
                         <input data-bind="value: publish_date"
                                readonly="readonly"
                                type="text"
                                id="sell1"
-                               class="form-control"
-                               placeholder="YYYY-MM-DD"></input>
+                               class="form-control"></input>
                       </div>
                     </div>
                   </div>
 
                   <div class="form-group">
                     <label class="control-label col-sm-3" for="sel1">Variable:</label>
+                      <div data-bind="ifnot: selectedForm">
+                        <div class="col-sm-6">
+                         <input type="text"
+                               readonly="readonly"
+                               class="form-control"
+                               placeholder="Variable to be mapped"></input>
+                        </div>
+                      </div>
                     <div data-bind="with: selectedForm">
                     <div class="col-sm-6">
-
                         <select data-bind="options: variables,
                                          optionsText: $data"
                                 class="form-control"
