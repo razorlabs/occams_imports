@@ -26,7 +26,11 @@
                   <div class="form-group">
                     <label class="control-label col-sm-3" for="sel1">Form:</label>
                     <div class="col-sm-6">
-                      <select data-bind="options: forms" class="form-control" id="sel1"></select>
+                      <select data-bind="options: forms,
+                                         optionsText: 'name',
+                                         value: selectedForm,
+                                         optionsCaption: 'Select a form...'"
+                              class="form-control" id="sel1"></select>
                     </div>
                   </div>
 
@@ -43,14 +47,15 @@
                   <div class="form-group">
                     <label class="control-label col-sm-3" for="sel1">Variable:</label>
                     <div class="col-sm-6">
-                      <select class="form-control" id="sel1">
-                        <option>alcohol_use</option>
-                        <option>drug_use</option>
-                      </select>
+                      <div data-bind="with: selectedForm">
+                        <select data-bind="options: variables,
+                                         optionsText: $data"
+                                class="form-control"
+                                id="sel1"></select>
+                     </div>
                     </div>
                   </div>
                 </form>
-
               </div>
             </div>
           </div>
