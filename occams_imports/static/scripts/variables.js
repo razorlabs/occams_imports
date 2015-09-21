@@ -30,10 +30,11 @@ function formViewModel(){
 
       $.each(json.forms, function(){
         var form = new formModel(this.name, this.publish_date, this.variables)
-        self.forms.push(this.form)
+        self.forms.push(form)
       });
   }
   });
 
   self.forms = ko.observableArray();
+  selectedForm = ko.observable()
 }
