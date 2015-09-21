@@ -36,13 +36,13 @@ def get_schemas(context, request):
     data['forms'] = []
     for schema in schemas:
         try:
-            attributes = schema.attributes.keys()
+            variables = schema.attributes.keys()
         except KeyError:
-            attributes = []
+            variables = []
         data['forms'].append({
             u'name': schema.name,
             u'publish_date': schema.publish_date.strftime('%Y-%m-%d'),
-            u'attributes': attributes
+            u'variables': variables
         })
 
     return json.dumps(data)
