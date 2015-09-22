@@ -28,9 +28,17 @@ def get_schemas(context, request):
     import json
     from sqlalchemy.orm import joinedload
     from occams_datastore import models as datastore
+    from occams_imports import models as models
 
     schemas = Session.query(datastore.Schema).options(
-        joinedload('attributes')).order_by(datastore.Schema.name).all()
+        joinedload('attributes')).filter(
+        datastore.Schema.id == models.Import.schema_id).filter(
+        models.Import.site != 'DRSC').order_by(datastore.Schema.name).all()
+
+    drsc_schemas = Session.query(datastore.Schema).options(
+        joinedload('attributes')).filter(
+        datastore.Schema.id == models.Import.schema_id).filter(
+        models.Import.site == 'DRSC').all()
 
     data = {}
     data['forms'] = []
