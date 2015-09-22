@@ -73,13 +73,35 @@
                     <div data-bind="with: selectedForm">
                     <div class="col-sm-6">
                         <select data-bind="options: attributes,
-                                         optionsText: 'variable'"
+                                           optionsText: 'variable',
+                                           value: $root.selectedAttribute"
                                 class="form-control"
                                 id="direct_variables"
                                 name="direct_variables"></select>
                      </div>
                     </div>
                   </div>
+                  <br />
+
+                  <div data-bind="with: selectedAttribute">
+                  <div class="form-group">
+                  <div class="col-sm-8 col-sm-offset-3">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Label</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td data-bind="text: label"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  </div>
+                  </div>
+                </div>
+
                 </form>
               </div>
             </div>
@@ -89,12 +111,95 @@
             <div class="panel panel-primary">
               <div class="panel-heading">DRSC variable selection</div>
               <div class="panel-body">
-                <p>Stuff goes here</p>
+
+                <form class="form-horizontal" role="form">
+                  <div class="form-group">
+                    <label class="control-label col-sm-3"
+                           for="direct_forms">Form:</label>
+                    <div class="col-sm-6">
+                      <select data-bind="options: drsc_forms,
+                                         optionsText: 'name',
+                                         value: selectedDRSCForm,
+                                         optionsCaption: 'Select a form...'"
+                              class="form-control"
+                              id="direct_forms"
+                              name="direct_forms"></select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="control-label col-sm-3"
+                           for="direct_version">Version:</label>
+                    <div class="col-sm-6">
+                      <div data-bind="ifnot: selectedDRSCForm">
+                        <input type="text"
+                               readonly="readonly"
+                               class="form-control"
+                               placeholder="Publish date of the form"></input>
+                      </div>
+                      <div data-bind="with: selectedDRSCForm">
+                        <input data-bind="value: publish_date"
+                               readonly="readonly"
+                               type="text"
+                               id="direct_version"
+                               name="direct_version"
+                               class="form-control"></input>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="control-label col-sm-3"
+                           for="direct_variables">Variable:</label>
+                      <div data-bind="ifnot: selectedDRSCForm">
+                        <div class="col-sm-6">
+                         <input type="text"
+                               readonly="readonly"
+                               class="form-control"
+                               placeholder="Variable to be mapped"></input>
+                        </div>
+                      </div>
+                    <div data-bind="with: selectedDRSCForm">
+                    <div class="col-sm-6">
+                        <select data-bind="options: attributes,
+                                           optionsText: 'variable',
+                                           value: $root.selectedDRSCAttribute"
+                                class="form-control"
+                                id="direct_variables"
+                                name="direct_variables"></select>
+                     </div>
+                    </div>
+                  </div>
+                  <br />
+
+                  <div data-bind="with: selectedDRSCAttribute">
+                  <div class="form-group">
+                  <div class="col-sm-8 col-sm-offset-3">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Label</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td data-bind="text: label"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  </div>
+
+                  </div>
+                </div>
                 <button class="btn btn-default btn-lg pull-right"
                         type="button">Map</button>
+                </form>
               </div>
             </div>
           </div>
+
+
         </div>
       </div>
 
