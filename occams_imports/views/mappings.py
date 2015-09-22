@@ -9,6 +9,28 @@ from pyramid.session import check_csrf_token
 from .. import Session
 
 
+def update_schema_data(data, schemas, drsc):
+    """Converts sql alchemy schema objects to dictionary for rendering"""
+    site = u'DRSC' if drsc else u''
+
+    for schema in schemas:
+        attributes = []
+        for attr in schema.attributes:
+            attribute = {}
+            attribute['variable'] = schema.attributes[attr].name
+            attribute['label'] = schema.attributes[attr].title
+            attributes.append(attribute)
+
+        data['forms'].append({
+            u'name': schema.name,
+            u'publish_date': schema.publish_date.strftime('%Y-%m-%d'),
+            u'attributes': attributes,
+            u'site': site
+        })
+
+    return data
+
+
 @view_config(
     route_name='imports.mappings',
     permission='view',
@@ -43,18 +65,7 @@ def get_schemas(context, request):
     data = {}
     data['forms'] = []
 
-    for schema in schemas:
-        attributes = []
-        for attr in schema.attributes:
-            attribute = {}
-            attribute['variable'] = schema.attributes[attr].name
-            attribute['label'] = schema.attributes[attr].title
-            attributes.append(attribute)
-
-        data['forms'].append({
-            u'name': schema.name,
-            u'publish_date': schema.publish_date.strftime('%Y-%m-%d'),
-            u'attributes': attributes
-        })
+    data = update_schema_data(data, schemas, drsc=False)
+    data = update_schema_data(data, drsc_schemas, drsc=True)
 
     return json.dumps(data)
