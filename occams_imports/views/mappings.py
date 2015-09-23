@@ -19,6 +19,17 @@ def update_schema_data(data, schemas, drsc):
             attribute = {}
             attribute['variable'] = schema.attributes[attr].name
             attribute['label'] = schema.attributes[attr].title
+            if schema.attributes[attr].type == u'choice':
+                choices = []
+                for choice in schema.attributes[attr].choices:
+                    name = schema.attributes[attr].choices[choice].name
+                    title = schema.attributes[attr].choices[choice].title
+                    choices.append({u'name': name, u'label': title})
+
+            else:
+                choices = []
+
+            attribute['choices'] = choices
             attributes.append(attribute)
 
         data['forms'].append({
