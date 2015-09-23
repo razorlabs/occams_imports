@@ -77,8 +77,8 @@
                 <a href="${url}" class="dropdown-toggle" data-toggle="dropdown">Mappings
                 <span class="caret"></span></a>
                   <ul class="dropdown-menu">
-                    <li><a href="${request.route_path('imports.mappings')}">Direct</a></li>
-                    <li><a href="${request.route_path('imports.codebooks_occams')}">Imputation</a></li>
+                    <li><a href="${request.route_path('imports.mappings.direct')}">Direct</a></li>
+                    <li><a href="${request.route_path('imports.mappings.imputation')}">Imputation</a></li>
                   </ul>
               </li>
 

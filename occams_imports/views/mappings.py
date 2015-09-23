@@ -43,11 +43,20 @@ def update_schema_data(data, schemas, drsc):
 
 
 @view_config(
-    route_name='imports.mappings',
+    route_name='imports.mappings.direct',
     permission='view',
     request_method='GET',
     renderer='../templates/mappings/mappings.pt')
-def occams(context, request):
+def occams_direct(context, request):
+    return {}
+
+
+@view_config(
+    route_name='imports.mappings.imputation',
+    permission='view',
+    request_method='GET',
+    renderer='../templates/mappings/imputations.pt')
+def occams_imputation(context, request):
     return {}
 
 
