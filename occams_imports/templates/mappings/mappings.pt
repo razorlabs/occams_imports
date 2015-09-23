@@ -100,7 +100,27 @@
                   </table>
                   </div>
                   </div>
+                  <div data-bind="if: choices().length != 0">
+                    <div class="form-group">
+                    <div class="col-sm-8 col-sm-offset-3">
+                    <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Value</th>
+                        <th>Label</th>
+                      </tr>
+                    </thead>
+                    <tbody data-bind="foreach: choices">
+                      <tr>
+                        <td data-bind="text: name"></td>
+                        <td data-bind="text: label"></td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
+                </div>
+                </div> <!-- end if choices -->
+                </div> <!--end with selected attribute -->
 
                 </form>
               </div>
