@@ -1,10 +1,28 @@
-function attributeModel(variable, label){
+function choiceModel(name, label){
+  'use strict'
+
+  var self = this;
+
+  self.name = ko.observable(name);
+  self.label = ko.observable(label);
+
+}
+
+
+function attributeModel(variable, label, choices){
   'use strict'
 
   var self = this;
 
   self.variable = ko.observable(variable);
   self.label = ko.observable(label);
+  self.choices = ko.observableArray([]);
+
+  var choicesLength = choices.length;
+
+  for (var i = 0; i < choicesLength; i++){
+    self.choices.push(new choiceModel(choices[i].name, choices[i].label));
+  }
 
 }
 
@@ -20,7 +38,9 @@ function formModel(name, publish_date, attributes){
   var attributeLength = attributes.length;
 
   for (var i = 0; i < attributeLength; i++){
-    self.attributes.push(new attributeModel(attributes[i].variable, attributes[i].label));
+    self.attributes.push(
+      new attributeModel(
+        attributes[i].variable, attributes[i].label, attributes[i].choices));
   }
 }
 
