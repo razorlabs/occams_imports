@@ -1,21 +1,14 @@
 <html metal:use-macro="load: ../master.pt">
   <metal:content-slot fill-slot="content-slot">
     <br />
-    <h1 i18n:translate="">Mapping Tool</h1>
+    <h1 i18n:translate="">Direct Mapping</h1>
     <br />
     <p i18n:translate="" class="lead">
-        This service was designed so you can map variables from existing eCRF's.
+        This interface was designed so you can map variables directly with no imputation.
     </p>
     <br />
     <br />
 
-    <ul class="nav nav-tabs">
-      <li class="active"><a data-toggle="tab"
-                            href="#direct">Direct Mapping</a></li>
-      <li><a data-toggle="tab" href="#imputation">Imputation</a></li>
-    </ul>
-
-    <div class="tab-content">
       <div id="direct" class="tab-pane fade in active">
         <div class="row">
           <div class="col-md-6">
@@ -241,139 +234,9 @@
               </div>
             </div>
           </div>
-
-
         </div>
       </div>
 
-      <div id="imputation" class="tab-pane fade">
-        <div class="row">
-          <div class="col-md-6">
-            <div class="panel panel-primary">
-              <div class="panel-heading">Select and/or convert</div>
-              <div class="panel-body">
-                <div class="row">
-                  <div class="col-md-4 col-md-offset-8">
-                    <button class="btn btn-default btn-md pull-right"
-                            type="button">Add variable</button>
-                  </div>
-                </div>
-                <br />
-
-                <form class="form-horizontal" role="form">
-                  <div class="form-group">
-                    <label class="control-label col-sm-3"
-                           for="direct_forms">Form:</label>
-                    <div class="col-sm-6">
-                      <select data-bind="options: forms,
-                                         optionsText: 'name',
-                                         value: selectedForm,
-                                         optionsCaption: 'Select a form...'"
-                              class="form-control"
-                              id="imputation_forms"
-                              name="imputation_forms"></select>
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="control-label col-sm-3"
-                           for="direct_version">Version:</label>
-                    <div class="col-sm-6">
-                      <div data-bind="ifnot: selectedForm">
-                        <input type="text"
-                               readonly="readonly"
-                               class="form-control"
-                               placeholder="Publish date of the form"></input>
-                      </div>
-                      <div data-bind="with: selectedForm">
-                        <input data-bind="value: publish_date"
-                               readonly="readonly"
-                               type="text"
-                               id="imputation_version"
-                               name="imputation_version"
-                               class="form-control"></input>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="control-label col-sm-3"
-                           for="direct_variables">Variable:</label>
-                      <div data-bind="ifnot: selectedForm">
-                        <div class="col-sm-6">
-                         <input type="text"
-                               readonly="readonly"
-                               class="form-control"
-                               placeholder="Variable to be mapped"></input>
-                        </div>
-                      </div>
-                    <div data-bind="with: selectedForm">
-                    <div class="col-sm-6">
-                        <select data-bind="options: attributes,
-                                         optionsText: 'variable'"
-                                class="form-control"
-                                id="imputation_variables"
-                                name="imputation_variables"></select>
-                     </div>
-                    </div>
-                  </div>
-                </form>
-
-            </div>
-            </div>
-          </div>
-
-          <div class="col-md-6">
-            <div class="panel panel-primary">
-              <div class="panel-heading">Impuation</div>
-              <div class="panel-body">
-
-                <form class="form-inline">
-                  <div class="form-group">
-                    <label class="control-label col-sm-3"
-                           for="drsc_form">Form:</label>
-                    <div class="col-sm-6">
-                     <select class="form-control" id="drsc_form">
-                        <option>drsc_form_a</option>
-                        <option>drsc_form_b</option>
-                    </select>
-                  </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="control-label col-sm-4"
-                           for="drsc_variable">Variable:</label>
-                    <div class="col-sm-6">
-                     <select class="form-control" id="drsc_form">
-                        <option>alcohol_use</option>
-                        <option>drug_use</option>
-                    </select>
-                  </div>
-                  </div>
-                  </form>
-                  <br />
-                  <br />
-
-                  <p><button class="btn btn-default btn-md pull-right"
-                             type="button">Add conditional operator</button></p>
-
-                  <br />
-                  <br />
-                  <p><button class="btn btn-default btn-md pull-right"
-                             type="button">Add logical operator</button></p>
-
-                  <br />
-                  <br />
-                  <br />
-                  <button class="btn btn-default btn-lg pull-right"
-                          type="button">Map</button>
-
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </metal:content-slot>
 
   <metal:javascript-slot fill-slot="javascript-extras-slot">
