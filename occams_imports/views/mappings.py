@@ -11,6 +11,8 @@ from .. import Session
 
 def update_schema_data(data, schemas, drsc):
     """Converts sql alchemy schema objects to dictionary for rendering"""
+    from operator import itemgetter
+
     site = u'DRSC' if drsc else u''
 
     for schema in schemas:
@@ -24,7 +26,12 @@ def update_schema_data(data, schemas, drsc):
                 for choice in schema.attributes[attr].choices:
                     name = schema.attributes[attr].choices[choice].name
                     title = schema.attributes[attr].choices[choice].title
-                    choices.append({u'name': name, u'label': title})
+                    order = schema.attributes[attr].choices[choice].order
+                    choices.append(
+                        {u'name': name, u'label': title, u'order': order}
+                    )
+                    # choices need to be sorted for display in mappings table
+                    choices = sorted(choices, key=itemgetter('order'))
 
             else:
                 choices = []
