@@ -121,6 +121,15 @@
                 </div> <!-- end if choices -->
                 </div> <!--end with selected attribute -->
 
+                <label class="control-label col-sm-3"
+                       for="mapping_score">Score:</label>
+                <div class="col-sm-2">
+                    <input type="text"
+                           class="form-control"
+                           id="mapping_score"
+                           type="mapping_score"></input>
+                </div>
+
                 <button class="btn btn-default btn-lg pull-right"
                         type="button">Map</button>
                 </form>
