@@ -17,7 +17,7 @@ def update_schema_data(data, schemas, drsc):
 
     for schema in schemas:
         attributes = []
-        for attr in schema.attributes:
+        for attr in sorted(schema.attributes):
             attribute = {}
             attribute['variable'] = schema.attributes[attr].name
             attribute['label'] = schema.attributes[attr].title
