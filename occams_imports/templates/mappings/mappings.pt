@@ -211,12 +211,15 @@
                     <table class="table table-hover">
                     <thead>
                       <tr>
+                        <th>Map</th>
                         <th>Choice Key</th>
                         <th>Choice Label</th>
                       </tr>
                     </thead>
                     <tbody data-bind="foreach: choices">
                       <tr>
+                        <td><input type="text"
+                               class="form-control"></input></td>
                         <td data-bind="text: name"></td>
                         <td data-bind="text: label"></td>
                       </tr>
