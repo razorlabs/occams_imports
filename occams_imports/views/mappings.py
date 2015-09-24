@@ -79,6 +79,8 @@ def get_schemas(context, request):
     from occams_datastore import models as datastore
     from occams_imports import models as models
 
+    check_csrf_token(request)
+
     schemas = Session.query(datastore.Schema).options(
         joinedload('attributes')).filter(
         datastore.Schema.id == models.Import.schema_id).filter(

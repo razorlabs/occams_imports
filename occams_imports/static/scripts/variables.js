@@ -8,7 +8,6 @@ function choiceModel(name, label){
 
 }
 
-
 function attributeModel(variable, label, choices){
   'use strict'
 
@@ -52,7 +51,7 @@ function formViewModel(){
   $.ajax({
     url: '/imports/schemas',
     method: 'GET',
-   /* headers: {'X-CSRF-Token': $.cookie('csrf_token')},*/
+    headers: {'X-CSRF-Token': $.cookie('csrf_token')},
     beforeSend: function(){
     },
     success: function(data, textStatus, jqXHR){
