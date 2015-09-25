@@ -1,5 +1,6 @@
 <html metal:use-macro="load: ../master.pt">
   <metal:content-slot fill-slot="content-slot">
+  <div id="views-mappings" style="display: none;" data-bind="visible: isReady">
     <br />
     <h1 i18n:translate="">Direct Mapping</h1>
     <br />
@@ -241,6 +242,7 @@
         </div> <!-- end panel primary -->
       </div> <!-- end col 6 -->
     </div> <!-- end row -->
+  <div> <!-- views - mapings -->
 
   </metal:content-slot>
 

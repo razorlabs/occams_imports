@@ -48,11 +48,20 @@ function formViewModel(){
 
   var self = this;
 
+  self.forms = ko.observableArray();
+  self.drsc_forms = ko.observableArray();
+  self.selectedForm = ko.observable();
+  self.selectedDRSCForm = ko.observable();
+  self.selectedAttribute = ko.observable();
+  self.selectedDRSCAttribute = ko.observable();
+  self.isReady = ko.observable(false);
+
   $.ajax({
     url: '/imports/schemas',
     method: 'GET',
     headers: {'X-CSRF-Token': $.cookie('csrf_token')},
     beforeSend: function(){
+      self.isReady(true)
     },
     success: function(data, textStatus, jqXHR){
       var json = $.parseJSON(data);
@@ -66,13 +75,10 @@ function formViewModel(){
           self.drsc_forms.push(form);
         }
       });
+
+
   }
   });
 
-  self.forms = ko.observableArray();
-  self.drsc_forms = ko.observableArray();
-  self.selectedForm = ko.observable();
-  self.selectedDRSCForm = ko.observable();
-  self.selectedAttribute = ko.observable();
-  self.selectedDRSCAttribute = ko.observable();
+
 }
