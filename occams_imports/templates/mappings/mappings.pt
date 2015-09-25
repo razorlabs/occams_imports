@@ -245,15 +245,11 @@
   </metal:content-slot>
 
   <metal:javascript-slot fill-slot="javascript-extras-slot">
-    <script src="/imports/static/scripts/variables.js"
-      type="text/javascript"></script>
-
     <script type="text/javascript">
       $(function(){
         'use strict';
         ko.applyBindings(new formViewModel());
       });
-
     </script>
   </metal:javascript-slot>
 
