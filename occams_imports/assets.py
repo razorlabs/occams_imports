@@ -48,6 +48,7 @@ def includeme(config):
             output=rel('gen/limis-main.%(version)s.css')),
         Bundle(rel('bower_components/select2/select2.css'), filters='cssrewrite'),
         rel('bower_components/select2-bootstrap-css/select2-bootstrap.css'),
+        rel('bower_components/css-spinners/css/spinners.css'),
         output=rel('gen/imports.%(version)s.css')))
 
     log.debug('Assets configurated')

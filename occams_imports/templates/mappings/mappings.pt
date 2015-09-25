@@ -23,10 +23,18 @@
                   <select data-bind="options: drsc_forms,
                                      optionsText: 'name',
                                      value: selectedDRSCForm,
-                                     optionsCaption: 'Select a form...'"
+                                     optionsCaption: 'Select a form after load...'"
                           class="form-control"
                           id="direct_forms"
                           name="direct_forms"></select>
+                </div>
+                <div id="loading"
+                     style="display: none;"
+                     data-bind="visible: isLoading">
+                  <div class="col-sm-1">
+                    <div class="throbber-loader">
+                    </div>
+                  </div>
                 </div>
               </div>
 

@@ -55,6 +55,7 @@ function formViewModel(){
   self.selectedAttribute = ko.observable();
   self.selectedDRSCAttribute = ko.observable();
   self.isReady = ko.observable(false);
+  self.isLoading = ko.observable(true);
 
   $.ajax({
     url: '/imports/schemas',
@@ -75,7 +76,7 @@ function formViewModel(){
           self.drsc_forms.push(form);
         }
       });
-
+      self.isLoading(false);
 
   }
   });
