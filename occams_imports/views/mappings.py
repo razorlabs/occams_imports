@@ -114,6 +114,18 @@ def mappings_direct_map(context, request):
 
     check_csrf_token(request)
 
+    confidence = request.json['confidence']
+
+    drsc_name = request.json['drsc']['name']
+    drsc_publish_date = request.json['drsc']['publish_date']
+    drsc_variable = request.json['selected_drsc']['variable']
+    drsc_label = request.json['selected_drsc']['label']
+
+    name = request.json['site']['name']
+    publish_date = request.json['site']['publish_date']
+    variable = request.json['selected']['variable']
+    label = request.json['selected']['label']
+
     data = {}
     data['msg'] = u'The server sent you back a message!'
     data['msg_type'] = u'Success - '
