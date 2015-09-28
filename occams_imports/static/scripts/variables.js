@@ -106,6 +106,8 @@ function formViewModel(){
           self.drsc_forms.push(form);
         }
       });
+    },
+    complete: function(){
       self.isLoading(false);
   }
   });
