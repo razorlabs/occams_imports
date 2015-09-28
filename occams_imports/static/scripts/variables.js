@@ -5,7 +5,6 @@ function choiceModel(name, label){
 
   self.name = ko.observable(name);
   self.label = ko.observable(label);
-
 }
 
 function attributeModel(variable, label, choices){
@@ -22,7 +21,6 @@ function attributeModel(variable, label, choices){
   for (var i = 0; i < choicesLength; i++){
     self.choices.push(new choiceModel(choices[i].name, choices[i].label));
   }
-
 }
 
 function formModel(name, publish_date, attributes){
@@ -43,6 +41,17 @@ function formModel(name, publish_date, attributes){
   }
 }
 
+function mapVariable(){
+  'use strict'
+
+  var self = this;
+
+  self.isInfo(false);
+  self.isSuccess(true);
+  self.msgType('Success - ');
+  self.msg('Variable mapped and changes saved to the database.');
+}
+
 function formViewModel(){
   'use strict';
 
@@ -54,8 +63,15 @@ function formViewModel(){
   self.selectedDRSCForm = ko.observable();
   self.selectedAttribute = ko.observable();
   self.selectedDRSCAttribute = ko.observable();
+
   self.isReady = ko.observable(false);
   self.isLoading = ko.observable(true);
+
+  self.isDanger = ko.observable(false);
+  self.isSuccess = ko.observable(false);
+  self.msgType = ko.observable('Info - ');
+  self.msg = ko.observable('Please select a form after loading.');
+  self.isInfo = ko.observable(true);
 
   $.ajax({
     url: '/imports/schemas',
@@ -77,9 +93,6 @@ function formViewModel(){
         }
       });
       self.isLoading(false);
-
   }
   });
-
-
 }

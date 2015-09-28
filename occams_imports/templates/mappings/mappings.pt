@@ -7,9 +7,10 @@
     <p i18n:translate="" class="lead">
       This interface was designed so you can map variables directly with no imputation.
     </p>
-    <br />
-    <br />
-
+    <div data-bind="css: { 'alert': true, 'alert-success': isSuccess, 'alert-info': isInfo }">
+      <strong data-bind="text: msgType"></strong>
+      <span data-bind="text: msg"></span>
+    </div>
     <div class="row">
       <div class="col-md-6">
         <div class="panel panel-primary">
@@ -23,7 +24,7 @@
                   <select data-bind="options: drsc_forms,
                                      optionsText: 'name',
                                      value: selectedDRSCForm,
-                                     optionsCaption: 'Select a form after load...'"
+                                     optionsCaption: 'Select a form...'"
                           class="form-control"
                           id="direct_forms"
                           name="direct_forms"></select>
@@ -136,7 +137,8 @@
               </div>
 
               <button class="btn btn-default btn-lg pull-right"
-                      type="button">Map</button>
+                      type="button"
+                      data-bind="click: mapVariable">Map</button>
             </form>
           </div> <!-- end panel body -->
         </div> <!-- end panel primary -->
