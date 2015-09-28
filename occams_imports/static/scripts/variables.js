@@ -49,6 +49,11 @@ function mapVariable(){
   $.ajax({
     url: '/imports/mappings/direct/map',
     method: 'POST',
+    data: ko.toJSON({drsc: self.selectedDRSCForm(),
+                     site: self.selectedForm(),
+                     confidence: self.confidence(),
+                     selected_drsc: self.selectedDRSCAttribute,
+                     selected: self.selectedAttribute}),
     headers: {'X-CSRF-Token': $.cookie('csrf_token')},
     beforeSend: function(){
     },
