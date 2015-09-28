@@ -29,6 +29,8 @@ def includeme(config):
 
     config.add_route('imports.mappings.direct',             '/imports/mappings/direct',           factory=models.RootFactory)
 
+    config.add_route('imports.mappings.direct.map',         '/imports/mappings/direct/map',       factory=models.RootFactory)
+
     config.add_route('imports.mappings.imputation',         '/imports/mappings/imputation',       factory=models.RootFactory)
 
     config.add_route('imports.schemas',                     '/imports/schemas',                   factory=models.RootFactory)
