@@ -46,10 +46,24 @@ function mapVariable(){
 
   var self = this;
 
-  self.isInfo(false);
-  self.isSuccess(true);
-  self.msgType('Success - ');
-  self.msg('Variable mapped and changes saved to the database.');
+  $.ajax({
+    url: '/imports/mappings/direct/map',
+    method: 'POST',
+    headers: {'X-CSRF-Token': $.cookie('csrf_token')},
+    beforeSend: function(){
+    },
+    success: function(data, textStatus, jqXHR){
+      var json = $.parseJSON(data);
+
+      self.isInfo(json['isInfo']);
+      self.isSuccess(json['isSuccess']);
+      self.msgType(json['msg_type']);
+      self.msg(json['msg']);
+
+    },
+    complete: function(){
+    }
+  });
 }
 
 function formViewModel(){
