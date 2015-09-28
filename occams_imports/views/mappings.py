@@ -98,3 +98,26 @@ def get_schemas(context, request):
     data = update_schema_data(data, drsc_schemas, drsc=True)
 
     return json.dumps(data)
+
+
+@view_config(
+    route_name='imports.mappings.direct.map',
+    permission='view',
+    request_method='POST',
+    xhr=True,
+    renderer='json')
+def mappings_direct_map(context, request):
+    import json
+    from sqlalchemy.orm import joinedload
+    from occams_datastore import models as datastore
+    from occams_imports import models as models
+
+    check_csrf_token(request)
+
+    data = {}
+    data['msg'] = u'The server sent you back a message!'
+    data['msg_type'] = u'Success - '
+    data['isSuccess'] = True
+    data['isInfo'] = False
+
+    return json.dumps(data)
