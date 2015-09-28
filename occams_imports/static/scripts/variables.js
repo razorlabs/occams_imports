@@ -71,6 +71,7 @@ function formViewModel(){
 
   var self = this;
 
+  self.confidence = ko.observable(0);
   self.forms = ko.observableArray();
   self.drsc_forms = ko.observableArray();
   self.selectedForm = ko.observable();
