@@ -108,28 +108,48 @@ def get_schemas(context, request):
     renderer='json')
 def mappings_direct_map(context, request):
     import json
-    from sqlalchemy.orm import joinedload
+    from datetime import datetime
+
     from occams_datastore import models as datastore
     from occams_imports import models as models
 
     check_csrf_token(request)
 
-    confidence = request.json['confidence']
+    mapping = {}
+    mapping['drsc_name'] = request.json['drsc']['name']
+    mapping['drsc_publish_date'] = request.json['drsc']['publish_date']
+    mapping['drsc_variable'] = request.json['selected_drsc']['variable']
+    mapping['drsc_label'] = request.json['selected_drsc']['label']
 
-    drsc_name = request.json['drsc']['name']
-    drsc_publish_date = request.json['drsc']['publish_date']
-    drsc_variable = request.json['selected_drsc']['variable']
-    drsc_label = request.json['selected_drsc']['label']
+    mapping['mapping_type'] = u'direct'
 
-    name = request.json['site']['name']
-    publish_date = request.json['site']['publish_date']
-    variable = request.json['selected']['variable']
-    label = request.json['selected']['label']
+    mapping['mapping'] = {}
+    mapping['mapping']['confidence'] = request.json['confidence']
+    mapping['mapping']['name'] = request.json['site']['name']
+    mapping['mapping']['publish_date'] = request.json['site']['publish_date']
+    mapping['mapping']['variable'] = request.json['selected']['variable']
+    mapping['mapping']['label'] = request.json['selected']['label']
+
+    if u'choices' not in request.json['selected_drsc']:
+        mapping['mapping']['choices_map'] = None
 
     user_feedback = {}
-    user_feedback['msg'] = u'The server sent you back a message!'
+    user_feedback['msg'] = u'The mapping was saved in the database'
     user_feedback['msg_type'] = u'Success - '
     user_feedback['isSuccess'] = True
     user_feedback['isInfo'] = False
+
+    publish_date = datetime.strptime(
+        request.json['drsc']['publish_date'], '%Y-%m-%d')
+
+    schema = Session.query(models.Schema).filter(
+        datastore.Schema.name == request.json['drsc']['name'],
+        datastore.Schema.publish_date == publish_date.date()
+    ).one()
+
+    Session.add(models.Mapper(
+        schema=schema,
+        mapped=mapping
+    ))
 
     return json.dumps(user_feedback)
