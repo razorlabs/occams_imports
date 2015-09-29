@@ -5,6 +5,7 @@ function choiceModel(name, label){
 
   self.name = ko.observable(name);
   self.label = ko.observable(label);
+  self.mapped = ko.observable('');
 }
 
 function attributeModel(variable, label, choices){
