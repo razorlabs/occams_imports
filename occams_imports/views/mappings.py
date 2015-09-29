@@ -132,6 +132,8 @@ def mappings_direct_map(context, request):
 
     if u'choices' not in request.json['selected_drsc']:
         mapping['mapping']['choices_map'] = None
+    else:
+        mapping['mapping']['choices_map'] = request.json['selected_drsc']['choices']
 
     user_feedback = {}
     user_feedback['msg'] = u'The mapping was saved in the database'
