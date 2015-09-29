@@ -126,10 +126,10 @@ def mappings_direct_map(context, request):
     variable = request.json['selected']['variable']
     label = request.json['selected']['label']
 
-    data = {}
-    data['msg'] = u'The server sent you back a message!'
-    data['msg_type'] = u'Success - '
-    data['isSuccess'] = True
-    data['isInfo'] = False
+    user_feedback = {}
+    user_feedback['msg'] = u'The server sent you back a message!'
+    user_feedback['msg_type'] = u'Success - '
+    user_feedback['isSuccess'] = True
+    user_feedback['isInfo'] = False
 
-    return json.dumps(data)
+    return json.dumps(user_feedback)
