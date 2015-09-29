@@ -58,6 +58,14 @@ function mapVariable(){
     beforeSend: function(){
     },
     success: function(data, textStatus, jqXHR){
+      self.confidence(0);
+      self.forms([]);
+      self.drsc_forms([]);
+      self.selectedForm();
+      self.selectedDRSCForm();
+      self.selectedAttribute();
+      self.selectedDRSCAttribute();
+
       var json = $.parseJSON(data);
 
       self.isInfo(json['isInfo']);
