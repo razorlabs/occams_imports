@@ -115,7 +115,7 @@
                       </thead>
                       <tbody data-bind="foreach: choices">
                         <tr>
-                          <td><input type="text"
+                          <td><input data-bind="value: mapped"
                                      class="form-control"></input></td>
                           <td data-bind="text: name"></td>
                           <td data-bind="text: label"></td>
