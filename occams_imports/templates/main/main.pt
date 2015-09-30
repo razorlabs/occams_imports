@@ -1,7 +1,43 @@
 <html metal:use-macro="load: ../master.pt">
   <metal:content-slot fill-slot="content-slot">
 
-    Welcome to the imports homepage!
+  <br />
+  <h1 i18n:translate="">Mapped Variables</h1>
+  <br />
+  <br />
+
+   <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>DRSC Form</th>
+          <th>DRSC Variable</th>
+          <th>Site Form</th>
+          <th>Site Variable</th>
+          <th>Date Mapped</th>
+          <th>View</th>
+        </tr>
+      </thead>
+      <tbody data-bind="foreach: mapped">
+        <tr>
+          <td data-bind="text: drsc_form"></td>
+          <td data-bind="text: drsc_variable"></td>
+          <td data-bind="text: site_form"></td>
+          <td data-bind="text: site_variable"></td>
+          <td data-bind="text: date_mapped"></td>
+          <td><a href="#">Link to map</a></td>
+        </tr>
+      </tbody>
+    </table>
 
   </metal:content-slot>
+
+  <metal:javascript-slot fill-slot="javascript-extras-slot">
+    <script type="text/javascript">
+      $(function(){
+        'use strict';
+        ko.applyBindings(new formListViewModel());
+      });
+    </script>
+  </metal:javascript-slot>
+
 </html>
