@@ -10,6 +10,26 @@ function mappedModel(drsc_form, drsc_variable, site_form, site_variable, date_ma
   self.date_mapped = ko.observable(date_mapped);
 }
 
+function viewMappedVariable(mapped){
+  'use strict'
+
+  var self = this;
+
+  $.ajax({
+    url: '/imports/mappings/view_mapped',
+    method: 'POST',
+    data: ko.toJSON({}),
+    headers: {'X-CSRF-Token': $.cookie('csrf_token')},
+    beforeSend: function(){
+    },
+    success: function(data, textStatus, jqXHR){
+
+    },
+    complete: function(){
+    }
+  });
+}
+
 function formListViewModel(){
   'use strict';
 
