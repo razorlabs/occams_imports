@@ -4,7 +4,6 @@ Roster for direct and imputation mappings of DRSC variables
 This is a listing of mapped variables
 """
 
-from pyramid.renderers import render_to_response
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
 
@@ -19,8 +18,6 @@ from .. import Session
     renderer='json')
 def get_schemas(context, request):
     import json
-    from sqlalchemy.orm import joinedload
-    from occams_datastore import models as datastore
     from occams_imports import models as models
 
     check_csrf_token(request)
@@ -51,8 +48,6 @@ def get_schemas(context, request):
     request_method='GET',
     renderer='../templates/mappings/mapped.pt')
 def get_schemas_mapped(context, request):
-    from operator import itemgetter
-
     from occams_datastore import models as datastore
     from occams_imports import models as models
 
@@ -75,10 +70,10 @@ def get_schemas_mapped(context, request):
         drsc_variable = mappings.mapped['drsc_variable']
         if mappings.schema.attributes[drsc_variable].type == u'choice':
             choices = mappings.schema.attributes[drsc_variable].choices
-           # from pdb import set_trace; set_trace()
+            # from pdb import set_trace; set_trace()
             # choices = sorted(choices, key=itemgetter('order'))
             # data to populate drsc table
-            for choice in sorted(choices, key=lambda choice: choices[choice].order):
+            for choice in sorted(choices, key=lambda i: choices[i].order):
                 drsc_form_rows.append({
                     'variable': drsc_variable,
                     'description': mappings.schema.title,
@@ -93,7 +88,7 @@ def get_schemas_mapped(context, request):
             choices = attribute.choices
             # choices = sorted(choices, key=itemgetter('order'))
             mappings_form_rows = []
-            for choice in sorted(choices, key=lambda choice: choices[choice].order):
+            for choice in sorted(choices, key=lambda i: choices[i].order):
                 mapped_value = u''
                 mapped_label = u''
                 for row in mappings.mapped['mapping']['choices_map']:
