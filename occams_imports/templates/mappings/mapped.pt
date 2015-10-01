@@ -2,10 +2,26 @@
   <metal:content-slot fill-slot="content-slot">
 
   <br />
-  <h3>DRSC Form: ${drsc_form}</h3>
-  <h3>DRSC Publish_Date: ${drsc_publish_date}</h3>
   <br />
-  <br />
+
+  <div class="row">
+    <div class="col-md-3">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>DRSC Form</th>
+            <th>Publish Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td tal:content="drsc_form"></td>
+            <td tal:content="drsc_publish_date"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
    <table class="table table-hover">
       <thead>
