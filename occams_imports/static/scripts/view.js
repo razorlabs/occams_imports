@@ -11,6 +11,7 @@ function mappedModel(drsc_form, drsc_variable, site_form,
   self.date_mapped = ko.observable(date_mapped);
   self.mapped_id = ko.observable(mapped_id);
   self.url = '/imports/mappings/view_mapped?id=' + mapped_id;
+  self.deleteRow = ko.observable(false);
 }
 
 function viewMappedVariable(mapped){
