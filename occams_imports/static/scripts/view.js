@@ -1,4 +1,5 @@
-function mappedModel(drsc_form, drsc_variable, site_form, site_variable, date_mapped){
+function mappedModel(drsc_form, drsc_variable, site_form,
+                     site_variable, date_mapped, mapped_id){
   'use strict'
 
   var self = this;
@@ -8,6 +9,8 @@ function mappedModel(drsc_form, drsc_variable, site_form, site_variable, date_ma
   self.site_form = ko.observable(site_form);
   self.site_variable = ko.observable(site_variable);
   self.date_mapped = ko.observable(date_mapped);
+  self.mapped_id = ko.observable(mapped_id);
+  self.url = '/imports/mappings/view_mapped?id=' + mapped_id;
 }
 
 function viewMappedVariable(mapped){
@@ -18,7 +21,7 @@ function viewMappedVariable(mapped){
   $.ajax({
     url: '/imports/mappings/view_mapped',
     method: 'POST',
-    data: ko.toJSON({}),
+    data: ko.toJSON({mapped_id: mapped.mapped_id}),
     headers: {'X-CSRF-Token': $.cookie('csrf_token')},
     beforeSend: function(){
     },
@@ -51,7 +54,8 @@ function formListViewModel(){
 
       $.each(json.rows, function(){
         var row = new mappedModel(this.drsc_form, this.drsc_variable,
-          this.site_form, this.site_variable, this.date_mapped);
+          this.site_form, this.site_variable, this.date_mapped,
+          this.mapped_id);
 
         self.mapped.push(row);
 
