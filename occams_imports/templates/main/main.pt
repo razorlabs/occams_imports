@@ -24,8 +24,7 @@
           <td data-bind="text: site_form"></td>
           <td data-bind="text: site_variable"></td>
           <td data-bind="text: date_mapped"></td>
-          <td><a data-bind="click: viewMappedVariable"
-                 href="#">Link to map</a></td>
+          <td><a data-bind="attr: { href: url }">Link to map</a></td>
         </tr>
       </tbody>
     </table>
