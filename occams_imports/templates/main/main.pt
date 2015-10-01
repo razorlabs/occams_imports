@@ -35,7 +35,7 @@
   <br />
   <button class="btn btn-default btn-lg pull-right btn btn-danger"
           type="button"
-          data-bind="click: mapVariable">Delete</button>
+          data-bind="click: deleteRows">Delete</button>
   </div>
 
   </metal:content-slot>
