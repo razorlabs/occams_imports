@@ -1,6 +1,6 @@
 <html metal:use-macro="load: ../master.pt">
   <metal:content-slot fill-slot="content-slot">
-
+  <div id="view-mappings" style="display: none;" data-bind="visible: isReady">
   <br />
   <h1 i18n:translate="">Mapped Variables</h1>
   <br />
@@ -28,6 +28,7 @@
         </tr>
       </tbody>
     </table>
+  </div>
 
   </metal:content-slot>
 
