@@ -15,6 +15,7 @@
           <th>Site Variable</th>
           <th>Date Mapped</th>
           <th>View</th>
+          <th>Select</th>
         </tr>
       </thead>
       <tbody data-bind="foreach: mapped">
@@ -25,11 +26,15 @@
           <td data-bind="text: site_variable"></td>
           <td data-bind="text: date_mapped"></td>
           <td><a data-bind="attr: { href: url }">Link to map</a></td>
+          <td><input type="checkbox" value=""></td>
         </tr>
       </tbody>
     </table>
   </div>
-
+  <br />
+  <button class="btn btn-default btn-lg pull-right btn btn-danger"
+          type="button"
+          data-bind="click: mapVariable">Delete</button>
   </metal:content-slot>
 
   <metal:javascript-slot fill-slot="javascript-extras-slot">
