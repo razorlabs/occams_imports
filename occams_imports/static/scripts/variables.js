@@ -99,7 +99,7 @@ function formViewModel(){
     method: 'GET',
     headers: {'X-CSRF-Token': $.cookie('csrf_token')},
     beforeSend: function(){
-      self.isReady(true)
+      self.isReady(true);
     },
     success: function(data, textStatus, jqXHR){
       var json = $.parseJSON(data);

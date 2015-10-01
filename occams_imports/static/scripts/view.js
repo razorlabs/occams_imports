@@ -47,7 +47,6 @@ function formListViewModel(){
     method: 'GET',
     headers: {'X-CSRF-Token': $.cookie('csrf_token')},
     beforeSend: function(){
-      self.isReady(true)
     },
     success: function(data, textStatus, jqXHR){
       var json = $.parseJSON(data);
@@ -62,7 +61,7 @@ function formListViewModel(){
       });
     },
     complete: function(){
-
+      self.isReady(true);
   }
   });
 }
