@@ -1,0 +1,35 @@
+<html metal:use-macro="load: ../master.pt">
+  <metal:content-slot fill-slot="content-slot">
+
+  <br />
+  <h3>DRSC Form: ${drsc_form}</h3>
+  <h3>DRSC Publish_Date: ${drsc_publish_date}</h3>
+  <br />
+  <br />
+
+   <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Description</th>
+          <th>Type</th>
+          <th>Confidence</th>
+          <th>Label</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody tal:repeat="form drsc_form_rows">
+        <tr>
+          <td tal:content="form.variable"></td>
+          <td tal:content="form.description"></td>
+          <td tal:content="form.type"></td>
+          <td tal:content="form.confidence"></td>
+          <td tal:content="form.label"></td>
+          <td tal:content="form.key"></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </metal:content-slot>
+
+</html>
