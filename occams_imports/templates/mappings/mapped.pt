@@ -3,80 +3,89 @@
 
   <br />
   <br />
+  <div class="panel panel-primary">
+    <div class="panel-heading">DRSC form/variable info</div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-3">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>DRSC Form</th>
+                  <th>Publish Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td tal:content="drsc_form"></td>
+                  <td tal:content="drsc_publish_date"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-  <div class="row">
-    <div class="col-md-3">
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th>DRSC Form</th>
-            <th>Publish Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td tal:content="drsc_form"></td>
-            <td tal:content="drsc_publish_date"></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+         <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Confidence</th>
+                <th>Label</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody tal:repeat="form drsc_form_rows">
+              <tr>
+                <td tal:content="form.variable"></td>
+                <td tal:content="form.description"></td>
+                <td tal:content="form.type"></td>
+                <td tal:content="form.confidence"></td>
+                <td tal:content="form.label"></td>
+                <td tal:content="form.key"></td>
+              </tr>
+            </tbody>
+          </table>
+      </div>
   </div>
 
-   <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>Variable</th>
-          <th>Description</th>
-          <th>Type</th>
-          <th>Confidence</th>
-          <th>Label</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-      <tbody tal:repeat="form drsc_form_rows">
-        <tr>
-          <td tal:content="form.variable"></td>
-          <td tal:content="form.description"></td>
-          <td tal:content="form.type"></td>
-          <td tal:content="form.confidence"></td>
-          <td tal:content="form.label"></td>
-          <td tal:content="form.key"></td>
-        </tr>
-      </tbody>
-    </table>
-
   <br />
   <br />
+  <div class="panel panel-primary">
+    <div class="panel-heading">Mapping info</div>
+      <div class="panel-body">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Variable</th>
+              <th>Desc</th>
+              <th>Type</th>
+              <th>Form</th>
+              <th>Label</th>
+              <th>Value</th>
+              <th>Mapped Variable</th>
+              <th>Mapped Label</th>
+              <th>Mapped Value</th>
+            </tr>
+          </thead>
+          <tbody tal:repeat="form mappings_form_rows">
+            <tr>
+              <td tal:content="form.variable"></td>
+              <td tal:content="form.description"></td>
+              <td tal:content="form.type"></td>
+              <td tal:content="form.form"></td>
+              <td tal:content="form.label"></td>
+              <td tal:content="form.value"></td>
+              <td tal:content="form.mapped_variable"></td>
+              <td tal:content="form.mapped_label"></td>
+              <td tal:content="form.mapped_value"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  </div>
 
-   <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>Variable</th>
-          <th>Desc</th>
-          <th>Type</th>
-          <th>Form</th>
-          <th>Label</th>
-          <th>Value</th>
-          <th>Mapped Variable</th>
-          <th>Mapped Label</th>
-          <th>Mapped Value</th>
-        </tr>
-      </thead>
-      <tbody tal:repeat="form mappings_form_rows">
-        <tr>
-          <td tal:content="form.variable"></td>
-          <td tal:content="form.description"></td>
-          <td tal:content="form.type"></td>
-          <td tal:content="form.form"></td>
-          <td tal:content="form.label"></td>
-          <td tal:content="form.value"></td>
-          <td tal:content="form.mapped_variable"></td>
-          <td tal:content="form.mapped_label"></td>
-          <td tal:content="form.mapped_value"></td>
-        </tr>
-      </tbody>
-    </table>
 
   </metal:content-slot>
 
