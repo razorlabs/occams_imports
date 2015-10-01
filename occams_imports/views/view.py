@@ -54,6 +54,9 @@ def get_schemas_mapped(context, request):
     mappings = Session.query(models.Mapper).filter(
         models.Mapper.id == request.params['id']).one()
 
+    mappings_form_rows = []
+    drsc_form_rows = []
+
     if mappings.mapped['mapping_type'] == u'direct':
         # get site form and choices
         # we need to display the label map on visualization page
@@ -66,7 +69,6 @@ def get_schemas_mapped(context, request):
 
         attribute = schema.attributes[mappings.mapped['mapping']['variable']]
 
-        drsc_form_rows = []
         drsc_variable = mappings.mapped['drsc_variable']
         if mappings.schema.attributes[drsc_variable].type == u'choice':
             choices = mappings.schema.attributes[drsc_variable].choices
@@ -87,7 +89,7 @@ def get_schemas_mapped(context, request):
             # We need all choices to diplay even if not mapped
             choices = attribute.choices
             # choices = sorted(choices, key=itemgetter('order'))
-            mappings_form_rows = []
+
             for choice in sorted(choices, key=lambda i: choices[i].order):
                 mapped_value = u''
                 mapped_label = u''
@@ -108,6 +110,28 @@ def get_schemas_mapped(context, request):
                     'mapped_label': mapped_value,
                     'mapped_value': mapped_label
                 })
+        else:
+            # no choices processing
+            drsc_form_rows.append({
+                'variable': drsc_variable,
+                'description': mappings.schema.title,
+                'type': mappings.schema.attributes[drsc_variable].type,
+                'confidence': mappings.mapped['mapping']['confidence'],
+                'label': u'',
+                'key': u'',
+            })
+
+            mappings_form_rows.append({
+                'variable': attribute.name,
+                'description': attribute.title,
+                'type': mappings.schema.attributes[drsc_variable].type,
+                'form': schema.name,
+                'label': attribute.title,
+                'value': u'',
+                'mapped_variable': drsc_variable,
+                'mapped_label': u'',
+                'mapped_value': u''
+            })
 
     else:
         # process as imputation
