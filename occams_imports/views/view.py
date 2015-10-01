@@ -51,8 +51,6 @@ def get_schemas(context, request):
     request_method='GET',
     renderer='../templates/mappings/mapped.pt')
 def get_schemas_mapped(context, request):
-    import json
-    from sqlalchemy.orm import joinedload
     from occams_datastore import models as datastore
     from occams_imports import models as models
 
@@ -60,10 +58,22 @@ def get_schemas_mapped(context, request):
         models.Mapper.id == request.params['id']).one()
 
     if mappings.mapped['mapping_type'] == u'direct':
+        # get site form and choices
+        # we need to display the label map on visualization page
+        # site labels for choices is not available in json map in mappings tbl
+        schema_name = mappings.mapped['mapping']['name']
+        schema_publish_date = mappings.mapped['mapping']['publish_date']
+        schema = Session.query(datastore.Schema).filter(
+            datastore.Schema.name == schema_name,
+            datastore.Schema.publish_date == schema_publish_date).one()
+
+        attribute = schema.attributes[mappings.mapped['mapping']['variable']]
+
         drsc_form_rows = []
         drsc_variable = mappings.mapped['drsc_variable']
         if mappings.schema.attributes[drsc_variable].type == u'choice':
             choices = mappings.schema.attributes[drsc_variable].choices
+            # data to populate drsc table
             for choice in choices:
                 drsc_form_rows.append({
                     'variable': drsc_variable,
@@ -75,6 +85,30 @@ def get_schemas_mapped(context, request):
 
                 })
 
+            # We need all choices to diplay even if not mapped
+            choices = attribute.choices
+            mappings_form_rows = []
+            for choice in choices:
+                mapped_value = u''
+                mapped_label = u''
+                for row in mappings.mapped['mapping']['choices_map']:
+                    if row['mapped'] == choice:
+                        mapped_value = row['name']
+                        mapped_label = row['label']
+                # mapped_value = mappings.mapped['mapping']
+                # mapped_label =
+                mappings_form_rows.append({
+                    'variable': attribute.name,
+                    'description': attribute.title,
+                    'type': mappings.schema.attributes[drsc_variable].type,
+                    'form': schema.name,
+                    'label': choices[choice].title,
+                    'value': choices[choice].name,
+                    'mapped_variable': drsc_variable,
+                    'mapped_label': mapped_value,
+                    'mapped_value': mapped_label
+                })
+
     else:
         # process as imputation
         pass
@@ -82,5 +116,6 @@ def get_schemas_mapped(context, request):
     return {
         'drsc_form': mappings.schema.name,
         'drsc_publish_date': mappings.schema.publish_date.strftime('%Y-%m-%d'),
-        'drsc_form_rows': drsc_form_rows
+        'drsc_form_rows': drsc_form_rows,
+        'mappings_form_rows': mappings_form_rows
     }

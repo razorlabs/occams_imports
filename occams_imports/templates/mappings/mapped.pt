@@ -46,6 +46,38 @@
       </tbody>
     </table>
 
+  <br />
+  <br />
+
+   <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Desc</th>
+          <th>Type</th>
+          <th>Form</th>
+          <th>Label</th>
+          <th>Value</th>
+          <th>Mapped Variable</th>
+          <th>Mapped Label</th>
+          <th>Mapped Value</th>
+        </tr>
+      </thead>
+      <tbody tal:repeat="form mappings_form_rows">
+        <tr>
+          <td tal:content="form.variable"></td>
+          <td tal:content="form.description"></td>
+          <td tal:content="form.type"></td>
+          <td tal:content="form.form"></td>
+          <td tal:content="form.label"></td>
+          <td tal:content="form.value"></td>
+          <td tal:content="form.mapped_variable"></td>
+          <td tal:content="form.mapped_label"></td>
+          <td tal:content="form.mapped_value"></td>
+        </tr>
+      </tbody>
+    </table>
+
   </metal:content-slot>
 
 </html>
