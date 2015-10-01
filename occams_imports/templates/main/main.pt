@@ -25,16 +25,17 @@
           <td data-bind="text: site_form"></td>
           <td data-bind="text: site_variable"></td>
           <td data-bind="text: date_mapped"></td>
-          <td><a data-bind="attr: { href: url }">Link to map</a></td>
+          <td><a data-bind="attr: { href: url }">View Mapping</a></td>
           <td><input type="checkbox" value=""></td>
         </tr>
       </tbody>
     </table>
-  </div>
   <br />
   <button class="btn btn-default btn-lg pull-right btn btn-danger"
           type="button"
           data-bind="click: mapVariable">Delete</button>
+  </div>
+
   </metal:content-slot>
 
   <metal:javascript-slot fill-slot="javascript-extras-slot">
