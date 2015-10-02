@@ -35,7 +35,11 @@ function viewMappedVariable(mapped){
 }
 
 function deleteRows(){
+  'use strict'
 
+  var self = this;
+
+  self.mapped.remove(function(item) { return item.deleteRow() == true })
 }
 
 function formListViewModel(){
