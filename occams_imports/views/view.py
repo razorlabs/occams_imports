@@ -88,7 +88,6 @@ def get_schemas_mapped(context, request):
 
             # We need all choices to diplay even if not mapped
             choices = attribute.choices
-            # choices = sorted(choices, key=itemgetter('order'))
 
             for choice in sorted(choices, key=lambda i: choices[i].order):
                 mapped_value = u''
@@ -97,8 +96,7 @@ def get_schemas_mapped(context, request):
                     if row['mapped'] == choice:
                         mapped_value = row['name']
                         mapped_label = row['label']
-                # mapped_value = mappings.mapped['mapping']
-                # mapped_label =
+
                 mappings_form_rows.append({
                     'variable': attribute.name,
                     'description': attribute.title,
@@ -107,8 +105,8 @@ def get_schemas_mapped(context, request):
                     'label': choices[choice].title,
                     'value': choices[choice].name,
                     'mapped_variable': drsc_variable,
-                    'mapped_label': mapped_value,
-                    'mapped_value': mapped_label
+                    'mapped_label': mapped_label,
+                    'mapped_value': mapped_value
                 })
         else:
             # no choices processing
