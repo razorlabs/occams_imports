@@ -2,8 +2,9 @@
   <metal:content-slot fill-slot="content-slot">
   <div id="view-mappings" style="display: none;" data-bind="visible: isReady">
   <br />
-  <h1 i18n:translate="">Mapped Variables</h1>
-  <br />
+  <header class="page-header">
+    <h1 i18n:translate="">Mapped Variables</h1>
+  </header>
   <div data-bind="css: { 'alert': true, 'alert-success': isSuccess, 'alert-info': isInfo }">
     <strong data-bind="text: msgType"></strong>
     <span data-bind="text: msg"></span>
