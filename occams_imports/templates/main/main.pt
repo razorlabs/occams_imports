@@ -8,7 +8,7 @@
     <strong data-bind="text: msgType"></strong>
     <span data-bind="text: msg"></span>
   </div>
-   <table class="table table-hover">
+    <table class="table table-hover">
       <thead>
         <tr>
           <th>DRSC Form</th>
@@ -34,10 +34,14 @@
         </tr>
       </tbody>
     </table>
-  <br />
-  <button class="btn btn-default btn-lg pull-right btn btn-danger"
-          type="button"
-          data-bind="click: deleteRows">Delete</button>
+    <br />
+
+    <button class="btn btn-default btn-lg pull-right"
+            type="button"
+            data-bind="click: deleteRows">
+      <span class="glyphicon glyphicon-trash"></span>
+      <span>Delete</span>
+    </button>
   </div>
 
   </metal:content-slot>
