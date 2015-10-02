@@ -36,14 +36,14 @@
                 <th>Value</th>
               </tr>
             </thead>
-            <tbody tal:repeat="form drsc_form_rows">
-              <tr>
-                <td tal:content="form.variable"></td>
+            <tbody>
+              <tr tal:repeat="form drsc_form_rows">
+                <td><code tal:content="form.variable"></code></td>
                 <td tal:content="form.description"></td>
                 <td tal:content="form.type"></td>
                 <td tal:content="form.confidence"></td>
                 <td tal:content="form.label"></td>
-                <td tal:content="form.key"></td>
+                <td><code tal:content="form.key"></code></td>
               </tr>
             </tbody>
           </table>
@@ -69,17 +69,17 @@
               <th>Mapped Value</th>
             </tr>
           </thead>
-          <tbody tal:repeat="form mappings_form_rows">
-            <tr>
-              <td tal:content="form.variable"></td>
+          <tbody>
+            <tr tal:repeat="form mappings_form_rows">
+              <td><code tal:content="form.variable"></code></td>
               <td tal:content="form.description"></td>
               <td tal:content="form.type"></td>
               <td tal:content="form.form"></td>
               <td tal:content="form.label"></td>
-              <td tal:content="form.value"></td>
-              <td tal:content="form.mapped_variable"></td>
+              <td><code tal:content="form.value"></code></td>
+              <td><code tal:content="form.mapped_variable"></code></td>
               <td tal:content="form.mapped_label"></td>
-              <td tal:content="form.mapped_value"></td>
+              <td><code tal:content="form.mapped_value"></code></td>
             </tr>
           </tbody>
         </table>
