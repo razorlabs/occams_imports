@@ -31,7 +31,9 @@
           <td data-bind="text: site_form"></td>
           <td><code data-bind="text: site_variable"></code></td>
           <td data-bind="text: date_mapped"></td>
-          <td><a data-bind="attr: { href: url }">View Mapping</a></td>
+          <td><a data-bind="attr: { href: url }">
+                <span class="fa fa-chevron-right"></span>
+              </a></td>
         </tr>
       </tbody>
     </table>
