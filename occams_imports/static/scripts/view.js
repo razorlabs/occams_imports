@@ -63,6 +63,16 @@ function formListViewModel(){
   self.msg = ko.observable('Please click on View Mapping for more info.');
   self.isInfo = ko.observable(true);
 
+  self.isChecked = ko.computed(function() {
+      var count = 0;
+      ko.utils.arrayForEach(self.mapped(), function(item) {
+        if (item.deleteRow() == true){
+          count += 1
+        }
+      });
+      return count;
+    });
+
   $.ajax({
     url: '/imports/mappings/view',
     method: 'GET',
