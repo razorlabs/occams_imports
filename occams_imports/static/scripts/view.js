@@ -60,8 +60,10 @@ function formListViewModel(){
   self.isDanger = ko.observable(false);
   self.isSuccess = ko.observable(false);
   self.msgType = ko.observable('Info - ');
-  self.msg = ko.observable('Please click on View Mapping for more info.');
+  self.msg = ko.observable('Please click chevron on the right to view mapping.');
   self.isInfo = ko.observable(true);
+
+  self.numOfMappings = ko.observable(0);
 
   self.isChecked = ko.computed(function() {
       var count = 0;
@@ -92,6 +94,7 @@ function formListViewModel(){
       });
     },
     complete: function(){
+      self.numOfMappings(self.mapped().length);
       self.isReady(true);
   }
   });

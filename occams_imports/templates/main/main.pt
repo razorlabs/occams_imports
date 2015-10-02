@@ -5,6 +5,11 @@
   <header class="page-header">
     <h1 i18n:translate="">Mapped Variables</h1>
   </header>
+  <p>
+    <span>Showing</span>
+    <strong><span data-bind="text: numOfMappings"></span></strong>
+    <span>mappings</span>
+  </p>
   <div data-bind="css: { 'alert': true, 'alert-success': isSuccess, 'alert-info': isInfo }">
     <strong data-bind="text: msgType"></strong>
     <span data-bind="text: msg"></span>
