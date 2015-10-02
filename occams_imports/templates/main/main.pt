@@ -3,6 +3,20 @@
   <div id="view-mappings" style="display: none;" data-bind="visible: isReady">
   <br />
   <header class="page-header">
+    <div class="pull-right">
+      <div class="btn-group">
+        <button type="button"
+                class="btn pull-right btn-default dropdown-toggle "
+                data-toggle="dropdown">
+          <span class="glyphicon glyphicon-plus"></span>
+          <span>Mapping</span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="${request.route_path('imports.mappings.direct')}">Direct</a></li>
+          <li><a href="${request.route_path('imports.mappings.imputation')}">Imputation</a></li>
+        </ul>
+      </div> <!-- btn-group-->
+    </div> <!-- pull-right-->
     <h1 i18n:translate="">Mapped Variables</h1>
   </header>
   <p>

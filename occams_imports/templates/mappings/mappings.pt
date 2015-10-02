@@ -1,9 +1,9 @@
 <html metal:use-macro="load: ../master.pt">
   <metal:content-slot fill-slot="content-slot">
   <div id="views-mappings" style="display: none;" data-bind="visible: isReady">
-    <br />
-    <h1 i18n:translate="">Direct Mapping</h1>
-    <br />
+    <header class="page-header">
+      <h1 i18n:translate="">Direct Mapping</h1>
+    </header>
     <p i18n:translate="" class="lead">
       This interface was designed so you can map variables directly with no imputation.
     </p>
