@@ -4,8 +4,10 @@
   <br />
   <h1 i18n:translate="">Mapped Variables</h1>
   <br />
-  <br />
-
+  <div data-bind="css: { 'alert': true, 'alert-success': isSuccess, 'alert-info': isInfo }">
+    <strong data-bind="text: msgType"></strong>
+    <span data-bind="text: msg"></span>
+  </div>
    <table class="table table-hover">
       <thead>
         <tr>

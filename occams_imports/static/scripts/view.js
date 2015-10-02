@@ -51,6 +51,12 @@ function formListViewModel(){
 
   self.mapped = ko.observableArray();
 
+  self.isDanger = ko.observable(false);
+  self.isSuccess = ko.observable(false);
+  self.msgType = ko.observable('Info - ');
+  self.msg = ko.observable('Please click on View Mapping for more info.');
+  self.isInfo = ko.observable(true);
+
   $.ajax({
     url: '/imports/mappings/view',
     method: 'GET',
