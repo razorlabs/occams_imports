@@ -40,6 +40,12 @@ function deleteRows(){
   var self = this;
 
   self.mapped.remove(function(item) { return item.deleteRow() == true })
+
+  self.isInfo(false);
+  self.isSuccess(true);
+  self.msgType('Success - ');
+  self.msg('All selected records deleted from database.');
+
 }
 
 function formListViewModel(){
