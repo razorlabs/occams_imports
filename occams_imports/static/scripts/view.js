@@ -53,6 +53,8 @@ function deleteRows(){
       self.isSuccess(true);
       self.msgType('Success - ');
       self.msg('All selected records deleted from database.');
+
+      self.numOfMappings(self.mapped().length);
     },
     complete: function(){
     }
