@@ -39,12 +39,24 @@ function deleteRows(){
 
   var self = this;
 
-  self.mapped.remove(function(item) { return item.deleteRow() == true })
+  $.ajax({
+    url: '/imports/mappings/delete',
+    method: 'DELETE',
+    data: ko.toJSON({mapped_delete: self.mapped()}),
+    headers: {'X-CSRF-Token': $.cookie('csrf_token')},
+    beforeSend: function(){
+    },
+    success: function(data, textStatus, jqXHR){
+      self.mapped.remove(function(item) { return item.deleteRow() == true })
 
-  self.isInfo(false);
-  self.isSuccess(true);
-  self.msgType('Success - ');
-  self.msg('All selected records deleted from database.');
+      self.isInfo(false);
+      self.isSuccess(true);
+      self.msgType('Success - ');
+      self.msg('All selected records deleted from database.');
+    },
+    complete: function(){
+    }
+  });
 
 }
 

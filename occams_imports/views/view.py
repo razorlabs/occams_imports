@@ -43,6 +43,30 @@ def get_schemas(context, request):
 
 
 @view_config(
+    route_name='imports.mappings.delete',
+    permission='view',
+    request_method='DELETE',
+    xhr=True,
+    renderer='json')
+def delete_mappings(context, request):
+    import json
+    from occams_imports import models as models
+
+    check_csrf_token(request)
+
+    mappings = request.json['mapped_delete']
+
+    for mapping in mappings:
+        if mapping['deleteRow'] is True:
+            Session.query(models.Mapper).filter(
+                models.Mapper.id == mapping['mapped_id']).delete()
+
+    Session.flush()
+
+    return json.dumps({})
+
+
+@view_config(
     route_name='imports.mappings.view_mapped',
     permission='view',
     request_method='GET',
