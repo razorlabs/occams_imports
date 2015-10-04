@@ -39,4 +39,6 @@ def includeme(config):
 
     config.add_route('imports.mappings.view_mapped',        '/imports/mappings/view_mapped',      factory=models.RootFactory)
 
+    config.add_route('imports.mappings.delete',             '/imports/mappings/delete',           factory=models.RootFactory)
+
     log.debug('Routes configured')
