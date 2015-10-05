@@ -37,7 +37,7 @@
           <th>Site Form</th>
           <th>Site Variable</th>
           <th>Date Mapped</th>
-          <th>View</th>
+          <th></th>
         </tr>
       </thead>
       <tbody data-bind="foreach: mapped">
