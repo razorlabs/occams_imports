@@ -1,8 +1,13 @@
 <html metal:use-macro="load: ../master.pt">
   <metal:content-slot fill-slot="content-slot">
-
-  <br />
-  <br />
+  <header class="page-header">
+    <div class="pull-right">
+      <a href="${request.route_path('imports.main')}">
+        <span class="fa fa-chevron-left fa-lg"></span>
+      </a>
+    </div> <!-- pull-right-->
+    <h1 i18n:translate="">Mapped Variables</h1>
+  </header>
   <div class="panel panel-primary">
     <div class="panel-heading">DRSC form/variable info</div>
       <div class="panel-body">
