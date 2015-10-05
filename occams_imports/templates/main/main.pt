@@ -23,7 +23,13 @@
   <div class="pull-left">
     <p>
       <span>Showing</span>
-      <strong><span data-bind="text: numOfMappings"></span></strong>
+      <strong>
+        <!-- ko if: filter -->
+        <span data-bind="text: totalShowing"></span>
+        <span i18n:translate="">of</span>
+        <!-- /ko -->
+        <span data-bind="text: numOfMappings"></span>
+      </strong>
       <span>mappings</span>
     </p>
   </div>
@@ -32,6 +38,8 @@
     <form>
       <div class="form-group">
         <input type="search"
+               data-bind="value: filter,
+                          valueUpdate: ['input', 'afterkeydown']"
                class="form-control"
                name="filter"
                placeholder="Filter DRSC form..." >
@@ -58,7 +66,7 @@
         <th></th>
       </tr>
     </thead>
-    <tbody data-bind="foreach: mapped">
+    <tbody data-bind="foreach: filteredMapped">
       <tr>
         <td><input type="checkbox"
                    data-bind="checked: deleteRow"

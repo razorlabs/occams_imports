@@ -78,6 +78,11 @@ function formListViewModel(){
   self.isInfo = ko.observable(true);
 
   self.numOfMappings = ko.observable(0);
+  self.filter = ko.observable();
+
+  self.totalShowing  = ko.pureComputed(function(){
+    return self.filteredMapped().length;
+  });
 
   self.isChecked = ko.computed(function() {
       var count = 0;
@@ -88,6 +93,33 @@ function formListViewModel(){
       });
       return count;
     });
+
+  /**
+   *  Filtered mappings based on filter string>
+   */
+  self.filteredMapped = ko.pureComputed(function(){
+    var filter = self.filter();
+
+    // No filter, return mapped list
+    if (!filter) {
+      return self.mapped();
+    }
+
+    filter = filter.toLowerCase();
+
+    return self.mapped().filter(function(mapping) {
+      return mapping.drsc_form().toLowerCase().indexOf(filter) > -1
+        || mapping.drsc_variable().toLowerCase().indexOf(filter) > -1
+        || mapping.site_form().toLowerCase().indexOf(filter) > -1
+        || mapping.site_variable().toLowerCase().indexOf(filter) > -1
+        || mapping.date_mapped().toLowerCase().indexOf(filter) > -1
+          });
+  }).extend({
+    rateLimit: {
+      method: 'notifyWhenChangesStop',
+      timeout: 400
+    }
+  });
 
   $.ajax({
     url: '/imports/mappings/view',
