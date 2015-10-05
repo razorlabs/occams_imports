@@ -20,54 +20,70 @@
     </div> <!-- pull-right-->
     <h1 i18n:translate="">Mapped Variables</h1>
   </header>
-  <p>
-    <span>Showing</span>
-    <strong><span data-bind="text: numOfMappings"></span></strong>
-    <span>mappings</span>
-  </p>
+  <div class="pull-left">
+    <p>
+      <span>Showing</span>
+      <strong><span data-bind="text: numOfMappings"></span></strong>
+      <span>mappings</span>
+    </p>
+  </div>
+
+  <div class="pull-right">
+    <form>
+      <div class="form-group">
+        <input type="search"
+               class="form-control"
+               name="filter"
+               placeholder="Filter DRSC form..." >
+      </div>
+    </form>
+  </div>
+  <br />
+  <br />
+  <br />
   <div data-bind="css: { 'alert': true, 'alert-success': isSuccess, 'alert-info': isInfo }">
     <strong data-bind="text: msgType"></strong>
     <span data-bind="text: msg"></span>
   </div>
-    <table class="table table-hover table-striped">
-      <thead>
-        <tr>
-          <th></th>
-          <th>DRSC Form</th>
-          <th>DRSC Variable</th>
-          <th>Site Form</th>
-          <th>Site Variable</th>
-          <th>Date Mapped</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody data-bind="foreach: mapped">
-        <tr>
-          <td><input type="checkbox"
-                     data-bind="checked: deleteRow"
-                     value=""></td>
-          <td data-bind="text: drsc_form"></td>
-          <td><code data-bind="text: drsc_variable"></code></td>
-          <td data-bind="text: site_form"></td>
-          <td><code data-bind="text: site_variable"></code></td>
-          <td data-bind="text: date_mapped"></td>
-          <td><a data-bind="attr: { href: url }">
-                <span class="fa fa-chevron-right"></span>
-              </a></td>
-        </tr>
-      </tbody>
-    </table>
-    <br />
-    <div id="delete_button"
-         style="display: none;"
-         data-bind="visible: isChecked">
-      <button class="btn btn-default btn-lg"
-              type="button"
-              data-bind="click: deleteRows">
-        <span class="glyphicon glyphicon-trash"></span>
-        <span>Delete Selected</span>
-      </button>
-    </div>
+
+  <table class="table table-hover table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th>DRSC Form</th>
+        <th>DRSC Variable</th>
+        <th>Site Form</th>
+        <th>Site Variable</th>
+        <th>Date Mapped</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody data-bind="foreach: mapped">
+      <tr>
+        <td><input type="checkbox"
+                   data-bind="checked: deleteRow"
+                   value=""></td>
+        <td data-bind="text: drsc_form"></td>
+        <td><code data-bind="text: drsc_variable"></code></td>
+        <td data-bind="text: site_form"></td>
+        <td><code data-bind="text: site_variable"></code></td>
+        <td data-bind="text: date_mapped"></td>
+        <td><a data-bind="attr: { href: url }">
+              <span class="fa fa-chevron-right"></span>
+            </a></td>
+      </tr>
+    </tbody>
+  </table>
+  <br />
+  <div id="delete_button"
+       style="display: none;"
+       data-bind="visible: isChecked">
+    <button class="btn btn-default btn-lg"
+            type="button"
+            data-bind="click: deleteRows">
+      <span class="glyphicon glyphicon-trash"></span>
+      <span>Delete Selected</span>
+    </button>
   </div>
 
   </metal:content-slot>
