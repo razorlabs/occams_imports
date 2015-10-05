@@ -43,12 +43,20 @@
             </thead>
             <tbody>
               <tr tal:repeat="form drsc_form_rows">
-                <td><code tal:content="form.variable"></code></td>
+                <td>
+                  <div tal:condition="form.variable">
+                    <code tal:content="form.variable"></code>
+                  </div>
+                </td>
                 <td tal:content="form.description"></td>
                 <td tal:content="form.type"></td>
                 <td tal:content="form.confidence"></td>
                 <td tal:content="form.label"></td>
-                <td><code tal:content="form.key"></code></td>
+                <td>
+                  <div tal:condition="form.key">
+                    <code tal:content="form.key"></code>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -76,15 +84,31 @@
           </thead>
           <tbody>
             <tr tal:repeat="form mappings_form_rows">
-              <td><code tal:content="form.variable"></code></td>
+              <td>
+                <div tal:condition="form.variable">
+                  <code tal:content="form.variable"></code>
+                </div>
+              </td>
               <td tal:content="form.description"></td>
               <td tal:content="form.type"></td>
               <td tal:content="form.form"></td>
               <td tal:content="form.label"></td>
-              <td><code tal:content="form.value"></code></td>
-              <td><code tal:content="form.mapped_variable"></code></td>
+              <td>
+                <div tal:condition="form.value">
+                  <code tal:content="form.value"></code>
+                </div>
+              </td>
+              <td>
+                <div tal:condition="form.mapped_variable">
+                  <code tal:content="form.mapped_variable"></code>
+                </div>
+              </td>
               <td tal:content="form.mapped_label"></td>
-              <td><code tal:content="form.mapped_value"></code></td>
+              <td>
+                <div tal:condition="form.mapped_value">
+                  <code tal:content="form.mapped_value"></code>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
