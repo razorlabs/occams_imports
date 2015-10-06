@@ -71,11 +71,11 @@
         <td><input type="checkbox"
                    data-bind="checked: deleteRow"
                    value=""></td>
-        <td data-bind="text: drsc_form"></td>
-        <td><code data-bind="text: drsc_variable"></code></td>
-        <td data-bind="text: site_form"></td>
-        <td><code data-bind="text: site_variable"></code></td>
-        <td data-bind="text: date_mapped"></td>
+        <td data-bind="text: drscForm"></td>
+        <td><code data-bind="text: drscVariable"></code></td>
+        <td data-bind="text: siteForm"></td>
+        <td><code data-bind="text: siteVariable"></code></td>
+        <td data-bind="text: dateMapped"></td>
         <td><a data-bind="attr: { href: url }">
               <span class="fa fa-chevron-right"></span>
             </a></td>

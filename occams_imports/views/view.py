@@ -59,7 +59,7 @@ def delete_mappings(context, request):
     for mapping in mappings:
         if mapping['deleteRow'] is True:
             Session.query(models.Mapper).filter(
-                models.Mapper.id == mapping['mapped_id']).delete()
+                models.Mapper.id == mapping['mappedId']).delete()
 
     Session.flush()
 

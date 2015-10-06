@@ -1,16 +1,16 @@
-function mappedModel(drsc_form, drsc_variable, site_form,
-                     site_variable, date_mapped, mapped_id){
+function mappedModel(drscForm, drscVariable, siteForm,
+                     siteVariable, dateMapped, mappedId){
   'use strict'
 
   var self = this;
 
-  self.drsc_form = ko.observable(drsc_form);
-  self.drsc_variable = ko.observable(drsc_variable);
-  self.site_form = ko.observable(site_form);
-  self.site_variable = ko.observable(site_variable);
-  self.date_mapped = ko.observable(date_mapped);
-  self.mapped_id = ko.observable(mapped_id);
-  self.url = '/imports/mappings/view_mapped?id=' + mapped_id;
+  self.drscForm = ko.observable(drscForm);
+  self.drscVariable = ko.observable(drscVariable);
+  self.siteForm = ko.observable(siteForm);
+  self.siteVariable = ko.observable(siteVariable);
+  self.dateMapped = ko.observable(dateMapped);
+  self.mappedId = ko.observable(mappedId);
+  self.url = '/imports/mappings/view_mapped?id=' + mappedId;
   self.deleteRow = ko.observable(false);
 }
 
@@ -22,7 +22,7 @@ function viewMappedVariable(mapped){
   $.ajax({
     url: '/imports/mappings/view_mapped',
     method: 'POST',
-    data: ko.toJSON({mapped_id: mapped.mapped_id}),
+    data: ko.toJSON({mapped_id: mapped.mappedId}),
     headers: {'X-CSRF-Token': $.cookie('csrf_token')},
     beforeSend: function(){
     },
@@ -108,11 +108,11 @@ function formListViewModel(){
     filter = filter.toLowerCase();
 
     return self.mapped().filter(function(mapping) {
-      return mapping.drsc_form().toLowerCase().indexOf(filter) > -1
-        || mapping.drsc_variable().toLowerCase().indexOf(filter) > -1
-        || mapping.site_form().toLowerCase().indexOf(filter) > -1
-        || mapping.site_variable().toLowerCase().indexOf(filter) > -1
-        || mapping.date_mapped().toLowerCase().indexOf(filter) > -1
+      return mapping.drscForm().toLowerCase().indexOf(filter) > -1
+        || mapping.drscVariable().toLowerCase().indexOf(filter) > -1
+        || mapping.siteForm().toLowerCase().indexOf(filter) > -1
+        || mapping.siteVariable().toLowerCase().indexOf(filter) > -1
+        || mapping.dateMapped().toLowerCase().indexOf(filter) > -1
           });
   }).extend({
     rateLimit: {
