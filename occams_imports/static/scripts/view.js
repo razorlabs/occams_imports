@@ -14,26 +14,6 @@ function mappedModel(drscForm, drscVariable, siteForm,
   self.deleteRow = ko.observable(false);
 }
 
-function viewMappedVariable(mapped){
-  'use strict'
-
-  var self = this;
-
-  $.ajax({
-    url: '/imports/mappings/view_mapped',
-    method: 'POST',
-    data: ko.toJSON({mapped_id: mapped.mappedId}),
-    headers: {'X-CSRF-Token': $.cookie('csrf_token')},
-    beforeSend: function(){
-    },
-    success: function(data, textStatus, jqXHR){
-
-    },
-    complete: function(){
-    }
-  });
-}
-
 function deleteRows(){
   'use strict'
 
@@ -59,7 +39,6 @@ function deleteRows(){
     complete: function(){
     }
   });
-
 }
 
 function formListViewModel(){
