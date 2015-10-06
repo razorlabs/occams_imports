@@ -36,6 +36,13 @@ function deleteRows(){
 
       self.numOfMappings(self.mapped().length);
     },
+    error: function(data, textStatus, jqXHR){
+      console.log(data.responseJSON);
+      self.isInfo(false);
+      self.isDanger(true);
+      self.msgType('Error - ');
+      self.msg('There was an error deleting record/s from the database.');
+    },
     complete: function(){
     }
   });

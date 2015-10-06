@@ -49,7 +49,7 @@
   <br />
   <br />
   <br />
-  <div data-bind="css: { 'alert': true, 'alert-success': isSuccess, 'alert-info': isInfo }">
+  <div data-bind="css: { 'alert': true, 'alert-success': isSuccess, 'alert-info': isInfo, 'alert-danger': isDanger }">
     <strong data-bind="text: msgType"></strong>
     <span data-bind="text: msg"></span>
   </div>

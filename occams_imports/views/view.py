@@ -60,18 +60,41 @@ def get_schemas(context, request):
     renderer='json')
 def delete_mappings(context, request):
     import json
+
+    from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+
     from occams_imports import models as models
 
     check_csrf_token(request)
 
     mappings = request.json['mapped_delete']
 
+    records = []
+
+    # only delete if all records can be deleted
     for mapping in mappings:
         if mapping['deleteRow'] is True:
-            Session.query(models.Mapper).filter(
-                models.Mapper.id == mapping['mappedId']).delete()
+            try:
+                mapped = Session.query(models.Mapper).filter(
+                    models.Mapper.id == mapping['mappedId']).one()
 
-    Session.flush()
+            except NoResultFound:
+                request.response.status = 400
+                return json.dumps(
+                    {'error': 'No record found for id: '.format(
+                        mapping['mappedId'])})
+
+            except MultipleResultsFound:
+                request.response.status = 400
+                return json.dumps(
+                    {'error': 'Multiple records found for id: '.format(
+                        mapping['mappedId'])})
+
+            else:
+                records.append(mapped)
+
+    for record in records:
+        Session.delete(record)
 
     return json.dumps({})
 
