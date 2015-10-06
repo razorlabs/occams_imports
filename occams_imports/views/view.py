@@ -13,7 +13,7 @@ from .. import Session
 @view_config(
     route_name='imports.main',
     permission='view',
-    renderer='../templates/main/main.pt')
+    renderer='../templates/main/view.pt')
 def main(context, request):
     """
     """
