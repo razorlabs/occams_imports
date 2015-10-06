@@ -93,6 +93,7 @@
       <span>Delete Selected</span>
     </button>
   </div>
+</div>
 
   </metal:content-slot>
 
