@@ -84,6 +84,8 @@ function formListViewModel(){
     return self.filteredMapped().length;
   });
 
+  // determine if box is checked
+  // delete button only visible if at least one box is checked
   self.isChecked = ko.computed(function() {
       var count = 0;
       ko.utils.arrayForEach(self.mapped(), function(item) {
@@ -121,6 +123,7 @@ function formListViewModel(){
     }
   });
 
+  // get initial data
   $.ajax({
     url: '/imports/mappings/view',
     method: 'GET',
