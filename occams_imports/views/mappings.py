@@ -72,7 +72,7 @@ def occams_imputation(context, request):
     permission='view',
     request_method='GET',
     renderer='../templates/mappings/imputation_demo.pt')
-def occams_direct(context, request):
+def occams_imputation_demo(context, request):
     return {}
 
 
