@@ -102,13 +102,7 @@ function formListViewModel(){
         || mapping.siteVariable().toLowerCase().indexOf(filter) > -1
         || mapping.dateMapped().toLowerCase().indexOf(filter) > -1
           });
-  }).extend({
-    rateLimit: {
-      method: 'notifyWhenChangesStop',
-      timeout: 400
-    }
-  });
-
+  })
   // get initial data
   $.ajax({
     url: '/imports/mappings/view',
