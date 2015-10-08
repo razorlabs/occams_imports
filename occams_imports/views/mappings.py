@@ -68,6 +68,15 @@ def occams_imputation(context, request):
 
 
 @view_config(
+    route_name='imports.mappings.imputation.demo',
+    permission='view',
+    request_method='GET',
+    renderer='../templates/mappings/imputation_demo.pt')
+def occams_direct(context, request):
+    return {}
+
+
+@view_config(
     route_name='imports.schemas',
     permission='view',
     request_method='GET',

@@ -88,6 +88,21 @@
                     resource  factory(request);
                     url       request.route_path('imports.main');
                     active    False;"
+
+                  tal:attributes="class python:'active' if active else ''"
+                  tal:condition="request.has_permission('view', resource)">
+                <a href="${url}" class="dropdown-toggle" data-toggle="dropdown">Demos
+                <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="${request.route_path('imports.mappings.imputation.demo')}">Imputation Visualization</a></li>
+                </ul>
+              </li>
+
+              <li tal:define="
+                    factory   import:occams_imports.models.RootFactory;
+                    resource  factory(request);
+                    url       request.route_path('imports.main');
+                    active    False;"
                   tal:attributes="class python:'active' if active else ''"
                   tal:condition="request.has_permission('view', resource)">
                 <a  href="${url}">Upload</a>
