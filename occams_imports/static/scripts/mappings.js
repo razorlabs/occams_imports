@@ -59,13 +59,16 @@ function mapVariable(){
     beforeSend: function(){
     },
     success: function(data, textStatus, jqXHR){
+      ko.utils.arrayForEach(self.selectedDRSCAttribute().choices(), function(item){
+        item.mapped('');
+      });
+
       var json = $.parseJSON(data);
 
       self.isInfo(json['isInfo']);
       self.isSuccess(json['isSuccess']);
       self.msgType(json['msg_type']);
       self.msg(json['msg']);
-
     },
     complete: function(){
     }
