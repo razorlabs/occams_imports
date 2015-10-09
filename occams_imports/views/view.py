@@ -129,8 +129,6 @@ def get_schemas_mapped(context, request):
         drsc_variable = mappings.mapped['drsc_variable']
         if mappings.schema.attributes[drsc_variable].type == u'choice':
             choices = mappings.schema.attributes[drsc_variable].choices
-            # from pdb import set_trace; set_trace()
-            # choices = sorted(choices, key=itemgetter('order'))
             # data to populate drsc table
             for choice in sorted(choices, key=lambda i: choices[i].order):
                 drsc_form_rows.append({
@@ -150,7 +148,7 @@ def get_schemas_mapped(context, request):
                 mapped_value = u''
                 mapped_label = u''
                 for row in mappings.mapped['mapping']['choices_map']:
-                    if row['mapped'] == choice:
+                    if choice in row['mapped'].split(','):
                         mapped_value = row['name']
                         mapped_label = row['label']
 
