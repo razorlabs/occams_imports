@@ -91,12 +91,12 @@ def get_schemas(context, request):
     check_csrf_token(request)
 
     schemas = Session.query(datastore.Schema).options(
-        joinedload('attributes')).filter(
+        joinedload('attributes').joinedload('choices')).filter(
         datastore.Schema.id == models.Import.schema_id).filter(
         models.Import.site != 'DRSC').order_by(datastore.Schema.name).all()
 
     drsc_schemas = Session.query(datastore.Schema).options(
-        joinedload('attributes')).filter(
+        joinedload('attributes').joinedload('choices')).filter(
         datastore.Schema.id == models.Import.schema_id).filter(
         models.Import.site == 'DRSC').all()
 
