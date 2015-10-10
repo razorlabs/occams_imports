@@ -84,7 +84,7 @@
   <div id="delete_button"
        style="display: none;"
        data-bind="visible: isChecked">
-    <button class="btn btn-default btn-lg"
+    <button class="btn btn-default btn-danger btn-lg"
             type="button"
             data-bind="click: deleteRows">
       <span class="glyphicon glyphicon-trash"></span>
