@@ -144,12 +144,6 @@ def mappings_direct_map(context, request):
     else:
         mapping['mapping']['choices_map'] = request.json['selected_drsc']['choices']
 
-    user_feedback = {}
-    user_feedback['msg'] = u'The mapping was saved in the database'
-    user_feedback['msg_type'] = u'Success - '
-    user_feedback['isSuccess'] = True
-    user_feedback['isInfo'] = False
-
     publish_date = datetime.strptime(
         request.json['drsc']['publish_date'], '%Y-%m-%d')
 
@@ -163,4 +157,4 @@ def mappings_direct_map(context, request):
         mapped=mapping
     ))
 
-    return json.dumps(user_feedback)
+    return json.dumps({})

@@ -63,12 +63,7 @@ function mapVariable(){
         item.mapped('');
       });
 
-      var json = $.parseJSON(data);
-
-      self.isInfo(json['isInfo']);
-      self.isSuccess(json['isSuccess']);
-      self.msgType(json['msg_type']);
-      self.msg(json['msg']);
+      window.location.href = '/imports';
     },
     complete: function(){
     }
