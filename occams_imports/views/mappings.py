@@ -160,9 +160,12 @@ def mappings_direct_map(context, request):
         datastore.Schema.publish_date == publish_date.date()
     ).one()
 
-    Session.add(models.Mapper(
+    mapped_obj = models.Mapper(
         schema=schema,
         mapped=mapping
-    ))
+    )
 
-    return json.dumps({})
+    Session.add(mapped_obj)
+    Session.flush()
+
+    return json.dumps({'id': mapped_obj.id})

@@ -63,7 +63,8 @@ function mapVariable(){
         item.mapped('');
       });
 
-      window.location.href = '/imports';
+      var json = $.parseJSON(data);
+      window.location.href = '/imports/mappings/view_mapped?id=' + json.id;
     },
     complete: function(){
     }
