@@ -254,7 +254,7 @@
                          data-bind="value: confidence"></input>
               </div>
 
-              <button class="btn btn-default btn-lg pull-right"
+              <button class="btn btn-primary btn-lg pull-right"
                       type="button"
                       data-bind="click: mapVariable">Map</button>
             </form>
