@@ -28,6 +28,7 @@ def main(context, request):
     renderer='json')
 def get_schemas(context, request):
     import json
+    from occams_datastore import models as datastore
     from occams_imports import models as models
 
     check_csrf_token(request)
@@ -42,6 +43,7 @@ def get_schemas(context, request):
 
         row['drsc_form'] = mapping.mapped['drsc_name']
         row['drsc_variable'] = mapping.mapped['drsc_variable']
+        row['site'] = mapping.mapped['site']
         row['site_form'] = mapping.mapped['mapping']['name']
         row['site_variable'] = mapping.mapped['mapping']['variable']
         row['date_mapped'] = mapping.create_date.strftime('%Y-%m-%d')

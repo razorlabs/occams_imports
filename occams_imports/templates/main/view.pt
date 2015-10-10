@@ -58,6 +58,7 @@
         <th></th>
         <th>DRSC Form</th>
         <th>DRSC Variable</th>
+        <th>Site</th>
         <th>Site Form</th>
         <th>Site Variable</th>
         <th>Date Mapped</th>
@@ -71,6 +72,7 @@
                    value=""></td>
         <td data-bind="text: drscForm"></td>
         <td><code data-bind="text: drscVariable"></code></td>
+        <td data-bind="text: site"></td>
         <td data-bind="text: siteForm"></td>
         <td><code data-bind="text: siteVariable"></code></td>
         <td data-bind="text: dateMapped"></td>

@@ -1,4 +1,4 @@
-function mappedModel(drscForm, drscVariable, siteForm,
+function mappedModel(drscForm, drscVariable, site, siteForm,
                      siteVariable, dateMapped, mappedId){
   'use strict'
 
@@ -6,6 +6,7 @@ function mappedModel(drscForm, drscVariable, siteForm,
 
   self.drscForm = ko.observable(drscForm);
   self.drscVariable = ko.observable(drscVariable);
+  self.site = ko.observable(site);
   self.siteForm = ko.observable(siteForm);
   self.siteVariable = ko.observable(siteVariable);
   self.dateMapped = ko.observable(dateMapped);
@@ -114,7 +115,7 @@ function formListViewModel(){
       var json = $.parseJSON(data);
 
       $.each(json.rows, function(){
-        var row = new mappedModel(this.drsc_form, this.drsc_variable,
+        var row = new mappedModel(this.drsc_form, this.drsc_variable, this.site,
           this.site_form, this.site_variable, this.date_mapped,
           this.mapped_id);
 
