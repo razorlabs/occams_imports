@@ -254,6 +254,18 @@
                          data-bind="value: confidence"></input>
               </div>
 
+              <!-- ko if: $root.confidence() == "1" -->
+              <h6>No/little manipulation/interpretation</h6>
+              <!-- /ko -->
+
+              <!-- ko if: $root.confidence() == "2" -->
+              <h6>Some manipulation/interpretation</h6>
+              <!-- /ko -->
+
+              <!-- ko if: $root.confidence() == "3" -->
+              <h6>Significant manipulation/interpretation</h6>
+              <!-- /ko -->
+
               <button class="btn btn-primary btn-lg pull-right"
                       type="button"
                       data-bind="click: mapVariable">Map</button>
