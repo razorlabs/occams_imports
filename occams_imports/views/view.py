@@ -111,6 +111,13 @@ def get_schemas_mapped(context, request):
     mappings = Session.query(models.Mapper).filter(
         models.Mapper.id == request.params['id']).one()
 
+    site_import = Session.query(models.Import).filter(
+        datastore.Schema.name == mappings.mapped['mapping']['name']).filter(
+        datastore.Schema.publish_date == mappings.mapped['mapping']['publish_date']).filter(
+        datastore.Schema.id == models.Import.schema_id).one()
+
+    site = site_import.site
+
     mappings_form_rows = []
     drsc_form_rows = []
 
@@ -156,6 +163,7 @@ def get_schemas_mapped(context, request):
                     'variable': attribute.name,
                     'description': attribute.title,
                     'type': mappings.schema.attributes[drsc_variable].type,
+                    'site': site,
                     'form': schema.name,
                     'label': choices[choice].title,
                     'value': choices[choice].name,
@@ -178,6 +186,7 @@ def get_schemas_mapped(context, request):
                 'variable': attribute.name,
                 'description': attribute.title,
                 'type': mappings.schema.attributes[drsc_variable].type,
+                'site': site,
                 'form': schema.name,
                 'label': attribute.title,
                 'value': u'',

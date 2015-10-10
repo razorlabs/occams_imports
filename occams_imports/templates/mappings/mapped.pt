@@ -74,6 +74,7 @@
               <th>Variable</th>
               <th>Desc</th>
               <th>Type</th>
+              <th>Site</th>
               <th>Form</th>
               <th>Label</th>
               <th>Value</th>
@@ -91,6 +92,7 @@
               </td>
               <td tal:content="form.description"></td>
               <td tal:content="form.type"></td>
+              <td tal:content="form.site"></td>
               <td tal:content="form.form"></td>
               <td tal:content="form.label"></td>
               <td>
