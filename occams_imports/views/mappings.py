@@ -124,11 +124,19 @@ def mappings_direct_map(context, request):
 
     check_csrf_token(request)
 
+    site_import = Session.query(models.Import).filter(
+        datastore.Schema.name == request.json['site']['name']).filter(
+        datastore.Schema.publish_date == request.json['site']['publish_date']).filter(
+        datastore.Schema.id == models.Import.schema_id).one()
+
+    site = site_import.site
+
     mapping = {}
     mapping['drsc_name'] = request.json['drsc']['name']
     mapping['drsc_publish_date'] = request.json['drsc']['publish_date']
     mapping['drsc_variable'] = request.json['selected_drsc']['variable']
     mapping['drsc_label'] = request.json['selected_drsc']['label']
+    mapping['site'] = site
 
     mapping['mapping_type'] = u'direct'
 
