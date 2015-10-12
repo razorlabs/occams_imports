@@ -99,6 +99,7 @@ function formListViewModel(){
     return self.mapped().filter(function(mapping) {
       return mapping.drscForm().toLowerCase().indexOf(filter) > -1
         || mapping.drscVariable().toLowerCase().indexOf(filter) > -1
+        || mapping.site().toLowerCase().indexOf(filter) > -1
         || mapping.siteForm().toLowerCase().indexOf(filter) > -1
         || mapping.siteVariable().toLowerCase().indexOf(filter) > -1
         || mapping.dateMapped().toLowerCase().indexOf(filter) > -1
