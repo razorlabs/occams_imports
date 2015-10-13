@@ -67,14 +67,30 @@
                             name="operator"></select>
                   </div>
                   <div class="col-md-5">
-                    <button class="btn btn-default btn-md"
-                            data-bind="click: addConditionalOperator"
-                            type="button">Add conditional operator</button>
+                    <button type="button"
+                            class="btn btn-default dropdown-toggle"
+                            data-toggle="dropdown">
+                      Logical Operator
+                    <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a href="#"
+                             data-bind="click: addLogicalOperator">Add</a></li>
+                      <li><a href="#">Remove</a></li>
+                    </ul>
                   </div>
                   <div class="col-md-4">
-                    <button class="btn btn-default btn-md"
-                            data-bind="click: addLogicalOperator"
-                            type="button">Add logical operator</button>
+                    <button type="button"
+                            class="btn btn-default dropdown-toggle"
+                            data-toggle="dropdown">
+                      Conditional Operator
+                    <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a href="#"
+                             data-bind="click: addConditionalOperator">Add</a></li>
+                      <li><a href="#">Remove</a></li>
+                    </ul>
                   </div>
                 </div>
                 <br />
