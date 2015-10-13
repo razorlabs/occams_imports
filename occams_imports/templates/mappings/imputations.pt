@@ -128,7 +128,12 @@
   </metal:content-slot>
 
   <metal:javascript-slot fill-slot="javascript-extras-slot">
-
+    <script type="text/javascript">
+      $(function(){
+        'use strict';
+        ko.applyBindings(new imputationViewModel());
+      });
+    </script>
   </metal:javascript-slot>
 
 </html>
