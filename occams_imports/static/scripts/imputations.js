@@ -6,4 +6,12 @@ function imputationViewModel(){
   self.operators = ko.observableArray(['any', 'all']);
   self.selectedOperator = ko.observable();
 
+  self.addConditionalOperator = function(){
+
+  }
+
+  self.addLogicalOperator = function(){
+
+  }
+
 }
