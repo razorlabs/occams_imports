@@ -58,32 +58,50 @@
                   <br />
                   <br />
 
-                  <div class="row">
-
+                <div class="row">
                   <div class="col-md-2">
-                  <select data-bind="options: operators,
-                                     value: selectedOperator"
-                          class="form-control"
-                          id="operator"
-                          name="operator"></select>
+                    <select data-bind="options: operators,
+                                       value: selectedOperator"
+                            class="form-control"
+                            id="operator"
+                            name="operator"></select>
                   </div>
-                   <div class="col-md-5">
-                  <button class="btn btn-default btn-md"
-                          data-bind="click: addConditionalOperator"
-                          type="button">Add conditional operator</button>
+                  <div class="col-md-5">
+                    <button class="btn btn-default btn-md"
+                            data-bind="click: addConditionalOperator"
+                            type="button">Add conditional operator</button>
                   </div>
-                   <div class="col-md-4">
-                  <button class="btn btn-default btn-md"
-                          data-bind="click: addLogicalOperator"
-                          type="button">Add logical operator</button>
+                  <div class="col-md-4">
+                    <button class="btn btn-default btn-md"
+                            data-bind="click: addLogicalOperator"
+                            type="button">Add logical operator</button>
                   </div>
                 </div>
-                  <br />
-                  <br />
-                  <br />
-                  <button class="btn btn-default btn-lg pull-right"
-                          type="button">Map</button>
+                <br />
 
+                <div data-bind="foreach: logicalOperators">
+                  <div class="row">
+                    <div class="col-md-2">
+                      <select data-bind="options: operators"
+                              class="form-control"
+                              id="logical_operator"
+                              name="logical_operator"></select>
+
+                    </div>
+                    <div class="col-md-2">
+                      <input type="text"
+                             class="form-control"
+                             data-bind="value: value">
+                      </input>
+                    </div>
+                  </div>
+                  <br />
+                </div>
+                <br />
+                <br />
+                <br />
+                <button class="btn btn-default btn-lg pull-right"
+                        type="button">Map</button>
               </div>
             </div>
           </div>
