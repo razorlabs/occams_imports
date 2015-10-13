@@ -3,4 +3,6 @@ function imputationViewModel(){
 
   var self = this;
 
+  self.operators = ko.observableArray(['any', 'all']);
+
 }
