@@ -69,11 +69,13 @@
                   </div>
                    <div class="col-md-5">
                   <button class="btn btn-default btn-md"
-                             type="button">Add conditional operator</button>
+                          data-bind="click: addCoditional Operator"
+                          type="button">Add conditional operator</button>
                   </div>
                    <div class="col-md-4">
                   <button class="btn btn-default btn-md"
-                             type="button">Add logical operator</button>
+                          data-bind="click: addLogicalOperator"
+                          type="button">Add logical operator</button>
                   </div>
                 </div>
                   <br />
