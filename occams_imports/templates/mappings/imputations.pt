@@ -66,7 +66,7 @@
                             id="operator"
                             name="operator"></select>
                   </div>
-                  <div class="col-md-5">
+                  <div class="col-md-4">
                     <button type="button"
                             class="btn btn-default dropdown-toggle"
                             data-toggle="dropdown">
