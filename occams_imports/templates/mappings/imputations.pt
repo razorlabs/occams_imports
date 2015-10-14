@@ -1,9 +1,9 @@
 <html metal:use-macro="load: ../master.pt">
   <metal:content-slot fill-slot="content-slot">
     <div style="display: none;" data-bind="visible: true">
-    <br />
-    <h1 i18n:translate="">Imputation Mapping</h1>
-    <br />
+    <header class="page-header">
+      <h1 i18n:translate="">Imputation Mapping</h1>
+    </header>
     <p i18n:translate="" class="lead">
         This interface was designed so you can map variables using imputations.
     </p>
@@ -166,35 +166,40 @@
               <br />
               <br />
 
-              <label class="control-label col-sm-3"
-                     for="confidence">Confidence:</label>
-              <div class="col-sm-2">
-                  <input type="number"
-                         class="form-control"
-                         id="confidence"
-                         min="1"
-                         max="3"
-                         data-bind="value: confidence"></input>
-              </div>
+              <div class="row">
+                <label class="control-label col-sm-2"
+                       for="confidence">Confidence:</label>
+                <div class="col-sm-2">
+                    <input type="number"
+                           class="form-control"
+                           id="confidence"
+                           min="1"
+                           max="3"
+                           data-bind="value: confidence"></input>
+                </div>
+                <div class="col-md-5">
+                <!-- ko if: $root.confidence() == "1" -->
+                <h6>No/little manipulation/interpretation</h6>
+                <!-- /ko -->
 
-              <!-- ko if: $root.confidence() == "1" -->
-              <h6>No/little manipulation/interpretation</h6>
-              <!-- /ko -->
+                <!-- ko if: $root.confidence() == "2" -->
+                <h6>Some manipulation/interpretation</h6>
+                <!-- /ko -->
 
-              <!-- ko if: $root.confidence() == "2" -->
-              <h6>Some manipulation/interpretation</h6>
-              <!-- /ko -->
-
-              <!-- ko if: $root.confidence() == "3" -->
-              <h6>Significant manipulation/interpretation</h6>
-              <!-- /ko -->
-                <button class="btn btn-primary btn-lg pull-right"
-                        type="button"
-                        data-bind="click: saveImputation">Map</button>
-              </div>
-            </div>
-          </div>
-        </div>
+                <!-- ko if: $root.confidence() == "3" -->
+                <h6>Significant manipulation/interpretation</h6>
+                <!-- /ko -->
+                </div>
+                <div class="col-md-2">
+                  <button class="btn btn-primary btn-lg"
+                          type="button"
+                          data-bind="click: saveImputation">Map</button>
+                </div>
+              </div> <!--end row -->
+              </div> <!-- end panel body -->
+            </div> <!-- end panel primary -->
+          </div> <!--end col 6 -->
+        </div> <!-- end row -->
       </div> <!-- end is ready -->
   </metal:content-slot>
 
