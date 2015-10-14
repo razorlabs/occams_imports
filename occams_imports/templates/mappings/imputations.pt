@@ -80,6 +80,7 @@
                              data-bind="click: deleteComparisonOperator">Remove</a></li>
                     </ul>
                   </div>
+
                   <div class="col-md-4">
                     <button type="button"
                             class="btn btn-default dropdown-toggle"
@@ -113,7 +114,22 @@
                     </div>
                   </div>
                   <br />
-                </div>
+                </div> <!-- end foreach comparisonOperators -->
+
+                <div data-bind="foreach: logicalOperators">
+                  <div class="row">
+                    <div class="col-md-2">
+                      <select data-bind="options: operators"
+                              class="form-control"
+                              id="logical_operator"
+                              name="logical_operator"></select>
+
+                    </div>
+                  </div>
+                  <br />
+                </div> <!-- end foreach comparisonOperators -->
+
+
                 <br />
                 <br />
                 <br />

@@ -5,6 +5,10 @@ function comparisonModel(){
   self.value = ko.observable();
 }
 
+function logicalModel(){
+  self.operators = ko.observableArray(['and', 'or']);
+}
+
 function imputationViewModel(){
   'use strict';
 
@@ -13,8 +17,10 @@ function imputationViewModel(){
   self.operators = ko.observableArray(['any', 'all']);
   self.selectedOperator = ko.observable();
   self.comparisonOperators = ko.observableArray([]);
+  self.logicalOperators = ko.observableArray([]);
 
   self.addLogicalOperator = function(){
+    self.logicalOperators.push(new logicalModel());
 
   }
 
