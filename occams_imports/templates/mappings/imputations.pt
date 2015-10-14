@@ -102,8 +102,8 @@
                     <div class="col-md-2">
                       <select data-bind="options: operators"
                               class="form-control"
-                              id="logical_operator"
-                              name="logical_operator"></select>
+                              id="comparison_operator"
+                              name="comparison_operator"></select>
 
                     </div>
                     <div class="col-md-2">
@@ -123,11 +123,10 @@
                               class="form-control"
                               id="logical_operator"
                               name="logical_operator"></select>
-
                     </div>
                   </div>
                   <br />
-                </div> <!-- end foreach comparisonOperators -->
+                </div> <!-- end foreach logicalOperators -->
 
 
                 <br />
