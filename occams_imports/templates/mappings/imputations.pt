@@ -70,6 +70,19 @@
                     <button type="button"
                             class="btn btn-default dropdown-toggle"
                             data-toggle="dropdown">
+                      Comparison Operator
+                    <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a href="#"
+                             data-bind="click: addComparisonOperator">Add</a></li>
+                      <li><a href="#">Remove</a></li>
+                    </ul>
+                  </div>
+                  <div class="col-md-4">
+                    <button type="button"
+                            class="btn btn-default dropdown-toggle"
+                            data-toggle="dropdown">
                       Logical Operator
                     <span class="caret"></span>
                     </button>
@@ -79,23 +92,10 @@
                       <li><a href="#">Remove</a></li>
                     </ul>
                   </div>
-                  <div class="col-md-4">
-                    <button type="button"
-                            class="btn btn-default dropdown-toggle"
-                            data-toggle="dropdown">
-                      Conditional Operator
-                    <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                      <li><a href="#"
-                             data-bind="click: addConditionalOperator">Add</a></li>
-                      <li><a href="#">Remove</a></li>
-                    </ul>
-                  </div>
                 </div>
                 <br />
 
-                <div data-bind="foreach: logicalOperators">
+                <div data-bind="foreach: comparisonOperators">
                   <div class="row">
                     <div class="col-md-2">
                       <select data-bind="options: operators"

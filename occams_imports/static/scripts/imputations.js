@@ -1,4 +1,4 @@
-function logicalModel(){
+function comparisonModel(){
   'use strict';
 
   self.operators = ko.observableArray(['==', '!=', '>', '<', '>=', '<=']);
@@ -12,14 +12,14 @@ function imputationViewModel(){
 
   self.operators = ko.observableArray(['any', 'all']);
   self.selectedOperator = ko.observable();
-  self.logicalOperators = ko.observableArray([]);
+  self.comparisonOperators = ko.observableArray([]);
 
-  self.addConditionalOperator = function(){
+  self.addLogicalOperator = function(){
 
   }
 
-  self.addLogicalOperator = function(){
-    self.logicalOperators.push(new logicalModel());
+  self.addComparisonOperator = function(){
+    self.comparisonOperators.push(new comparisonModel());
   }
 
 }
