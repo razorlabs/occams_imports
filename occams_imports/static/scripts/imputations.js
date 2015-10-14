@@ -24,6 +24,7 @@ function imputationViewModel(){
   self.selectedOperator = ko.observable();
   self.comparisonOperators = ko.observableArray([]);
   self.logicalOperators = ko.observableArray([]);
+  self.confidence = ko.observable(1);
 
   self.addLogicalOperator = function(){
     self.logicalOperators.push(new logicalModel());
