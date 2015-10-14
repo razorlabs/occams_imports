@@ -13,6 +13,21 @@ function logicalModel(){
   var self = this;
 
   self.operators = ko.observableArray(['and', 'or']);
+  self.comparisons = ko.observableArray([]);
+
+  self.addComparisonOperator = function(){
+    'use strict'
+
+    var self = this;
+    self.comparisons.push(new comparisonModel());
+  }
+
+  self.deleteComparisonOperator = function(){
+    'use strict'
+
+    var self = this;
+    self.comparisons.pop()
+  }
 }
 
 function imputationViewModel(){

@@ -97,10 +97,10 @@
                     </ul>
                   </div>
                 </div>
-                <br />
 
                 <div data-bind="foreach: comparisonOperators">
                   <div class="row">
+                    <br />
                     <div class="col-md-2">
                       <select data-bind="options: operators"
                               class="form-control"
@@ -115,22 +115,56 @@
                       </input>
                     </div>
                   </div>
-                  <br />
                 </div> <!-- end foreach comparisonOperators -->
 
                 <div data-bind="foreach: logicalOperators">
                   <div class="row">
+                    <br />
                     <div class="col-md-2">
                       <select data-bind="options: operators"
                               class="form-control"
                               id="logical_operator"
                               name="logical_operator"></select>
                     </div>
+
+                    <div class="col-md-4">
+                      <button type="button"
+                              class="btn btn-default dropdown-toggle"
+                              data-toggle="dropdown">
+                        Comparison Operator
+                      <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a href="#"
+                               data-bind="click: addComparisonOperator">Add</a></li>
+                        <li><a href="#"
+                               data-bind="click: deleteComparisonOperator">Remove</a></li>
+                      </ul>
+                    </div>
                   </div>
-                  <br />
+
+                    <div data-bind="foreach: comparisons">
+                      <div class="row">
+                        <br />
+                        <div class="col-md-2 col-md-offset-2">
+                          <select data-bind="options: operators"
+                                  class="form-control"
+                                  id="comparison_operator"
+                                  name="comparison_operator"></select>
+
+                        </div>
+                        <div class="col-md-2">
+                          <input type="text"
+                                 class="form-control"
+                                 data-bind="value: value">
+                          </input>
+                        </div>
+                      </div>
+                    </div> <!-- end foreach comparisons -->
                 </div> <!-- end foreach logicalOperators -->
 
-                <br />
+              <br />
+              <br />
 
               <label class="control-label col-sm-3"
                      for="confidence">Confidence:</label>
