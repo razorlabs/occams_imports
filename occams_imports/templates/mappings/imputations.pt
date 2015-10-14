@@ -1,5 +1,6 @@
 <html metal:use-macro="load: ../master.pt">
   <metal:content-slot fill-slot="content-slot">
+    <div style="display: none;" data-bind="visible: true">
     <br />
     <h1 i18n:translate="">Imputation Mapping</h1>
     <br />
@@ -129,9 +130,6 @@
                   <br />
                 </div> <!-- end foreach logicalOperators -->
 
-
-                <br />
-                <br />
                 <br />
 
               <label class="control-label col-sm-3"
@@ -163,7 +161,7 @@
             </div>
           </div>
         </div>
-
+      </div> <!-- end is ready -->
   </metal:content-slot>
 
   <metal:javascript-slot fill-slot="javascript-extras-slot">
