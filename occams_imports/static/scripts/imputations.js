@@ -22,4 +22,8 @@ function imputationViewModel(){
     self.comparisonOperators.push(new comparisonModel());
   }
 
+  self.deleteComparisonOperator = function(){
+    self.comparisonOperators.pop()
+  }
+
 }

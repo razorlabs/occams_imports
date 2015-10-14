@@ -76,7 +76,8 @@
                     <ul class="dropdown-menu">
                       <li><a href="#"
                              data-bind="click: addComparisonOperator">Add</a></li>
-                      <li><a href="#">Remove</a></li>
+                      <li><a href="#"
+                             data-bind="click: deleteComparisonOperator">Remove</a></li>
                     </ul>
                   </div>
                   <div class="col-md-4">
