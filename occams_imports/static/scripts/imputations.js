@@ -32,4 +32,8 @@ function imputationViewModel(){
     self.comparisonOperators.pop()
   }
 
+  self.deleteLogicalOperator = function(){
+    self.logicalOperators.pop()
+  }
+
 }

@@ -91,7 +91,8 @@
                     <ul class="dropdown-menu">
                       <li><a href="#"
                              data-bind="click: addLogicalOperator">Add</a></li>
-                      <li><a href="#">Remove</a></li>
+                      <li><a href="#"
+                             data-bind="click: deleteLogicalOperator">Remove</a></li>
                     </ul>
                   </div>
                 </div>
