@@ -59,6 +59,7 @@ function logicalModel(){
 
   self.operators = ko.observableArray(['and', 'or']);
   self.comparisons = ko.observableArray([]);
+  self.selectedOperator = ko.observable();
 
   self.addComparisonOperator = function(){
     'use strict'

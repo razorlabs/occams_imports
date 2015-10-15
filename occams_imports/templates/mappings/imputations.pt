@@ -162,7 +162,8 @@
               <div class="row">
                 <br />
                 <div class="col-md-2">
-                  <select data-bind="options: operators"
+                  <select data-bind="options: operators,
+                                     value: selectedOperator"
                           class="form-control"
                           id="logical_operator"
                           name="logical_operator"></select>
@@ -188,7 +189,8 @@
                   <div class="row">
                     <br />
                     <div class="col-md-2 col-md-offset-2">
-                      <select data-bind="options: operators"
+                      <select data-bind="options: operators,
+                                         value: selectedOperator"
                               class="form-control"
                               id="comparison_operator"
                               name="comparison_operator"></select>
