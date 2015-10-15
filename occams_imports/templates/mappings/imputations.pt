@@ -7,8 +7,10 @@
     <p i18n:translate="" class="lead">
         This interface was designed so you can map variables using imputations.
     </p>
-    <br />
-    <br />
+    <div data-bind="css: { 'alert': true, 'alert-danger': isDanger, 'alert-info': isInfo }">
+      <strong data-bind="text: msgType"></strong>
+      <span data-bind="text: msg"></span>
+    </div>
 
     <div class="row">
       <div class="col-md-6">

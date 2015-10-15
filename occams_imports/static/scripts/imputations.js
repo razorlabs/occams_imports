@@ -120,6 +120,11 @@ function imputationViewModel(){
   self.selectedDRSCForm = ko.observable();
   self.selectedDRSCAttribute = ko.observable();
 
+  self.isDanger = ko.observable(false);
+  self.msgType = ko.observable('Info - ');
+  self.msg = ko.observable('Please select a form after loading.');
+  self.isInfo = ko.observable(true);
+
   self.addLogicalOperator = function(){
     self.logicalOperators.push(new logicalModel());
 
@@ -154,6 +159,14 @@ function imputationViewModel(){
 
     var self = this;
 
+    if (self.selectedDRSCForm() === undefined){
+      self.isInfo(false);
+      self.msgType('Error - ');
+      self.msg('Please select a form to apply imputation.');
+      self.isDanger(true);
+    }
+
+    else {
     var data = ko.toJSON({logical: self.logicalOperators(),
                           comparison: self.comparisonOperators(),
                           selected_comparison_condition: self.selectedComparisonCondition,
@@ -161,6 +174,7 @@ function imputationViewModel(){
                           drsc_publish_date: self.selectedDRSCForm().publish_date,
                           drsc_variable: self.selectedDRSCAttribute().variable})
     console.log(data);
+    }
   }
 
   $.ajax({
