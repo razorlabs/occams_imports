@@ -7,7 +7,8 @@
     <p i18n:translate="" class="lead">
         This interface was designed so you can map variables using imputations.
     </p>
-    <div data-bind="css: { 'alert': true, 'alert-danger': isDanger, 'alert-info': isInfo }">
+    <div data-bind="css: { 'alert': true, 'alert-danger': isDanger, 'alert-info': isInfo,
+                   'alert-success': isSuccess }">
       <strong data-bind="text: msgType"></strong>
       <span data-bind="text: msg"></span>
     </div>
@@ -19,10 +20,72 @@
           <div class="panel-body">
             <div class="row">
               <div class="col-md-4 col-md-offset-8">
-                <button class="btn btn-default btn-md pull-right"
+                <button class="btn btn-primary btn-md pull-right"
                         type="button">Add variable</button>
               </div>
             </div> <!-- end row-->
+            <form class="form-horizontal" role="form">
+              <br />
+              <div class="form-group">
+                <label class="control-label col-sm-3"
+                       for="direct_forms">Form:</label>
+                <div class="col-sm-6">
+                  <select data-bind="options: forms,
+                                     optionsText: 'name',
+                                     value: selectedForm,
+                                     optionsCaption: 'Select a form...'"
+                          class="form-control"
+                          id="direct_forms"
+                          name="direct_forms"></select>
+                </div> <!-- end col 6-->
+              </div> <!-- end form group-->
+
+              <div class="form-group">
+                <label class="control-label col-sm-3"
+                       for="direct_version">Version:</label>
+                <div class="col-sm-6">
+                  <div data-bind="ifnot: selectedForm">
+                    <input type="text"
+                           readonly="readonly"
+                           class="form-control"
+                           placeholder="Publish date of the form"></input>
+                  </div>
+                  <div data-bind="with: selectedForm">
+                    <input data-bind="value: publish_date"
+                           readonly="readonly"
+                           type="text"
+                           id="direct_version"
+                           name="direct_version"
+                           class="form-control"></input>
+                  </div> <!-- end with selected form -->
+                </div> <!-- end col 6-->
+              </div> <!-- end form group -->
+
+              <div class="form-group">
+                <label class="control-label col-sm-3"
+                       for="direct_variables">Variable:</label>
+                  <div data-bind="ifnot: selectedForm">
+                    <div class="col-sm-6">
+                     <input type="text"
+                           readonly="readonly"
+                           class="form-control"
+                           placeholder="Variable to be mapped"></input>
+                    </div> <!-- end col 6-->
+                  </div> <!-- if not selected form -->
+                <div data-bind="with: selectedForm">
+                  <div class="col-sm-6">
+                    <select data-bind="options: attributes,
+                                       optionsText: 'variable',
+                                       value: $root.selectedAttribute"
+                            class="form-control"
+                            id="direct_variables"
+                            name="direct_variables"></select>
+                 </div> <!-- end col 6-->
+                </div> <!-- end with selected form -->
+              </div> <!-- end form group -->
+              <br />
+            </form>
+
             <br />
           </div> <!-- panel body-->
         </div> <!-- panel primary -->

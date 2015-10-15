@@ -116,10 +116,15 @@ function imputationViewModel(){
   self.isReady = ko.observableArray(false);
   self.isLoading = ko.observable(true);
 
+  self.forms = ko.observableArray();
+  self.selectedForm = ko.observable();
+  self.selectedAttribute = ko.observable();
+
   self.drsc_forms = ko.observableArray();
   self.selectedDRSCForm = ko.observable();
   self.selectedDRSCAttribute = ko.observable();
 
+  self.isSuccess = ko.observable(false);
   self.isDanger = ko.observable(false);
   self.msgType = ko.observable('Info - ');
   self.msg = ko.observable('Please select a form after loading.');
@@ -173,6 +178,13 @@ function imputationViewModel(){
                           drsc_form: self.selectedDRSCForm().name,
                           drsc_publish_date: self.selectedDRSCForm().publish_date,
                           drsc_variable: self.selectedDRSCAttribute().variable})
+
+    self.isInfo(false);
+    self.isDanger(false);
+    self.msgType('Success - ');
+    self.msg('Imputation inserted into the database.');
+    self.isSuccess(true);
+
     console.log(data);
     }
   }
@@ -190,7 +202,7 @@ function imputationViewModel(){
       $.each(json.forms, function(){
         var form = new formModel(this.name, this.publish_date, this.attributes);
         if (this.site != 'DRSC'){
-
+          self.forms.push(form);
         }
         else{
           self.drsc_forms.push(form);
