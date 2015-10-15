@@ -52,6 +52,19 @@ function comparisonModel(){
   self.value = ko.observable();
 }
 
+comparisonModel.prototype.toJSON = function() {
+  // remove unnecessary operators attribute to clean up
+  // ko.JSON results
+  'use strict'
+
+  var self = this;
+
+  var copy = ko.toJS(self);
+  delete copy.operators;
+
+  return copy;
+}
+
 function logicalModel(){
   'use strict'
 
@@ -74,6 +87,19 @@ function logicalModel(){
     var self = this;
     self.comparisons.pop()
   }
+}
+
+logicalModel.prototype.toJSON = function() {
+  // remove unnecessary operators attribute to clean up
+  // ko.JSON results
+  'use strict'
+
+  var self = this;
+
+  var copy = ko.toJS(self);
+  delete copy.operators;
+
+  return copy;
 }
 
 function imputationViewModel(){
