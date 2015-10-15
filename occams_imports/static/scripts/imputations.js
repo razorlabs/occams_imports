@@ -79,8 +79,8 @@ function imputationViewModel(){
 
   var self = this;
 
-  self.operators = ko.observableArray(['any', 'all']);
-  self.selectedOperator = ko.observable();
+  self.conditions = ko.observableArray(['any', 'all']);
+  self.selectedComparisonCondition = ko.observable();
   self.comparisonOperators = ko.observableArray([]);
   self.logicalOperators = ko.observableArray([]);
   self.confidence = ko.observable(1);
@@ -127,7 +127,8 @@ function imputationViewModel(){
     var self = this;
 
     var data = ko.toJSON({logical: self.logicalOperators(),
-                          comparison: self.comparisonOperators()})
+                          comparison: self.comparisonOperators(),
+                          selected_comparison_condition: self.selectedComparisonCondition})
     console.log(data);
   }
 

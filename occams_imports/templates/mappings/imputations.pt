@@ -101,8 +101,8 @@
         <hr>
             <div class="row">
               <div class="col-md-2">
-                <select data-bind="options: operators,
-                                   value: selectedOperator"
+                <select data-bind="options: conditions,
+                                   value: selectedComparisonCondition"
                         class="form-control"
                         id="operator"
                         name="operator"></select>
