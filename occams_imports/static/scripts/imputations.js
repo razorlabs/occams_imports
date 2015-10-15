@@ -48,6 +48,7 @@ function comparisonModel(){
   var self = this;
 
   self.operators = ko.observableArray(['==', '!=', '>', '<', '>=', '<=']);
+  self.selectedOperator = ko.observable();
   self.value = ko.observable();
 }
 
