@@ -130,7 +130,10 @@ function imputationViewModel(){
 
     var data = ko.toJSON({logical: self.logicalOperators(),
                           comparison: self.comparisonOperators(),
-                          selected_comparison_condition: self.selectedComparisonCondition})
+                          selected_comparison_condition: self.selectedComparisonCondition,
+                          drsc_form: self.selectedDRSCForm().name,
+                          drsc_publish_date: self.selectedDRSCForm().publish_date,
+                          drsc_variable: self.selectedDRSCAttribute().variable})
     console.log(data);
   }
 
