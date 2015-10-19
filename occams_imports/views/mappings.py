@@ -6,8 +6,6 @@ from pyramid.renderers import render_to_response
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
 
-from .. import Session
-
 
 def update_schema_data(data, schemas, drsc):
     """Converts sql alchemy schema objects to dictionary for rendering"""
@@ -89,13 +87,14 @@ def get_schemas(context, request):
     from occams_imports import models as models
 
     check_csrf_token(request)
+    db_session = request.db_session
 
-    schemas = Session.query(datastore.Schema).options(
+    schemas = db_session.query(datastore.Schema).options(
         joinedload('attributes').joinedload('choices')).filter(
         datastore.Schema.id == models.Import.schema_id).filter(
         models.Import.site != 'DRSC').order_by(datastore.Schema.name).all()
 
-    drsc_schemas = Session.query(datastore.Schema).options(
+    drsc_schemas = db_session.query(datastore.Schema).options(
         joinedload('attributes').joinedload('choices')).filter(
         datastore.Schema.id == models.Import.schema_id).filter(
         models.Import.site == 'DRSC').all()
@@ -123,8 +122,9 @@ def mappings_direct_map(context, request):
     from occams_imports import models as models
 
     check_csrf_token(request)
+    db_session = request.db_session
 
-    site_import = Session.query(models.Import).filter(
+    site_import = db_session.query(models.Import).filter(
         datastore.Schema.name == request.json['site']['name']).filter(
         datastore.Schema.publish_date == request.json['site']['publish_date']).filter(
         datastore.Schema.id == models.Import.schema_id).one()
@@ -155,7 +155,7 @@ def mappings_direct_map(context, request):
     publish_date = datetime.strptime(
         request.json['drsc']['publish_date'], '%Y-%m-%d')
 
-    schema = Session.query(models.Schema).filter(
+    schema = db_session.query(models.Schema).filter(
         datastore.Schema.name == request.json['drsc']['name'],
         datastore.Schema.publish_date == publish_date.date()
     ).one()
@@ -165,7 +165,7 @@ def mappings_direct_map(context, request):
         mapped=mapping
     )
 
-    Session.add(mapped_obj)
-    Session.flush()
+    db_session.add(mapped_obj)
+    db_session.flush()
 
     return json.dumps({'id': mapped_obj.id})

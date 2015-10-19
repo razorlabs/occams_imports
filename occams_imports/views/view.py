@@ -7,8 +7,6 @@ This is a listing of mapped variables
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
 
-from .. import Session
-
 
 @view_config(
     route_name='imports.main',
@@ -32,8 +30,9 @@ def get_schemas(context, request):
     from occams_imports import models as models
 
     check_csrf_token(request)
+    db_session = request.db_session
 
-    mappings = Session.query(models.Mapper).all()
+    mappings = db_session.query(models.Mapper).all()
 
     data = {}
     data['rows'] = []
@@ -68,6 +67,7 @@ def delete_mappings(context, request):
     from occams_imports import models as models
 
     check_csrf_token(request)
+    db_session = request.db_session
 
     mappings = request.json['mapped_delete']
 
@@ -77,7 +77,7 @@ def delete_mappings(context, request):
     for mapping in mappings:
         if mapping['deleteRow'] is True:
             try:
-                mapped = Session.query(models.Mapper).filter(
+                mapped = db_session.query(models.Mapper).filter(
                     models.Mapper.id == mapping['mappedId']).one()
 
             except NoResultFound:
@@ -96,7 +96,7 @@ def delete_mappings(context, request):
                 records.append(mapped)
 
     for record in records:
-        Session.delete(record)
+        db_session.delete(record)
 
     return json.dumps({})
 
@@ -110,10 +110,12 @@ def get_schemas_mapped(context, request):
     from occams_datastore import models as datastore
     from occams_imports import models as models
 
-    mappings = Session.query(models.Mapper).filter(
+    db_session = request.db_session
+
+    mappings = db_session.query(models.Mapper).filter(
         models.Mapper.id == request.params['id']).one()
 
-    site_import = Session.query(models.Import).filter(
+    site_import = db_session.query(models.Import).filter(
         datastore.Schema.name == mappings.mapped['mapping']['name']).filter(
         datastore.Schema.publish_date == mappings.mapped['mapping']['publish_date']).filter(
         datastore.Schema.id == models.Import.schema_id).one()
@@ -129,7 +131,7 @@ def get_schemas_mapped(context, request):
         # site labels for choices is not available in json map in mappings tbl
         schema_name = mappings.mapped['mapping']['name']
         schema_publish_date = mappings.mapped['mapping']['publish_date']
-        schema = Session.query(datastore.Schema).filter(
+        schema = db_session.query(datastore.Schema).filter(
             datastore.Schema.name == schema_name,
             datastore.Schema.publish_date == schema_publish_date).one()
 

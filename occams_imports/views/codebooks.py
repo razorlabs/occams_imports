@@ -10,7 +10,6 @@ from pyramid.view import view_config
 from pyramid.session import check_csrf_token
 
 from occams.utils.forms import wtferrors
-from .. import Session
 
 
 @view_config(
@@ -71,6 +70,7 @@ def insert_codebooks(context, request):
               these are the records not inserted
     """
     check_csrf_token(request)
+    db_session = request.db_session
 
     dry = None
     forms = []
@@ -221,9 +221,9 @@ def insert_codebooks(context, request):
                 schema=schema
             )
 
-            Session.add(imported)
+            db_session.add(imported)
 
-            Session.flush()
+            db_session.flush()
 
             forms_inserted += 1
 
