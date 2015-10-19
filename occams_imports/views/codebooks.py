@@ -136,7 +136,7 @@ def insert_codebooks(context, request):
         if form_data not in forms:
             forms.append(form_data)
 
-        FieldForm = FieldFormFactory(context=schema)
+        FieldForm = FieldFormFactory(context=schema, request=request)
         form = FieldForm.from_json(record)
 
         if not form.validate():
