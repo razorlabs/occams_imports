@@ -88,7 +88,7 @@ def create_tables(request):
             if url.database not in ('', ':memory:'):
                 os.unlink(url.database)
         elif not reuse:
-            models.Base.metadata.create_all(engine)
+            models.Base.metadata.drop_all(engine)
             datastore.DataStoreModel.metadata.drop_all(engine)
 
 
@@ -131,7 +131,7 @@ def db_session(config):
 
     :returns: An instantiated sqalchemy database session
     """
-    from occams_imports import models
+    from occams_forms import models
 
     db_session = config.registry['db_sessionmaker']()
 
@@ -268,7 +268,7 @@ def app(request, wsgi, db_session):
     import transaction
     from webtest import TestApp
     from zope.sqlalchemy import mark_changed
-    from occams_imports import models
+    from occams_forms import models
 
     # Save all changes up tho this point (db_session does some configuration)
     with transaction.manager:
