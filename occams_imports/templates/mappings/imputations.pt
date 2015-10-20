@@ -19,16 +19,18 @@
           <div class="panel-heading">Select and/or convert</div>
           <div class="panel-body">
             <div class="row">
-              <div class="col-md-2 col-md-offset-7">
-                <button class="btn btn-primary btn-md"
-                        type="button"
-                        data-bind="click: addConversion">Add</button>
-              </div>
-              <div class="col-md-2 col-md">
-                <button class="btn btn-primary btn-md"
-                        type="button"
-                        data-bind="click: deleteConversion">Remove</button>
-              </div>
+              <div class="col-md-2 col-md-offset-9">
+                <button type="button"
+                        class="btn btn-default dropdown-toggle"
+                        data-toggle="dropdown">
+                  options
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a data-bind="click: addConversion">Add Operation</a></li>
+                  <li><a data-bind="click: deleteConversion">Remove Operation</a></li>
+                </ul>
+              </div> <!-- btn-group-->
             </div> <!-- end row-->
             <br />
             <form class="form-horizontal"
