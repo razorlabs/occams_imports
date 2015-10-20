@@ -156,12 +156,28 @@ function imputationViewModel(){
     self.comparisonOperators.push(new comparisonModel());
   }
 
+  self.addConversion = function(){
+    'use strict'
+
+    var self = this;
+
+    self.conversions.push(new conversionModel());
+  }
+
   self.deleteComparisonOperator = function(){
     'use strict'
 
     var self = this;
 
     self.comparisonOperators.pop()
+  }
+
+  self.deleteConversion = function(){
+    'use strict'
+
+    var self = this;
+
+    self.conversions.pop()
   }
 
   self.deleteLogicalOperator = function(){
