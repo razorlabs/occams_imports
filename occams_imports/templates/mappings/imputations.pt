@@ -34,6 +34,15 @@
                   role="form"
                   data-bind="foreach: conversions">
               <br />
+              <div data-bind="if: $index() > 0">
+                <div class="col-sm-2 pull-right">
+                  <select data-bind="options: mathOperators,
+                                     value: selectedOperator"
+                          class="form-control"
+                          id="math_operators"
+                          name="math_operators"></select>
+                </div>
+              </div>
               <div class="form-group">
                 <label class="control-label col-sm-3"
                        for="direct_forms">Form:</label>

@@ -108,6 +108,7 @@ function conversionModel(){
   var self = this;
 
   self.mathOperators = ko.observableArray(['*', '/', '+', '-']);
+  self.selectedOperator = ko.observable();
   self.selectedForm = ko.observable()
   self.selectedAttribute = ko.observable();
 }
