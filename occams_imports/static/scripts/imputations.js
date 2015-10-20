@@ -102,6 +102,17 @@ logicalModel.prototype.toJSON = function() {
   return copy;
 }
 
+function conversionModel(){
+  'use strict'
+
+  var self = this;
+
+  self.mathOperators = ko.observableArray(['*', '/', '+', '-']);
+  self.form = self.forms()
+  self.selectedForm = ko.observable()
+  self.selectedAttribute = ko.observable();
+}
+
 function imputationViewModel(){
   'use strict';
 
