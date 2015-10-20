@@ -45,13 +45,13 @@
                             id="math_operators"
                             name="math_operators"></select>
                   </div>
-                </div>
+                </div> <!-- end row -->
                 <br />
               </div>
               <div class="form-group">
                 <label class="control-label col-sm-3"
                        for="direct_forms">Form:</label>
-                <div class="col-sm-6">
+                <div class="col-sm-5">
                   <select data-bind="options: $root.forms,
                                      optionsText: 'name',
                                      value: selectedForm,
@@ -59,13 +59,18 @@
                           class="form-control"
                           id="direct_forms"
                           name="direct_forms"></select>
-                </div> <!-- end col 6-->
-              </div> <!-- end form group-->
+                  </div> <!-- end col 6-->
+                  <div data-bind="if: ($index() > 0 && !selectedForm())">
+                    <div class="col-sm-3 col-sm-offset-1">
+                      <input class="form-control" type="number"></input>
+                    </div>
+                  </div>
+                </div> <!-- end form group-->
 
               <div class="form-group">
                 <label class="control-label col-sm-3"
                        for="direct_version">Version:</label>
-                <div class="col-sm-6">
+                <div class="col-sm-5">
                   <div data-bind="ifnot: selectedForm">
                     <input type="text"
                            readonly="readonly"
@@ -87,7 +92,7 @@
                 <label class="control-label col-sm-3"
                        for="direct_variables">Variable:</label>
                   <div data-bind="ifnot: selectedForm">
-                    <div class="col-sm-6">
+                    <div class="col-sm-5">
                      <input type="text"
                            readonly="readonly"
                            class="form-control"
@@ -95,7 +100,7 @@
                     </div> <!-- end col 6-->
                   </div> <!-- if not selected form -->
                 <div data-bind="with: selectedForm">
-                  <div class="col-sm-6">
+                  <div class="col-sm-5">
                     <select data-bind="options: attributes,
                                        optionsText: 'variable',
                                        value: $root.selectedAttribute"
@@ -105,7 +110,6 @@
                  </div> <!-- end col 6-->
                 </div> <!-- end with selected form -->
               </div> <!-- end form group -->
-
             </form>
 
             <br />
