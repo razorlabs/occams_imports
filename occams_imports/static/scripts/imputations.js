@@ -131,6 +131,8 @@ function imputationViewModel(){
   self.selectedForm = ko.observable();
   self.selectedAttribute = ko.observable();
 
+  self.conversions = ko.observableArray();
+
   self.drsc_forms = ko.observableArray();
   self.selectedDRSCForm = ko.observable();
   self.selectedDRSCAttribute = ko.observable();
