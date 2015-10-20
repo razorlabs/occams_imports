@@ -19,18 +19,26 @@
           <div class="panel-heading">Select and/or convert</div>
           <div class="panel-body">
             <div class="row">
-              <div class="col-md-4 col-md-offset-8">
-                <button class="btn btn-primary btn-md pull-right"
-                        type="button">Add variable</button>
+              <div class="col-md-2 col-md-offset-7">
+                <button class="btn btn-primary btn-md"
+                        type="button"
+                        data-bind="click: addConversion">Add</button>
+              </div>
+              <div class="col-md-2 col-md">
+                <button class="btn btn-primary btn-md"
+                        type="button"
+                        data-bind="click: deleteConversion">Remove</button>
               </div>
             </div> <!-- end row-->
-            <form class="form-horizontal" role="form">
+            <form class="form-horizontal"
+                  role="form"
+                  data-bind="foreach: conversions">
               <br />
               <div class="form-group">
                 <label class="control-label col-sm-3"
                        for="direct_forms">Form:</label>
                 <div class="col-sm-6">
-                  <select data-bind="options: forms,
+                  <select data-bind="options: $root.forms,
                                      optionsText: 'name',
                                      value: selectedForm,
                                      optionsCaption: 'Select a form...'"

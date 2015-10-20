@@ -108,7 +108,6 @@ function conversionModel(){
   var self = this;
 
   self.mathOperators = ko.observableArray(['*', '/', '+', '-']);
-  self.form = self.forms()
   self.selectedForm = ko.observable()
   self.selectedAttribute = ko.observable();
 }
@@ -239,6 +238,7 @@ function imputationViewModel(){
       });
     },
     complete: function(){
+      self.addConversion();
       self.isLoading(false);
   }
   });
