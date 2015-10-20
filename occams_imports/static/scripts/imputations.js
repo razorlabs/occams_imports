@@ -109,7 +109,7 @@ function conversionModel(){
 
   self.mathOperators = ko.observableArray(['multiply', 'divide', 'add', 'subtract']);
   self.selectedOperator = ko.observable();
-  self.selectedForm = ko.observable()
+  self.selectedForm = ko.observable();
   self.selectedAttribute = ko.observable();
 }
 
