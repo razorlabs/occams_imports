@@ -54,7 +54,7 @@
                 <div class="col-sm-5">
                   <select data-bind="options: $root.forms,
                                      optionsText: 'name',
-                                     value: selectedForm,
+                                     value: $data.selectedForm,
                                      optionsCaption: 'Select a form...'"
                           class="form-control"
                           id="direct_forms"
@@ -103,7 +103,7 @@
                   <div class="col-sm-5">
                     <select data-bind="options: attributes,
                                        optionsText: 'variable',
-                                       value: $root.selectedAttribute"
+                                       value: $data.selectedAttribute"
                             class="form-control"
                             id="direct_variables"
                             name="direct_variables"></select>
