@@ -111,6 +111,7 @@ function conversionModel(){
   self.selectedOperator = ko.observable();
   self.selectedForm = ko.observable();
   self.selectedAttribute = ko.observable();
+  self.newConversion = ko.observable(false);
 }
 
 function imputationViewModel(){
