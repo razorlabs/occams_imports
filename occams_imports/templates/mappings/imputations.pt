@@ -255,7 +255,7 @@
                           name="comparison_operator"></select>
 
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                   <input type="text"
                          class="form-control"
                          data-bind="value: value">
@@ -302,7 +302,7 @@
                               name="comparison_operator"></select>
 
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                       <input type="text"
                              class="form-control"
                              data-bind="value: value">
