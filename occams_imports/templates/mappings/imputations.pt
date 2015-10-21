@@ -109,6 +109,13 @@
                             name="direct_variables"></select>
                  </div> <!-- end col 6-->
                 </div> <!-- end with selected form -->
+                <div class="col-sm-offset-3 col-sm-8">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox"> Start new conversion
+                    </label>
+                  </div>
+                </div>
               </div> <!-- end form group -->
             </form>
 
