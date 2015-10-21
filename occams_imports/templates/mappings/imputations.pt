@@ -62,7 +62,9 @@
                   </div> <!-- end col 6-->
                   <div data-bind="if: ($index() > 0 && !selectedForm())">
                     <div class="col-sm-3 col-sm-offset-1">
-                      <input class="form-control" type="number"></input>
+                      <input class="form-control"
+                             data-bind="value: value"
+                             type="number"></input>
                     </div>
                   </div>
                 </div> <!-- end form group-->
