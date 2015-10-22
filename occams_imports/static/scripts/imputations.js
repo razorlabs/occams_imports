@@ -112,7 +112,7 @@ function conversionModel(){
   self.selectedForm = ko.observable();
   self.selectedAttribute = ko.observable();
   self.newConversion = ko.observable(false);
-  self.value = ko.observable(0);
+  self.value = ko.observable();
 }
 
 function imputationViewModel(){
