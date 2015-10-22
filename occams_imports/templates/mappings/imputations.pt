@@ -60,7 +60,7 @@
                           id="direct_forms"
                           name="direct_forms"></select>
                   </div> <!-- end col 6-->
-                  <div data-bind="if: ($index() > 0 && !selectedForm())">
+                  <div data-bind="if: ($index() > 0 && !selectedForm() && !$root.conversions()[$index() -1].newConversion())">
                     <div class="col-sm-3 col-sm-offset-1">
                       <input class="form-control"
                              data-bind="value: value"
