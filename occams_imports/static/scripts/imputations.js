@@ -244,6 +244,7 @@ function imputationViewModel(){
     headers: {'X-CSRF-Token': $.cookie('csrf_token')},
     beforeSend: function(){
       self.isReady(true);
+      self.addConversion();
     },
     success: function(data, textStatus, jqXHR){
       var json = $.parseJSON(data);
@@ -259,7 +260,6 @@ function imputationViewModel(){
       });
     },
     complete: function(){
-      self.addConversion();
       self.isLoading(false);
   }
   });
