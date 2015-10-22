@@ -51,7 +51,7 @@
               <div class="form-group">
                 <label class="control-label col-sm-3"
                        for="direct_forms">Form:</label>
-                <div class="col-sm-5">
+                <div class="col-sm-6">
                   <select data-bind="options: $root.forms,
                                      optionsText: 'name',
                                      value: $data.selectedForm,
@@ -61,7 +61,7 @@
                           name="direct_forms"></select>
                   </div> <!-- end col 6-->
                   <div data-bind="if: ($index() > 0 && !selectedForm() && !$root.conversions()[$index() -1].newConversion())">
-                    <div class="col-sm-3 col-sm-offset-1">
+                    <div class="col-sm-2">
                       <input class="form-control"
                              data-bind="value: value"
                              type="number"></input>
@@ -72,7 +72,7 @@
               <div class="form-group">
                 <label class="control-label col-sm-3"
                        for="direct_version">Version:</label>
-                <div class="col-sm-5">
+                <div class="col-sm-6">
                   <div data-bind="ifnot: selectedForm">
                     <input type="text"
                            readonly="readonly"
@@ -94,7 +94,7 @@
                 <label class="control-label col-sm-3"
                        for="direct_variables">Variable:</label>
                   <div data-bind="ifnot: selectedForm">
-                    <div class="col-sm-5">
+                    <div class="col-sm-6">
                      <input type="text"
                            readonly="readonly"
                            class="form-control"
@@ -102,7 +102,7 @@
                     </div> <!-- end col 6-->
                   </div> <!-- if not selected form -->
                 <div data-bind="with: selectedForm">
-                  <div class="col-sm-5">
+                  <div class="col-sm-6">
                     <select data-bind="options: attributes,
                                        optionsText: 'variable',
                                        value: $data.selectedAttribute"
