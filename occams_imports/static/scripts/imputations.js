@@ -115,6 +115,20 @@ function conversionModel(){
   self.value = ko.observable();
 }
 
+conversionModel.prototype.toJSON = function(){
+  'use strict'
+
+  var self = this;
+
+  var copy = ko.toJS(self);
+  delete copy.mathOperators;
+  delete copy.selectedForm.attributes;
+  delete copy.selectedForm.selectedAttribute.label;
+  delete copy.selectedForm.selectedAttribute.choices;
+
+  return copy;
+}
+
 function imputationViewModel(){
   'use strict';
 
