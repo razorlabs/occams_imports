@@ -122,10 +122,11 @@ conversionModel.prototype.toJSON = function(){
 
   var copy = ko.toJS(self);
   delete copy.mathOperators;
-  delete copy.selectedForm.attributes;
-  delete copy.selectedForm.selectedAttribute.label;
-  delete copy.selectedForm.selectedAttribute.choices;
-
+  if (copy.selectedForm !== undefined){
+    delete copy.selectedForm.attributes;
+    delete copy.selectedForm.selectedAttribute.label;
+    delete copy.selectedForm.selectedAttribute.choices;
+  }
   return copy;
 }
 
@@ -223,7 +224,8 @@ function imputationViewModel(){
                           selected_comparison_condition: self.selectedComparisonCondition,
                           drsc_form: self.selectedDRSCForm().name,
                           drsc_publish_date: self.selectedDRSCForm().publish_date,
-                          drsc_variable: self.selectedDRSCAttribute().variable
+                          drsc_variable: self.selectedDRSCAttribute().variable,
+                          confidence: self.confidence()
                           })
 
     self.isInfo(false);
