@@ -33,6 +33,8 @@ def includeme(config):
 
     config.add_route('imports.mappings.imputation',         '/imports/mappings/imputation',       factory=models.RootFactory)
 
+    config.add_route('imports.mappings.imputation.map',     '/imports/mappings/imputation/map',   factory=models.RootFactory)
+
     config.add_route('imports.schemas',                     '/imports/schemas',                   factory=models.RootFactory)
 
     config.add_route('imports.mappings.view',               '/imports/mappings/view',             factory=models.RootFactory)
