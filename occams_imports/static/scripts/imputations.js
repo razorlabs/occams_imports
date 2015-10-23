@@ -215,26 +215,36 @@ function imputationViewModel(){
       self.msgType('Error - ');
       self.msg('Please select a form to apply imputation.');
       self.isDanger(true);
+
+      return;
     }
 
     else {
-    var data = ko.toJSON({conversions: self.conversions(),
-                          logical: self.logicalOperators(),
-                          comparison: self.comparisonOperators(),
-                          selected_comparison_condition: self.selectedComparisonCondition,
-                          drsc_form: self.selectedDRSCForm().name,
-                          drsc_publish_date: self.selectedDRSCForm().publish_date,
-                          drsc_variable: self.selectedDRSCAttribute().variable,
-                          confidence: self.confidence()
-                          })
 
-    self.isInfo(false);
-    self.isDanger(false);
-    self.msgType('Success - ');
-    self.msg('Imputation inserted into the database.');
-    self.isSuccess(true);
+      var data = ko.toJSON({conversions: self.conversions(),
+                            logical: self.logicalOperators(),
+                            comparison: self.comparisonOperators(),
+                            selected_comparison_condition: self.selectedComparisonCondition,
+                            drsc_form: self.selectedDRSCForm().name,
+                            drsc_publish_date: self.selectedDRSCForm().publish_date,
+                            drsc_variable: self.selectedDRSCAttribute().variable,
+                            confidence: self.confidence()
+                            })
 
-    console.log(data);
+      console.log(data);
+
+      $.ajax({
+        url: '/imports/mappings/imputation/map',
+        method: 'POST',
+        data: data,
+        headers: {'X-CSRF-Token': $.cookie('csrf_token')},
+        beforeSend: function(){
+        },
+        success: function(data, textStatus, jqXHR){
+        },
+        complete: function(){
+        }
+      });
     }
   }
 
