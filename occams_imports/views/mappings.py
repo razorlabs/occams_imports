@@ -169,3 +169,22 @@ def mappings_direct_map(context, request):
     db_session.flush()
 
     return json.dumps({'id': mapped_obj.id})
+
+
+@view_config(
+    route_name='imports.mappings.imputation.map',
+    permission='view',
+    request_method='POST',
+    xhr=True,
+    renderer='json')
+def mappings_imputations_map(context, request):
+    import json
+    from datetime import datetime
+
+    from occams_datastore import models as datastore
+    from occams_imports import models as models
+
+    check_csrf_token(request)
+    db_session = request.db_session
+
+    return json.dumps({})
