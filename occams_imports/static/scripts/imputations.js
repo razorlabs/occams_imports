@@ -222,12 +222,14 @@ function imputationViewModel(){
     else {
 
       var data = ko.toJSON({conversions: self.conversions(),
+                            //get first conversion form to determine site on server
+                            //this assumes all conversion are of the same site
+                            site: self.conversions()[0].selectedForm(),
                             logical: self.logicalOperators(),
                             comparison: self.comparisonOperators(),
                             selected_comparison_condition: self.selectedComparisonCondition,
-                            drsc_form: self.selectedDRSCForm().name,
-                            drsc_publish_date: self.selectedDRSCForm().publish_date,
-                            drsc_variable: self.selectedDRSCAttribute().variable,
+                            drsc: self.selectedDRSCForm(),
+                            selected_drsc: self.selectedDRSCAttribute(),
                             confidence: self.confidence()
                             })
 
