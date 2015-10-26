@@ -6,6 +6,7 @@ This is a listing of mapped variables
 
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
+from pyramid.renderers import render_to_response
 
 
 @view_config(
@@ -115,6 +116,10 @@ def get_schemas_mapped(context, request):
     mappings = db_session.query(models.Mapper).filter(
         models.Mapper.id == request.params['id']).one()
 
+    if mappings.mapped['mapping_type'] == u'imputation':
+        return render_to_response('../templates/mappings/imputed_mapped.pt',
+                                  {}, request=request)
+
     site_import = db_session.query(models.Import).filter(
         datastore.Schema.name == mappings.mapped['mapping']['name']).filter(
         datastore.Schema.publish_date == mappings.mapped['mapping']['publish_date']).filter(
@@ -198,10 +203,6 @@ def get_schemas_mapped(context, request):
                 'mapped_label': u'',
                 'mapped_value': u''
             })
-
-    else:
-        # process as imputation
-        pass
 
     return {
         'drsc_form': mappings.schema.name,
