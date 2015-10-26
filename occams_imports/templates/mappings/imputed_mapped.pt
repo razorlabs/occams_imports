@@ -1,0 +1,7 @@
+<html metal:use-macro="load: ../master.pt">
+  <metal:content-slot fill-slot="content-slot">
+  <header class="page-header">
+    <h1 i18n:translate="">Imputed mapped variables in development</h1>
+  </header>
+  </metal:content-slot>
+</html>
