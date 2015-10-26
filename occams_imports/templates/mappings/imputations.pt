@@ -209,6 +209,26 @@
                  </div> <!-- end col 6 -->
               </div> <!-- end selected drsc form-->
           </div> <!-- end form group -->
+
+          <!-- Code goes here for map to choice dropdown -->
+          <div data-bind="with: selectedDRSCAttribute">
+            <div data-bind="if: choices().length != 0">
+
+
+              <div class="form-group">
+                <label class="control-label col-sm-3"
+                       for="direct_version">Map to:</label>
+                <div class="col-sm-6">
+                  <select data-bind="options: choices,
+                                 optionsText: 'label',
+                                 value: $root.selectedMapTo"
+                          class="form-control"></select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <!-- Code ends here for map to choice dropdown -->
+
         </form>
         <hr>
             <div class="row">

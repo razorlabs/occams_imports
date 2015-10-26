@@ -153,6 +153,7 @@ function imputationViewModel(){
   self.drsc_forms = ko.observableArray();
   self.selectedDRSCForm = ko.observable();
   self.selectedDRSCAttribute = ko.observable();
+  self.selectedMapTo = ko.observable();
 
   self.isSuccess = ko.observable(false);
   self.isDanger = ko.observable(false);
