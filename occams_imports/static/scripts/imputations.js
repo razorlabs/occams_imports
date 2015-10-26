@@ -241,6 +241,7 @@ function imputationViewModel(){
         beforeSend: function(){
         },
         success: function(data, textStatus, jqXHR){
+          window.location.href = '/imports';
         },
         complete: function(){
         }
@@ -248,6 +249,7 @@ function imputationViewModel(){
     }
   }
 
+  //get initial form data
   $.ajax({
     url: '/imports/schemas',
     method: 'GET',
@@ -273,5 +275,4 @@ function imputationViewModel(){
       self.isLoading(false);
   }
   });
-
 }
