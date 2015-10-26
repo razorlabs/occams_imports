@@ -226,6 +226,7 @@ function imputationViewModel(){
                             //get first conversion form to determine site on server
                             //this assumes all conversion are of the same site
                             site: self.conversions()[0].selectedForm(),
+                            maps_to: self.selectedMapTo(),
                             logical: self.logicalOperators(),
                             comparison: self.comparisonOperators(),
                             selected_comparison_condition: self.selectedComparisonCondition,

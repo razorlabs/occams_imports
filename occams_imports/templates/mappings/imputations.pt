@@ -210,7 +210,7 @@
               </div> <!-- end selected drsc form-->
           </div> <!-- end form group -->
 
-          <!-- Code goes here for map to choice dropdown -->
+          <!-- If choice, give user ability to select map to -->
           <div data-bind="with: selectedDRSCAttribute">
             <div data-bind="if: choices().length != 0">
 
@@ -226,9 +226,20 @@
                   </div>
                 </div>
               </div>
+            <!-- If no choice, display variable name for users info -->
+            <div data-bind="if: choices().length == 0">
+              <div class="form-group">
+                <label class="control-label col-sm-3"
+                       for="direct_version">Maps to:</label>
+                <div class="col-sm-6">
+                  <input type="text"
+                         readonly="readonly"
+                         class="form-control"
+                         data-bind="value: variable"></input>
+                  </div>
+                </div>
+              </div>
             </div>
-          <!-- Code ends here for map to choice dropdown -->
-
         </form>
         <hr>
             <div class="row">
