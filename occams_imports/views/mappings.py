@@ -187,4 +187,39 @@ def mappings_imputations_map(context, request):
     check_csrf_token(request)
     db_session = request.db_session
 
+    site_import = db_session.query(models.Import).filter(
+        datastore.Schema.name == request.json['site']['name']).filter(
+        datastore.Schema.publish_date == request.json['site']['publish_date']).filter(
+        datastore.Schema.id == models.Import.schema_id).one()
+
+    site = site_import.site
+
+    mapping = {}
+    mapping['drsc_name'] = request.json['drsc']['name']
+    mapping['drsc_publish_date'] = request.json['drsc']['publish_date']
+    mapping['drsc_variable'] = request.json['selected_drsc']['variable']
+    mapping['drsc_label'] = request.json['selected_drsc']['label']
+    mapping['site'] = site
+
+    mapping['mapping_type'] = u'imputation'
+
+    mapping['mapping'] = {}
+    mapping['mapping']['confidence'] = request.json['confidence']
+
+    publish_date = datetime.strptime(
+        request.json['drsc']['publish_date'], '%Y-%m-%d')
+
+    schema = db_session.query(models.Schema).filter(
+        datastore.Schema.name == request.json['drsc']['name'],
+        datastore.Schema.publish_date == publish_date.date()
+    ).one()
+
+    mapped_obj = models.Mapper(
+        schema=schema,
+        mapped=mapping
+    )
+
+    db_session.add(mapped_obj)
+    db_session.flush()
+
     return json.dumps({})
