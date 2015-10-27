@@ -13,6 +13,10 @@ function mappedModel(drscForm, drscVariable, site, siteForm,
 
   var self = this;
 
+  //set default values as imputations will have undefined values here
+  siteForm = typeof siteForm !== 'undefined' ? siteForm : '';
+  siteVariable = typeof siteVariable !== 'undefined' ? siteVariable : '';
+
   self.drscForm = ko.observable(drscForm);
   self.drscVariable = ko.observable(drscVariable);
   self.site = ko.observable(site);
