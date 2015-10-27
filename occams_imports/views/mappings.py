@@ -205,8 +205,11 @@ def mappings_imputations_map(context, request):
 
     mapping['mapping'] = {}
     mapping['mapping']['confidence'] = request.json['confidence']
-    mapping['mapping']['variable'] = request.json['site']['selectedAttribute']['variable']
-    mapping['mapping']['name'] = request.json['site']['name']
+
+    mapping['mapping']['forms'] = {}
+
+    for conversion in request.json['conversions']:
+        mapping['mapping']['forms'][conversion['selectedForm']['name']] = conversion['selectedForm']['selectedAttribute']['variable']
 
     publish_date = datetime.strptime(
         request.json['drsc']['publish_date'], '%Y-%m-%d')

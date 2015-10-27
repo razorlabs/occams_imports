@@ -44,8 +44,15 @@ def get_schemas(context, request):
         row['drsc_form'] = mapping.mapped['drsc_name']
         row['drsc_variable'] = mapping.mapped['drsc_variable']
         row['site'] = mapping.mapped['site']
-        row['site_form'] = mapping.mapped['mapping']['name']
-        row['site_variable'] = mapping.mapped['mapping']['variable']
+
+        # imputation mappings may have multiple forms and variables
+        if mapping.mapped['mapping_type'] == u'imputation':
+            row['forms'] = mapping.mapped['mapping']['forms']
+
+        else:
+            row['site_form'] = mapping.mapped['mapping']['name']
+            row['site_variable'] = mapping.mapped['mapping']['variable']
+
         row['date_mapped'] = mapping.create_date.strftime('%Y-%m-%d')
         row['mapped_id'] = mapping.id
 

@@ -59,13 +59,13 @@
         <th>DRSC Form</th>
         <th>DRSC Variable</th>
         <th>Site</th>
-        <th>Site Form</th>
-        <th>Site Variable</th>
+        <th>Site Form(s)</th>
+        <th>Site Variable(s)</th>
         <th>Date Mapped</th>
         <th></th>
       </tr>
     </thead>
-    <tbody data-bind="foreach: filteredMapped">
+    <tbody data-bind="foreach: mapped">
       <tr>
         <td><input type="checkbox"
                    data-bind="checked: deleteRow"
@@ -73,8 +73,33 @@
         <td data-bind="text: drscForm"></td>
         <td><code data-bind="text: drscVariable"></code></td>
         <td data-bind="text: site"></td>
-        <td data-bind="text: siteForm"></td>
-        <td><code data-bind="text: siteVariable"></code></td>
+
+        <td>
+          <div data-bind="if: imputationForms().length >= 1">
+            <div data-bind="foreach: imputationForms">
+              <div data-bind="text: form"><br />
+              </div>
+            </div>
+          </div>
+
+          <div data-bind="if: imputationForms().length == 0">
+              <div data-bind="text: siteForm">
+            </div>
+          </div>
+        </td>
+
+        <td>
+          <div data-bind="if: imputationForms().length >= 1">
+            <div data-bind="foreach: imputationForms">
+              <code data-bind="text: variable"></code><br />
+            </div>
+          </div>
+
+          <div data-bind="if: imputationForms().length == 0">
+            <code data-bind="text: siteVariable"></code>
+          </div>
+        </td>
+
         <td data-bind="text: dateMapped"></td>
         <td><a data-bind="attr: { href: url }">
               <span class="fa fa-chevron-right"></span>

@@ -1,3 +1,12 @@
+function imputationFormsModel(form, variable){
+  'use strict'
+
+  var self = this;
+
+  self.form = ko.observable(form);
+  self.variable = ko.observable(variable);
+}
+
 function mappedModel(drscForm, drscVariable, site, siteForm,
                      siteVariable, dateMapped, mappedId){
   'use strict'
@@ -7,6 +16,7 @@ function mappedModel(drscForm, drscVariable, site, siteForm,
   self.drscForm = ko.observable(drscForm);
   self.drscVariable = ko.observable(drscVariable);
   self.site = ko.observable(site);
+  self.imputationForms = ko.observableArray([]);
   self.siteForm = ko.observable(siteForm);
   self.siteVariable = ko.observable(siteVariable);
   self.dateMapped = ko.observable(dateMapped);
@@ -120,8 +130,16 @@ function formListViewModel(){
           this.site_form, this.site_variable, this.date_mapped,
           this.mapped_id);
 
+        //if there are forms, this is an imputation and imputation
+        //objects need to be instantiated
+        //this supports multi line forms and variables in the view
+        if (this.forms){
+          $.each(this.forms, function(form, variable) {
+            row.imputationForms.push(
+              new imputationFormsModel(form, variable));
+          });
+        }
         self.mapped.push(row);
-
       });
     },
     complete: function(){
