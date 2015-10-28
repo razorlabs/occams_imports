@@ -235,6 +235,14 @@ function imputationViewModel(){
                             confidence: self.confidence()
                             })
 
+      //delete unnecessary data from the json
+      data = JSON.parse(data);
+      delete data.selected_drsc.choices;
+      delete data.drsc.attributes;
+      delete data.site.attributes;
+      delete data.site.selectedAttribute;
+      data = JSON.stringify(data);
+
       console.log(data);
 
       $.ajax({
