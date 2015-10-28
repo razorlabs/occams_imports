@@ -138,9 +138,9 @@ function formListViewModel(){
         //objects need to be instantiated
         //this supports multi line forms and variables in the view
         if (this.forms){
-          $.each(this.forms, function(form, variable) {
+          $.each(this.forms, function(index, formData) {
             row.imputationForms.push(
-              new imputationFormsModel(form, variable));
+              new imputationFormsModel(formData[0], formData[1]));
           });
         }
         self.mapped.push(row);

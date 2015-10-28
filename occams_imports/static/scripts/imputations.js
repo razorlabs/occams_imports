@@ -122,10 +122,12 @@ conversionModel.prototype.toJSON = function(){
 
   var copy = ko.toJS(self);
   delete copy.mathOperators;
+  delete copy.selectedAttribute.label;
+  delete copy.selectedAttribute.choices;
+
   if (copy.selectedForm !== undefined){
     delete copy.selectedForm.attributes;
-    delete copy.selectedForm.selectedAttribute.label;
-    delete copy.selectedForm.selectedAttribute.choices;
+
   }
   return copy;
 }
@@ -145,8 +147,6 @@ function imputationViewModel(){
   self.isLoading = ko.observable(true);
 
   self.forms = ko.observableArray();
-  self.selectedForm = ko.observable();
-  self.selectedAttribute = ko.observable();
 
   self.conversions = ko.observableArray();
 

@@ -66,14 +66,14 @@
                 <label class="control-label col-sm-3"
                        for="direct_version">Version:</label>
                 <div class="col-sm-6">
-                  <div data-bind="ifnot: selectedForm">
+                  <div data-bind="ifnot: $data.selectedForm">
                     <input type="text"
                            readonly="readonly"
                            class="form-control"
                            placeholder="Publish date of the form"></input>
                   </div>
-                  <div data-bind="with: selectedForm">
-                    <input data-bind="value: publish_date"
+                  <div data-bind="with: $data.selectedForm">
+                    <input data-bind="value: $data.publish_date"
                            readonly="readonly"
                            type="text"
                            id="direct_version"
@@ -86,7 +86,7 @@
               <div class="form-group">
                 <label class="control-label col-sm-3"
                        for="direct_variables">Variable:</label>
-                  <div data-bind="ifnot: selectedForm">
+                  <div data-bind="ifnot: $data.selectedForm">
                     <div class="col-sm-6">
                      <input type="text"
                            readonly="readonly"
@@ -94,11 +94,11 @@
                            placeholder="Variable to be mapped"></input>
                     </div> <!-- end col 6-->
                   </div> <!-- if not selected form -->
-                <div data-bind="with: selectedForm">
+                <div data-bind="with: $data.selectedForm">
                   <div class="col-sm-6">
-                    <select data-bind="options: attributes,
+                    <select data-bind="options: $data.attributes,
                                        optionsText: 'variable',
-                                       value: $data.selectedAttribute"
+                                       value: $parent.selectedAttribute"
                             class="form-control"
                             id="direct_variables"
                             name="direct_variables"></select>
@@ -118,7 +118,7 @@
                 <div data-bind="if: newConversion()">
                   <hr >
                 </div>
-            </form>
+            </form> <!-- end foreach conversions -->
 
             <div class="row">
               <div class="col-md-2 col-md-offset-9">
