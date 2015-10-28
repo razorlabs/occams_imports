@@ -187,9 +187,12 @@ def mappings_imputations_map(context, request):
     check_csrf_token(request)
     db_session = request.db_session
 
+    site_name = request.json['site']['name']
+    site_publish_date = request.json['site']['publish_date']
+
     site_import = db_session.query(models.Import).filter(
-        datastore.Schema.name == request.json['site']['name']).filter(
-        datastore.Schema.publish_date == request.json['site']['publish_date']).filter(
+        datastore.Schema.name == site_name).filter(
+        datastore.Schema.publish_date == site_publish_date).filter(
         datastore.Schema.id == models.Import.schema_id).one()
 
     site = site_import.site
@@ -209,7 +212,9 @@ def mappings_imputations_map(context, request):
     mapping['mapping']['forms'] = {}
 
     for conversion in request.json['conversions']:
-        mapping['mapping']['forms'][conversion['selectedForm']['name']] = conversion['selectedForm']['selectedAttribute']['variable']
+        form_name = conversion['selectedForm']['name']
+        variable = conversion['selectedForm']['selectedAttribute']['variable']
+        mapping['mapping']['forms'][form_name] = variable
 
     publish_date = datetime.strptime(
         request.json['drsc']['publish_date'], '%Y-%m-%d')
