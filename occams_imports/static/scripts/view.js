@@ -111,14 +111,28 @@ function formListViewModel(){
     filter = filter.toLowerCase();
 
     return self.mapped().filter(function(mapping) {
-      return mapping.drscForm().toLowerCase().indexOf(filter) > -1
+      var formVarMatch = false;
+
+      var matchFormOrVar = function(){
+        return ko.utils.arrayFirst(mapping.imputationForms(), function(imputation){
+          return imputation.form().toLowerCase().indexOf(filter) > -1
+            || imputation.variable().toLowerCase().indexOf(filter) > -1
+        });
+      }
+
+      if (mapping.imputationForms().length >= 1){
+        formVarMatch = matchFormOrVar();
+      }
+
+      return formVarMatch
         || mapping.drscVariable().toLowerCase().indexOf(filter) > -1
         || mapping.site().toLowerCase().indexOf(filter) > -1
         || mapping.siteForm().toLowerCase().indexOf(filter) > -1
         || mapping.siteVariable().toLowerCase().indexOf(filter) > -1
         || mapping.dateMapped().toLowerCase().indexOf(filter) > -1
-          });
+      });
   })
+
   // get initial data
   $.ajax({
     url: '/imports/mappings/view',
