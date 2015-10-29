@@ -33,7 +33,7 @@ def get_schemas(context, request):
     check_csrf_token(request)
     db_session = request.db_session
 
-    mappings = db_session.query(models.Mapper).all()
+    mappings = db_session.query(models.Mapper).order_by(models.Mapper.id).all()
 
     data = {}
     data['rows'] = []

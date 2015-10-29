@@ -270,7 +270,7 @@ function imputationViewModel(){
 
       console.log(data);
 
-/*      $.ajax({
+      $.ajax({
         url: '/imports/mappings/imputation/map',
         method: 'POST',
         data: data,
@@ -282,7 +282,7 @@ function imputationViewModel(){
         },
         complete: function(){
         }
-      });*/
+      });
     }
   }
 
