@@ -45,32 +45,12 @@
                           id="direct_forms"
                           name="direct_forms"></select>
                   </div> <!-- end col 6-->
-                  <div id="loading"
-                       style="display: none;"
-                       data-bind="visible: $root.isLoading">
-                    <div class="col-sm-1">
-                      <div class="throbber-loader">
-                      </div>
-                    </div>
-                  </div>
-                  <div data-bind="if: ($index() > 0 && !selectedForm() && !$root.conversions()[$index() -1].newConversion())">
-                    <div class="col-sm-2">
-                      <input class="form-control"
-                             data-bind="value: value"
-                             type="number"></input>
-                    </div>
-                  </div>
-                </div> <!-- end form group-->
-
-              <div class="form-group">
-                <label class="control-label col-sm-3"
-                       for="direct_version">Version:</label>
-                <div class="col-sm-6">
+                  <div class="col-sm-3">
                   <div data-bind="ifnot: $data.selectedForm">
                     <input type="text"
                            readonly="readonly"
                            class="form-control"
-                           placeholder="Publish date of the form"></input>
+                           placeholder="Publish date"></input>
                   </div>
                   <div data-bind="with: $data.selectedForm">
                     <input data-bind="value: $data.publish_date"
@@ -80,8 +60,15 @@
                            name="direct_version"
                            class="form-control"></input>
                   </div> <!-- end with selected form -->
-                </div> <!-- end col 6-->
-              </div> <!-- end form group -->
+                  </div>
+                  <div data-bind="if: ($index() > 0 && !selectedForm() && !$root.conversions()[$index() -1].newConversion())">
+                    <div class="col-sm-2">
+                      <input class="form-control"
+                             data-bind="value: value"
+                             type="number"></input>
+                    </div>
+                  </div>
+                </div> <!-- end form group-->
 
               <div class="form-group">
                 <label class="control-label col-sm-3"
