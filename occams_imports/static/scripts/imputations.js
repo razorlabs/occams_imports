@@ -158,7 +158,7 @@ function imputationViewModel(){
   self.isSuccess = ko.observable(false);
   self.isDanger = ko.observable(false);
   self.msgType = ko.observable('Info - ');
-  self.msg = ko.observable('Please select a form after loading.');
+  self.msg = ko.observable('Please wait until form loading is complete.');
   self.isInfo = ko.observable(true);
 
   self.addLogicalOperator = function(){
@@ -234,14 +234,23 @@ function imputationViewModel(){
 
     var self = this;
 
-    if (self.selectedDRSCForm() === undefined){
+    if (self.conversions()[0].selectedForm() === undefined){
+
       self.isInfo(false);
       self.msgType('Error - ');
-      self.msg('Please select a form to apply imputation.');
+      self.msg('Please select at least one Site form to apply imputation.');
+      self.isDanger(true);
+    }
+
+    else if (self.selectedDRSCForm() === undefined){
+      self.isInfo(false);
+      self.msgType('Error - ');
+      self.msg('Please select a DRSC form to apply imputation.');
       self.isDanger(true);
 
       return;
     }
+
 
     else {
 
