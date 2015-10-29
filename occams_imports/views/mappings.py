@@ -208,6 +208,12 @@ def mappings_imputations_map(context, request):
 
     mapping['mapping'] = {}
     mapping['mapping']['confidence'] = request.json['confidence']
+    mapping['mapping']['conversions'] = request.json['conversions']
+    mapping['mapping']['maps_to'] = request.json['maps_to']
+    selected_comparison = request.json['selected_comparison_condition']
+    mapping['mapping']['selected_comparison_condition'] = selected_comparison
+    mapping['mapping']['logical'] = request.json['logical']
+    mapping['mapping']['comparison'] = request.json['comparison']
 
     mapping['mapping']['forms'] = []
 
