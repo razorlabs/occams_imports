@@ -23,7 +23,7 @@
                   data-bind="foreach: conversions">
               <div data-bind="if: ($index() > 0 && !$root.conversions()[$index() -1].newConversion())">
                 <div class="row">
-                  <div class="col-sm-3 pull-right">
+                  <div class="col-sm-offset-3 col-sm-3">
                     <select data-bind="options: mathOperators,
                                        value: selectedOperator"
                             class="form-control"
@@ -61,13 +61,10 @@
                            class="form-control"></input>
                   </div> <!-- end with selected form -->
                   </div>
-                  <div data-bind="if: ($index() > 0 && !selectedForm() && !$root.conversions()[$index() -1].newConversion())">
-                    <div class="col-sm-2">
-                      <input class="form-control"
-                             data-bind="value: value"
-                             type="number"></input>
-                    </div>
-                  </div>
+
+                  <!--dynamic value input was here -->
+
+
                 </div> <!-- end form group-->
 
               <div class="form-group">
@@ -92,16 +89,7 @@
                  </div> <!-- end col 6-->
                 </div> <!-- end with selected form -->
                 </div> <!-- end form group -->
-                <div class="form-group">
-                  <div class="col-sm-offset-3 col-sm-5">
-                    <div class="checkbox">
-                      <label>
-                        <input type="checkbox"
-                               data-bind="checked: newConversion"> Start new conversion
-                      </label>
-                    </div>
-                  </div>
-                </div> <!-- end form group -->
+<!-- start new conversion used to be here -->
                 <div data-bind="if: newConversion()">
                   <hr >
                 </div>
@@ -118,6 +106,7 @@
                 <ul class="dropdown-menu">
                   <li><a data-bind="click: addConversion">Add Operation</a></li>
                   <li><a data-bind="click: deleteConversion">Remove Operation</a></li>
+                  <li><a>Add new bucket</a></li>
                 </ul>
               </div> <!-- btn-group-->
             </div> <!-- end row-->
