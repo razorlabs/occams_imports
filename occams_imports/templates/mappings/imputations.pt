@@ -24,12 +24,28 @@
               <div data-bind="if: ($index() > 0 && !$root.conversions()[$index() -1].newConversion())">
                 <div class="row">
                   <div class="col-sm-offset-3 col-sm-3">
-                    <select data-bind="options: mathOperators,
-                                       value: selectedOperator"
+                    <select data-bind="options: $data.mathOperators,
+                                       value: $data.selectedOperator"
                             class="form-control"
                             id="math_operators"
                             name="math_operators"></select>
                   </div>
+                  <div class="col-sm-3">
+
+                    <select data-bind="options: $data.operatorChoices,
+                                       value: $data.selectedOperatorChoice"
+                            class="form-control"
+                            id="direct_forms"
+                            name="direct_forms"></select>
+                  </div>
+                  <div data-bind="if: $data.selectedOperatorChoice() == 'By value'">
+                  <div class="col-sm-3">
+                    <input class="form-control"
+                           data-bind="value: value"
+                           type="number"></input>
+                    </div>
+                    </div>
+
                 </div> <!-- end row -->
                 <br />
               </div>
