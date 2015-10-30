@@ -21,34 +21,41 @@
             <form class="form-horizontal"
                   role="form"
                   data-bind="foreach: conversions">
+
+               <!-- test if not first conversion-->
               <div data-bind="if: ($index() > 0 && !$root.conversions()[$index() -1].newConversion())">
                 <div class="row">
                   <div class="col-sm-offset-3 col-sm-3">
                     <select data-bind="options: $data.mathOperators,
-                                       value: $data.selectedOperator"
+                                       value: $data.selectedOperator,
+                                       optionsCaption: 'Select...'"
                             class="form-control"
                             id="math_operators"
                             name="math_operators"></select>
                   </div>
                   <div class="col-sm-3">
 
+                    <div data-bind="if: $data.selectedOperator">
                     <select data-bind="options: $data.operatorChoices,
-                                       value: $data.selectedOperatorChoice"
+                                       value: $data.selectedOperatorChoice,
+                                       optionsCaption: 'Select...'"
                             class="form-control"
                             id="direct_forms"
                             name="direct_forms"></select>
                   </div>
+                </div>
                   <div data-bind="if: $data.selectedOperatorChoice() == 'By value'">
-                  <div class="col-sm-3">
-                    <input class="form-control"
-                           data-bind="value: value"
-                           type="number"></input>
+                    <div class="col-sm-3">
+                      <input class="form-control"
+                             data-bind="value: value"
+                             type="number"></input>
                     </div>
-                    </div>
-
+                  </div> <!-- end if 'by value' -->
                 </div> <!-- end row -->
-                <br />
-              </div>
+                <hr />
+              </div> <!-- end if not first conversion -->
+
+              <div data-bind="if: $data.selectedOperatorChoice() == 'By variable' || $index() == 0">
               <div class="form-group">
                 <label class="control-label col-sm-3"
                        for="direct_forms">Form:</label>
@@ -62,25 +69,21 @@
                           name="direct_forms"></select>
                   </div> <!-- end col 6-->
                   <div class="col-sm-3">
-                  <div data-bind="ifnot: $data.selectedForm">
-                    <input type="text"
-                           readonly="readonly"
-                           class="form-control"
-                           placeholder="Publish date"></input>
+                    <div data-bind="ifnot: $data.selectedForm">
+                      <input type="text"
+                             readonly="readonly"
+                             class="form-control"
+                             placeholder="Publish date"></input>
+                    </div>
+                    <div data-bind="with: $data.selectedForm">
+                      <input data-bind="value: $data.publish_date"
+                             readonly="readonly"
+                             type="text"
+                             id="direct_version"
+                             name="direct_version"
+                             class="form-control"></input>
+                    </div> <!-- end with selected form -->
                   </div>
-                  <div data-bind="with: $data.selectedForm">
-                    <input data-bind="value: $data.publish_date"
-                           readonly="readonly"
-                           type="text"
-                           id="direct_version"
-                           name="direct_version"
-                           class="form-control"></input>
-                  </div> <!-- end with selected form -->
-                  </div>
-
-                  <!--dynamic value input was here -->
-
-
                 </div> <!-- end form group-->
 
               <div class="form-group">
@@ -102,15 +105,14 @@
                             class="form-control"
                             id="direct_variables"
                             name="direct_variables"></select>
-                 </div> <!-- end col 6-->
-                </div> <!-- end with selected form -->
-                </div> <!-- end form group -->
-<!-- start new conversion used to be here -->
-                <div data-bind="if: newConversion()">
-                  <hr >
-                </div>
-            </form> <!-- end foreach conversions -->
 
+                  </div> <!-- end col 6-->
+                  </div> <!-- end with selected form -->
+                </div> <!-- end form group -->
+                <hr >
+              </div> <!-- end if 'By variable is selected' -->
+
+            </form> <!-- end foreach conversions -->
             <div class="row">
               <div class="col-md-2 col-md-offset-9">
                 <button type="button"
