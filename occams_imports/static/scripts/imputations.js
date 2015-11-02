@@ -151,6 +151,7 @@ function imputationViewModel(){
   self.forms = ko.observableArray();
 
   self.conversions = ko.observableArray();
+  self.buckets = ko.observableArray();
 
   self.drsc_forms = ko.observableArray();
   self.selectedDRSCForm = ko.observable();
@@ -182,6 +183,14 @@ function imputationViewModel(){
     var self = this;
 
     self.conversions.push(new conversionModel());
+  }
+
+  self.addBucket = function(conversions){
+    'use strict'
+
+    var self = this;
+
+    self.bucket.push(conversions);
   }
 
   self.deleteComparisonOperator = function(){
