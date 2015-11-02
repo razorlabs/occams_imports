@@ -134,6 +134,14 @@ conversionModel.prototype.toJSON = function(){
   return copy;
 }
 
+function bucketModel(conversions){
+  'use strict'
+
+  var self = this;
+
+  self.conversions = ko.observableArray([conversions])
+}
+
 function imputationViewModel(){
   'use strict';
 
@@ -190,7 +198,7 @@ function imputationViewModel(){
 
     var self = this;
 
-    self.bucket.push(conversions);
+    self.buckets.push(conversions);
   }
 
   self.deleteComparisonOperator = function(){
@@ -314,6 +322,7 @@ function imputationViewModel(){
     beforeSend: function(){
       self.isReady(true);
       self.addConversion();
+      self.buckets.push(new bucketModel(self.conversions()[0]));
     },
     success: function(data, textStatus, jqXHR){
       var json = $.parseJSON(data);
