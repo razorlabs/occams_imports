@@ -180,6 +180,13 @@
                                 class="form-control"></select>
                      </div> <!-- end col 6 -->
                   </div> <!-- end selected drsc form-->
+                  <div id="loading"
+                       style="display: none;"
+                       data-bind="visible: isLoading">
+                    <div class="col-sm-1">
+                      <div class="throbber-loader"></div>
+                    </div>
+                  </div>
               </div> <!-- end form group -->
 
               <!-- If choice, give user ability to select map to -->
