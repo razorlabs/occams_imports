@@ -265,13 +265,20 @@ function imputationViewModel(){
   self.saveImputation = function(){
     'use strict'
 
-    var self = this;
+    var noForm = false;
 
-    if (self.conversions()[0].selectedForm() === undefined){
+    ko.utils.arrayForEach(self.buckets(), function(bucket){
+      ko.utils.arrayForEach(bucket.conversions(), function(conversion){
+        if (conversion.selectedForm() === undefined){
+          noForm = true;
+        }
+      });
+    });
 
+    if (noForm === true){
       self.isInfo(false);
       self.msgType('Error - ');
-      self.msg('Please select at least one Site form to apply imputation.');
+      self.msg('Please select a form for every variable operation.');
       self.isDanger(true);
     }
 
