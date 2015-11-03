@@ -198,6 +198,12 @@ function imputationViewModel(){
     self.buckets.push(new bucketModel());
   }
 
+  self.removeBucket = function(bucket){
+    'use strict'
+
+    self.buckets.remove(bucket);
+  }
+
   self.deleteComparisonOperator = function(){
     'use strict'
 
