@@ -118,7 +118,9 @@
                       <li><a data-bind="click: $root.addConversion">Add Operation</a></li>
                       <li><a data-bind="click: $root.deleteConversion">Remove Operation</a></li>
                       <li><a data-bind="click: $root.addBucket">Add Bucket</a></li>
-                      <li><a data-bind="click: $root.removeBucket">Remove Bucket</a></li>
+                      <!-- ko if: $root.buckets().length > 1 -->
+                        <li><a data-bind="click: $root.removeBucket">Remove Bucket</a></li>
+                      <!-- /ko -->
                     </ul>
                   </div> <!-- btn-group-->
                 </div> <!-- end row-->

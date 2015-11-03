@@ -204,15 +204,7 @@ function imputationViewModel(){
   self.removeBucket = function(bucket){
     'use strict'
 
-    if (self.buckets().length === 1){
-      self.isInfo(false);
-      self.msgType('Error - ');
-      self.msg('You must have at least one bucket.');
-      self.isDanger(true);
-    }
-    else {
-      self.buckets.remove(bucket);
-    }
+    self.buckets.remove(bucket);
   }
 
   self.deleteComparisonOperator = function(){
