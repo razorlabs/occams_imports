@@ -126,6 +126,7 @@ conversionModel.prototype.toJSON = function(){
   delete copy.mathOperators;
   delete copy.selectedAttribute.label;
   delete copy.selectedAttribute.choices;
+  delete copy.operatorChoices;
 
   if (copy.selectedForm !== undefined){
     delete copy.selectedForm.attributes;
