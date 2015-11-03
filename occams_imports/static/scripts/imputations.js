@@ -165,6 +165,9 @@ function imputationViewModel(){
   self.selectedDRSCAttribute = ko.observable();
   self.selectedMapTo = ko.observable();
 
+  self.conversionLabel = ko.observable();
+  self.imputationLabel = ko.observable();
+
   self.isSuccess = ko.observable(false);
   self.isDanger = ko.observable(false);
   self.msgType = ko.observable('Info - ');
