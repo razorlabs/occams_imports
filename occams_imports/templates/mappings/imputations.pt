@@ -14,132 +14,127 @@
     </div>
 
     <div class="row">
-
-      <div data-bind="foreach: buckets">
-
-
-
       <div class="col-md-6">
-        <div class="panel panel-primary">
-          <div class="panel-heading">Conversion(s)</div>
-          <div class="panel-body">
-            <form class="form-horizontal"
-                  role="form"
-                  data-bind="foreach: conversions">
+        <div data-bind="foreach: buckets">
+          <div class="row">
+            <div class="panel panel-primary">
+              <div class="panel-heading">Conversion(s)</div>
+              <div class="panel-body">
+                <form class="form-horizontal"
+                      role="form"
+                      data-bind="foreach: conversions">
 
-               <!-- test if not first conversion-->
-              <div data-bind="if: ($index() > 0 && !$root.conversions()[$index() -1].newConversion())">
-                <div class="row">
-                  <div class="col-sm-offset-3 col-sm-3">
-                    <select data-bind="options: $data.mathOperators,
-                                       value: $data.selectedOperator,
-                                       optionsCaption: 'Select...'"
-                            class="form-control"
-                            id="math_operators"
-                            name="math_operators"></select>
-                  </div>
-                  <div class="col-sm-3">
+                   <!-- test if not first conversion-->
+                  <div data-bind="if: ($index() > 0 && !$parent.conversions()[$index() -1].newConversion())">
+                    <div class="row">
+                      <div class="col-sm-offset-3 col-sm-3">
+                        <select data-bind="options: $data.mathOperators,
+                                           value: $data.selectedOperator,
+                                           optionsCaption: 'Select...'"
+                                class="form-control"
+                                id="math_operators"
+                                name="math_operators"></select>
+                      </div>
+                      <div class="col-sm-3">
 
-                    <div data-bind="if: $data.selectedOperator">
-                    <select data-bind="options: $data.operatorChoices,
-                                       value: $data.selectedOperatorChoice,
-                                       optionsCaption: 'Select...'"
-                            class="form-control"
-                            id="direct_forms"
-                            name="direct_forms"></select>
-                  </div>
-                </div>
-                  <div data-bind="if: $data.selectedOperatorChoice() == 'By value'">
-                    <div class="col-sm-3">
-                      <input class="form-control"
-                             data-bind="value: value"
-                             type="number"></input>
+                        <div data-bind="if: $data.selectedOperator">
+                        <select data-bind="options: $data.operatorChoices,
+                                           value: $data.selectedOperatorChoice,
+                                           optionsCaption: 'Select...'"
+                                class="form-control"
+                                id="direct_forms"
+                                name="direct_forms"></select>
+                      </div>
                     </div>
-                  </div> <!-- end if 'by value' -->
-                </div> <!-- end row -->
-                <hr />
-              </div> <!-- end if not first conversion -->
+                      <div data-bind="if: $data.selectedOperatorChoice() == 'By value'">
+                        <div class="col-sm-3">
+                          <input class="form-control"
+                                 data-bind="value: value"
+                                 type="number"></input>
+                        </div>
+                      </div> <!-- end if 'by value' -->
+                    </div> <!-- end row -->
+                    <hr />
+                  </div> <!-- end if not first conversion -->
 
-              <div data-bind="if: $data.selectedOperatorChoice() == 'By variable' || $index() == 0">
-              <div class="form-group">
-                <label class="control-label col-sm-3"
-                       for="direct_forms">Form:</label>
-                <div class="col-sm-6">
-                  <select data-bind="options: $root.forms,
-                                     optionsText: 'name',
-                                     value: $data.selectedForm,
-                                     optionsCaption: 'Select a form...'"
-                          class="form-control"
-                          id="direct_forms"
-                          name="direct_forms"></select>
-                  </div> <!-- end col 6-->
-                  <div class="col-sm-3">
-                    <div data-bind="ifnot: $data.selectedForm">
-                      <input type="text"
-                             readonly="readonly"
-                             class="form-control"
-                             placeholder="Publish date"></input>
-                    </div>
-                    <div data-bind="with: $data.selectedForm">
-                      <input data-bind="value: $data.publish_date"
-                             readonly="readonly"
-                             type="text"
-                             id="direct_version"
-                             name="direct_version"
-                             class="form-control"></input>
-                    </div> <!-- end with selected form -->
-                  </div>
-                </div> <!-- end form group-->
-
-              <div class="form-group">
-                <label class="control-label col-sm-3"
-                       for="direct_variables">Variable:</label>
-                  <div data-bind="ifnot: $data.selectedForm">
+                  <div data-bind="if: $data.selectedOperatorChoice() == 'By variable' || $index() == 0">
+                  <div class="form-group">
+                    <label class="control-label col-sm-3"
+                           for="direct_forms">Form:</label>
                     <div class="col-sm-6">
-                     <input type="text"
-                           readonly="readonly"
-                           class="form-control"
-                           placeholder="Variable to be mapped"></input>
-                    </div> <!-- end col 6-->
-                  </div> <!-- if not selected form -->
-                <div data-bind="with: $data.selectedForm">
-                  <div class="col-sm-6">
-                    <select data-bind="options: $data.attributes,
-                                       optionsText: 'variable',
-                                       value: $parent.selectedAttribute"
-                            class="form-control"
-                            id="direct_variables"
-                            name="direct_variables"></select>
+                      <select data-bind="options: $root.forms,
+                                         optionsText: 'name',
+                                         value: $data.selectedForm,
+                                         optionsCaption: 'Select a form...'"
+                              class="form-control"
+                              id="direct_forms"
+                              name="direct_forms"></select>
+                      </div> <!-- end col 6-->
+                      <div class="col-sm-3">
+                        <div data-bind="ifnot: $data.selectedForm">
+                          <input type="text"
+                                 readonly="readonly"
+                                 class="form-control"
+                                 placeholder="Publish date"></input>
+                        </div>
+                        <div data-bind="with: $data.selectedForm">
+                          <input data-bind="value: $data.publish_date"
+                                 readonly="readonly"
+                                 type="text"
+                                 id="direct_version"
+                                 name="direct_version"
+                                 class="form-control"></input>
+                        </div> <!-- end with selected form -->
+                      </div>
+                    </div> <!-- end form group-->
 
-                  </div> <!-- end col 6-->
-                  </div> <!-- end with selected form -->
-                </div> <!-- end form group -->
-                <hr >
-              </div> <!-- end if 'By variable is selected' -->
+                  <div class="form-group">
+                    <label class="control-label col-sm-3"
+                           for="direct_variables">Variable:</label>
+                      <div data-bind="ifnot: $data.selectedForm">
+                        <div class="col-sm-6">
+                         <input type="text"
+                               readonly="readonly"
+                               class="form-control"
+                               placeholder="Variable to be mapped"></input>
+                        </div> <!-- end col 6-->
+                      </div> <!-- if not selected form -->
+                    <div data-bind="with: $data.selectedForm">
+                      <div class="col-sm-6">
+                        <select data-bind="options: $data.attributes,
+                                           optionsText: 'variable',
+                                           value: $parent.selectedAttribute"
+                                class="form-control"
+                                id="direct_variables"
+                                name="direct_variables"></select>
 
-            </form> <!-- end foreach conversions -->
-            <div class="row">
-              <div class="col-md-2 col-md-offset-9">
-                <button type="button"
-                        class="btn btn-default dropdown-toggle"
-                        data-toggle="dropdown">
-                  options
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a data-bind="click: $root.addConversion">Add Operation</a></li>
-                  <li><a data-bind="click: $root.deleteConversion">Remove Operation</a></li>
-                  <li><a data-bind="click: $root.addBucket">Add new bucket</a></li>
-                </ul>
-              </div> <!-- btn-group-->
-            </div> <!-- end row-->
-            </div> <!-- panel body-->
-          </div> <!-- panel primary -->
-        </div> <!-- end col 6 -->
-      </div> <!-- end foreach buckets -->
+                      </div> <!-- end col 6-->
+                      </div> <!-- end with selected form -->
+                    </div> <!-- end form group -->
+                    <hr >
+                  </div> <!-- end if 'By variable is selected' -->
 
-
-
+                </form> <!-- end foreach conversions -->
+                <div class="row">
+                  <div class="col-md-2 col-md-offset-9">
+                    <button type="button"
+                            class="btn btn-default dropdown-toggle"
+                            data-toggle="dropdown">
+                      options
+                      <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a data-bind="click: $root.addConversion">Add Operation</a></li>
+                      <li><a data-bind="click: $root.deleteConversion">Remove Operation</a></li>
+                      <li><a data-bind="click: $root.addBucket">Add new bucket</a></li>
+                    </ul>
+                  </div> <!-- btn-group-->
+                </div> <!-- end row-->
+              </div> <!-- panel body-->
+            </div> <!-- panel primary -->
+          </div> <!-- end row-->
+        </div> <!-- end foreach buckets -->
+      </div> <!-- end col 6 -->
 
       <div class="col-md-6">
         <div class="panel panel-primary">

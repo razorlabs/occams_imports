@@ -134,12 +134,12 @@ conversionModel.prototype.toJSON = function(){
   return copy;
 }
 
-function bucketModel(conversions){
+function bucketModel(){
   'use strict'
 
   var self = this;
 
-  self.conversions = ko.observableArray([conversions])
+  self.conversions = ko.observableArray([new conversionModel()]);
 }
 
 function imputationViewModel(){
@@ -158,7 +158,6 @@ function imputationViewModel(){
 
   self.forms = ko.observableArray();
 
-  self.conversions = ko.observableArray();
   self.buckets = ko.observableArray();
 
   self.drsc_forms = ko.observableArray();
@@ -185,20 +184,18 @@ function imputationViewModel(){
     self.comparisonOperators.push(new comparisonModel());
   }
 
-  self.addConversion = function(){
+  self.addConversion = function(bucket){
     'use strict'
 
     var self = this;
 
-    self.conversions.push(new conversionModel());
+    bucket.conversions.push(new conversionModel());
   }
 
-  self.addBucket = function(conversions){
+  self.addBucket = function(){
     'use strict'
 
-    var self = this;
-
-    self.buckets.push(conversions);
+    self.buckets.push(new bucketModel());
   }
 
   self.deleteComparisonOperator = function(){
@@ -321,8 +318,7 @@ function imputationViewModel(){
     headers: {'X-CSRF-Token': $.cookie('csrf_token')},
     beforeSend: function(){
       self.isReady(true);
-      self.addConversion();
-      self.buckets.push(new bucketModel(self.conversions()[0]));
+      self.buckets.push(new bucketModel());
     },
     success: function(data, textStatus, jqXHR){
       var json = $.parseJSON(data);
