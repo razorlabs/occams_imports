@@ -286,19 +286,21 @@ function imputationViewModel(){
 
     else {
 
-      self.initOperatorAndValues();
+      //self.initOperatorAndValues();
 
-      var data = ko.toJSON({conversions: self.conversions(),
+      var data = ko.toJSON({buckets: self.buckets(),
                             //get first conversion form to determine site on server
                             //this assumes all conversion are of the same site
-                            site: self.conversions()[0].selectedForm(),
+                            site: self.buckets()[0].conversions()[0].selectedForm(),
                             maps_to: self.selectedMapTo(),
                             logical: self.logicalOperators(),
                             comparison: self.comparisonOperators(),
                             selected_comparison_condition: self.selectedComparisonCondition,
                             drsc: self.selectedDRSCForm(),
                             selected_drsc: self.selectedDRSCAttribute(),
-                            confidence: self.confidence()
+                            confidence: self.confidence(),
+                            conversion_label: self.conversionLabel(),
+                            imputation_label: self.imputationLabel()
                             })
 
       //delete unnecessary data from the json
@@ -311,7 +313,7 @@ function imputationViewModel(){
 
       console.log(data);
 
-      $.ajax({
+/*      $.ajax({
         url: '/imports/mappings/imputation/map',
         method: 'POST',
         data: data,
@@ -323,7 +325,7 @@ function imputationViewModel(){
         },
         complete: function(){
         }
-      });
+      });*/
     }
   }
 
