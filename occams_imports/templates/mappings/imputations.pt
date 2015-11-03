@@ -30,19 +30,14 @@
                         <select data-bind="options: $data.mathOperators,
                                            value: $data.selectedOperator,
                                            optionsCaption: 'Select...'"
-                                class="form-control"
-                                id="math_operators"
-                                name="math_operators"></select>
+                                class="form-control"></select>
                       </div>
                       <div class="col-sm-3">
-
                         <div data-bind="if: $data.selectedOperator">
                         <select data-bind="options: $data.operatorChoices,
                                            value: $data.selectedOperatorChoice,
                                            optionsCaption: 'Select...'"
-                                class="form-control"
-                                id="direct_forms"
-                                name="direct_forms"></select>
+                                class="form-control"></select>
                       </div>
                     </div>
                       <div data-bind="if: $data.selectedOperatorChoice() == 'By value'">
@@ -59,15 +54,14 @@
                   <div data-bind="if: $data.selectedOperatorChoice() == 'By variable' || $index() == 0">
                   <div class="form-group">
                     <label class="control-label col-sm-3"
-                           for="direct_forms">Form:</label>
+                           for="site_forms">Form:</label>
                     <div class="col-sm-6">
                       <select data-bind="options: $root.forms,
                                          optionsText: 'name',
                                          value: $data.selectedForm,
                                          optionsCaption: 'Select a form...'"
                               class="form-control"
-                              id="direct_forms"
-                              name="direct_forms"></select>
+                              id="site_forms"></select>
                       </div> <!-- end col 6-->
                       <div class="col-sm-3">
                         <div data-bind="ifnot: $data.selectedForm">
@@ -80,8 +74,6 @@
                           <input data-bind="value: $data.publish_date"
                                  readonly="readonly"
                                  type="text"
-                                 id="direct_version"
-                                 name="direct_version"
                                  class="form-control"></input>
                         </div> <!-- end with selected form -->
                       </div>
@@ -89,12 +81,13 @@
 
                   <div class="form-group">
                     <label class="control-label col-sm-3"
-                           for="direct_variables">Variable:</label>
+                           for="site_variables">Variable:</label>
                       <div data-bind="ifnot: $data.selectedForm">
                         <div class="col-sm-6">
                          <input type="text"
                                readonly="readonly"
                                class="form-control"
+                               id="site_variables"
                                placeholder="Variable to be mapped"></input>
                         </div> <!-- end col 6-->
                       </div> <!-- if not selected form -->
@@ -104,8 +97,7 @@
                                            optionsText: 'variable',
                                            value: $parent.selectedAttribute"
                                 class="form-control"
-                                id="direct_variables"
-                                name="direct_variables"></select>
+                                id="site_variables"></select>
 
                       </div> <!-- end col 6-->
                       </div> <!-- end with selected form -->
@@ -185,9 +177,7 @@
                         <select data-bind="options: attributes,
                                            optionsText: 'variable',
                                            value: $root.selectedDRSCAttribute"
-                                class="form-control"
-                                id="direct_variables"
-                                name="direct_variables"></select>
+                                class="form-control"></select>
                      </div> <!-- end col 6 -->
                   </div> <!-- end selected drsc form-->
               </div> <!-- end form group -->
@@ -195,8 +185,6 @@
               <!-- If choice, give user ability to select map to -->
               <div data-bind="with: selectedDRSCAttribute">
                 <div data-bind="if: choices().length != 0">
-
-
                   <div class="form-group">
                     <label class="control-label col-sm-3"
                            for="direct_version">Map to:</label>
@@ -269,10 +257,7 @@
                 <div class="col-md-2">
                   <select data-bind="options: operators,
                                      value: selectedOperator"
-                          class="form-control"
-                          id="comparison_operator"
-                          name="comparison_operator"></select>
-
+                          class="form-control"></select>
                 </div>
                 <div class="col-md-3">
                   <input type="text"
@@ -289,9 +274,7 @@
                 <div class="col-md-2">
                   <select data-bind="options: operators,
                                      value: selectedOperator"
-                          class="form-control"
-                          id="logical_operator"
-                          name="logical_operator"></select>
+                          class="form-control"></select>
                 </div> <!-- end col 2 -->
 
                 <div class="col-md-4">
@@ -316,10 +299,7 @@
                     <div class="col-md-2 col-md-offset-2">
                       <select data-bind="options: operators,
                                          value: selectedOperator"
-                              class="form-control"
-                              id="comparison_operator"
-                              name="comparison_operator"></select>
-
+                              class="form-control"></select>
                     </div>
                     <div class="col-md-3">
                       <input type="text"
