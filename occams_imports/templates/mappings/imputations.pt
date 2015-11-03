@@ -140,105 +140,89 @@
         <div class="panel panel-primary">
           <div class="panel-heading">Imputation</div>
           <div class="panel-body">
-
-        <form class="form-horizontal" role="form">
-          <div class="form-group">
-            <label class="control-label col-sm-3"
-                   for="direct_forms">Form:</label>
-            <div class="col-sm-6">
-              <select data-bind="options: drsc_forms,
-                                 optionsText: 'name',
-                                 value: selectedDRSCForm,
-                                 optionsCaption: 'Select a form...'"
-                      class="form-control"
-                      id="direct_forms"
-                      name="direct_forms"></select>
-            </div> <!-- end col 6 -->
-            <div id="loading"
-                 style="display: none;"
-                 data-bind="visible: isLoading">
-              <div class="col-sm-1">
-                <div class="throbber-loader">
-                </div>
-              </div>
-            </div>
-          </div> <!-- end form group -->
-
-          <div class="form-group">
-            <label class="control-label col-sm-3"
-                   for="direct_version">Version:</label>
-            <div class="col-sm-6">
-              <div data-bind="ifnot: selectedDRSCForm">
-                <input type="text"
-                       readonly="readonly"
-                       class="form-control"
-                       placeholder="Publish date of the form"></input>
-              </div>
-              <div data-bind="with: selectedDRSCForm">
-                <input data-bind="value: publish_date"
-                       readonly="readonly"
-                       type="text"
-                       id="direct_version"
-                       name="direct_version"
-                       class="form-control"></input>
-              </div> <!-- end selected drsc form -->
-            </div> <!-- end col 6 -->
-          </div> <!-- end form group -->
-
-          <div class="form-group">
-            <label class="control-label col-sm-3"
-                   for="direct_variables">Variable:</label>
-              <div data-bind="ifnot: selectedDRSCForm">
+            <form class="form-horizontal" role="form">
+              <div class="form-group">
+                <label class="control-label col-sm-3"
+                       for="direct_forms">Form:</label>
                 <div class="col-sm-6">
-                 <input type="text"
-                       readonly="readonly"
-                       class="form-control"
-                       placeholder="Variable to be mapped"></input>
-                </div> <!-- end col 6 -->
-              </div> <!-- end selected drsc form -->
-              <div data-bind="with: selectedDRSCForm">
-                <div class="col-sm-6">
-                    <select data-bind="options: attributes,
-                                       optionsText: 'variable',
-                                       value: $root.selectedDRSCAttribute"
-                            class="form-control"
-                            id="direct_variables"
-                            name="direct_variables"></select>
-                 </div> <!-- end col 6 -->
-              </div> <!-- end selected drsc form-->
-          </div> <!-- end form group -->
-
-          <!-- If choice, give user ability to select map to -->
-          <div data-bind="with: selectedDRSCAttribute">
-            <div data-bind="if: choices().length != 0">
-
+                  <select data-bind="options: drsc_forms,
+                                     optionsText: 'name',
+                                     value: $data.selectedDRSCForm,
+                                     optionsCaption: 'Select a form...'"
+                          class="form-control"
+                          id="direct_forms"></select>
+                  </div> <!-- end col 6-->
+                  <div class="col-sm-3">
+                    <div data-bind="ifnot: $data.selectedDRSCForm">
+                      <input type="text"
+                             readonly="readonly"
+                             class="form-control"
+                             placeholder="Publish date"></input>
+                    </div>
+                    <div data-bind="with: $data.selectedDRSCForm">
+                      <input data-bind="value: $data.publish_date"
+                             readonly="readonly"
+                             type="text"
+                             id="direct_version"
+                             class="form-control"></input>
+                    </div> <!-- end with selected form -->
+                  </div>
+                </div> <!-- end form group-->
 
               <div class="form-group">
                 <label class="control-label col-sm-3"
-                       for="direct_version">Map to:</label>
-                <div class="col-sm-6">
-                  <select data-bind="options: choices,
-                                 optionsText: 'label',
-                                 value: $root.selectedMapTo"
-                          class="form-control"></select>
+                       for="direct_variables">Variable:</label>
+                  <div data-bind="ifnot: selectedDRSCForm">
+                    <div class="col-sm-6">
+                     <input type="text"
+                           readonly="readonly"
+                           class="form-control"
+                           placeholder="Variable to be mapped"></input>
+                    </div> <!-- end col 6 -->
+                  </div> <!-- end selected drsc form -->
+                  <div data-bind="with: selectedDRSCForm">
+                    <div class="col-sm-6">
+                        <select data-bind="options: attributes,
+                                           optionsText: 'variable',
+                                           value: $root.selectedDRSCAttribute"
+                                class="form-control"
+                                id="direct_variables"
+                                name="direct_variables"></select>
+                     </div> <!-- end col 6 -->
+                  </div> <!-- end selected drsc form-->
+              </div> <!-- end form group -->
+
+              <!-- If choice, give user ability to select map to -->
+              <div data-bind="with: selectedDRSCAttribute">
+                <div data-bind="if: choices().length != 0">
+
+
+                  <div class="form-group">
+                    <label class="control-label col-sm-3"
+                           for="direct_version">Map to:</label>
+                    <div class="col-sm-6">
+                      <select data-bind="options: choices,
+                                     optionsText: 'label',
+                                     value: $root.selectedMapTo"
+                              class="form-control"></select>
+                      </div>
+                    </div>
+                  </div>
+                <!-- If no choice, display variable name for users info -->
+                <div data-bind="if: choices().length == 0">
+                  <div class="form-group">
+                    <label class="control-label col-sm-3"
+                           for="direct_version">Maps to:</label>
+                    <div class="col-sm-6">
+                      <input type="text"
+                             readonly="readonly"
+                             class="form-control"
+                             data-bind="value: variable"></input>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            <!-- If no choice, display variable name for users info -->
-            <div data-bind="if: choices().length == 0">
-              <div class="form-group">
-                <label class="control-label col-sm-3"
-                       for="direct_version">Maps to:</label>
-                <div class="col-sm-6">
-                  <input type="text"
-                         readonly="readonly"
-                         class="form-control"
-                         data-bind="value: variable"></input>
-                  </div>
-                </div>
-              </div>
-            </div>
-        </form>
+            </form>
         <hr>
             <div class="row">
               <div class="col-md-2">
