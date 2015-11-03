@@ -136,7 +136,7 @@
         </div> <!-- end foreach buckets -->
       </div> <!-- end col 6 -->
 
-      <div class="col-md-6">
+      <div class="col-md-6" style="padding-right: 0px">
         <div class="panel panel-primary">
           <div class="panel-heading">Imputation</div>
           <div class="panel-body">
