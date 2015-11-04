@@ -39,7 +39,6 @@ function formImputationModel(name, publish_date, attributes){
   var attributeLength = attributes.length;
 
   for (var i = 0; i < attributeLength; i++){
-    console.log('Datatype: ' + attributes[i].datatype);
     self.attributes.push(
       new attributeImputationModel(
         attributes[i].variable, attributes[i].label,
