@@ -113,7 +113,6 @@ function conversionModel(){
   self.selectedOperatorChoice = ko.observable();
   self.selectedForm = ko.observable();
   self.selectedAttribute = ko.observable();
-  self.newConversion = ko.observable(false);
   self.value = ko.observable();
 }
 

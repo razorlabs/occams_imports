@@ -23,8 +23,8 @@
                       role="form"
                       data-bind="foreach: conversions">
 
-                   <!-- test if not first conversion-->
-                  <div data-bind="if: ($index() > 0 && !$parent.conversions()[$index() -1].newConversion())">
+                   <!-- first bucket should not display operators-->
+                  <div data-bind="if: ($index() > 0)">
                     <div class="row">
                       <div class="col-sm-offset-3 col-sm-3">
                         <select data-bind="options: $data.mathOperators,
