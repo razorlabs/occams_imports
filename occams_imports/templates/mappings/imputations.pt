@@ -102,7 +102,7 @@
                       </div> <!-- end col 6-->
                       <div data-bind="with: $parent.selectedAttribute">
                         <div class="col-sm-3">
-                          <code data-bind="text: datatype"></code>
+                           <a href="#" data-bind="text: datatype, tooltip: { title: label, placement: 'bottom' }"></a>
                         </div>
                       </div>
                       </div> <!-- end with selected form -->
@@ -207,7 +207,7 @@
                      </div> <!-- end col 6 -->
                     <div data-bind="with: $root.selectedDRSCAttribute">
                       <div class="col-sm-3">
-                        <code data-bind="text: datatype"></code>
+                        <a href="#" data-bind="text: datatype, tooltip: { title: label, placement: 'bottom' }"></a>
                       </div>
                     </div>
                   </div> <!-- end selected drsc form-->
