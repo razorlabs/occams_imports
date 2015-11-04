@@ -1,14 +1,16 @@
-function choiceModel(name, label){
+function choiceImputationModel(name, label){
   'use strict'
 
   var self = this;
 
   self.name = ko.observable(name);
   self.label = ko.observable(label);
-  self.mapped = ko.observable('');
+  self.mapToOptions = ko.pureComputed(function(){
+    return name + ' - ' + label;
+  }, self);
 }
 
-function attributeModel(variable, label, choices){
+function attributeImputationModel(variable, label, choices){
   'use strict'
 
   var self = this;
@@ -20,11 +22,11 @@ function attributeModel(variable, label, choices){
   var choicesLength = choices.length;
 
   for (var i = 0; i < choicesLength; i++){
-    self.choices.push(new choiceModel(choices[i].name, choices[i].label));
+    self.choices.push(new choiceImputationModel(choices[i].name, choices[i].label));
   }
 }
 
-function formModel(name, publish_date, attributes){
+function formImputationModel(name, publish_date, attributes){
   'use strict'
 
   var self = this;
@@ -37,7 +39,7 @@ function formModel(name, publish_date, attributes){
 
   for (var i = 0; i < attributeLength; i++){
     self.attributes.push(
-      new attributeModel(
+      new attributeImputationModel(
         attributes[i].variable, attributes[i].label, attributes[i].choices));
   }
 }
@@ -320,7 +322,7 @@ function imputationViewModel(){
       var json = $.parseJSON(data);
 
       $.each(json.forms, function(){
-        var form = new formModel(this.name, this.publish_date, this.attributes);
+        var form = new formImputationModel(this.name, this.publish_date, this.attributes);
         if (this.site != 'DRSC'){
           self.forms.push(form);
         }

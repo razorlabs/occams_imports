@@ -326,7 +326,7 @@
                          for="direct_version">Map to:</label>
                   <div class="col-sm-6">
                     <select data-bind="options: choices,
-                                   optionsText: 'label',
+                                   optionsText: 'mapToOptions',
                                    value: $root.selectedMapTo"
                             class="form-control"></select>
                     </div>
