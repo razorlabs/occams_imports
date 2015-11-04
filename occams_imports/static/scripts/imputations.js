@@ -196,10 +196,11 @@ function imputationViewModel(){
     bucket.conversions.push(new conversionModel());
   }
 
-  self.addBucket = function(){
+  self.addBucket = function(bucket){
     'use strict'
 
-    self.buckets.push(new bucketModel());
+    var index = self.buckets.indexOf(bucket);
+    self.buckets.splice(index + 1, 0, new bucketModel());
   }
 
   self.removeBucket = function(bucket){
