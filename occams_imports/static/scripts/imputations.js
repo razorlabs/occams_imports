@@ -218,12 +218,10 @@ function imputationViewModel(){
     self.comparisonOperators.pop()
   }
 
-  self.deleteConversion = function(){
+  self.deleteConversion = function(bucket){
     'use strict'
 
-    var self = this;
-
-    self.conversions.pop()
+    bucket.conversions.pop()
   }
 
   self.deleteLogicalOperator = function(){

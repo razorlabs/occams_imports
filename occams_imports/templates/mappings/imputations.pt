@@ -106,24 +106,43 @@
                   </div> <!-- end if 'By variable is selected' -->
 
                 </form> <!-- end foreach conversions -->
-                <div class="row">
-                  <div class="col-md-2 col-md-offset-9">
+
+                <form class="form-horizontal">
+                  <div class="form-group">
+                    <div class="col-md-2 col-md-offset-3">
+                      <button type="button"
+                              class="btn btn-default dropdown-toggle"
+                              data-toggle="dropdown">options
+                        <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a data-bind="click: $root.addConversion">Add Operation</a></li>
+                        <!-- ko if: $data.conversions().length > 1 -->
+                        <li><a data-bind="click: $root.deleteConversion">Remove Operation</a></li>
+                        <!-- /ko -->
+                      </ul>
+                    </div> <!-- btn-group-->
+
+                    <div class="col-md-1 col-md-offset-4">
+                      <button type="button"
+                              class="btn btn-primary"
+                              data-bind="click: $root.addBucket">
+                         <span class="glyphicon glyphicon-plus-sign"></span>
+                       </button>
+                    </div>
+
+                    <!-- ko if: $root.buckets().length > 1 -->
+                    <div class="col-md-1">
                     <button type="button"
-                            class="btn btn-default dropdown-toggle"
-                            data-toggle="dropdown">
-                      options
-                      <span class="caret"></span>
+                            class="btn btn-primary"
+                            data-bind="click: $root.removeBucket">
+                        <span class="glyphicon glyphicon-trash"></span>
                     </button>
-                    <ul class="dropdown-menu">
-                      <li><a data-bind="click: $root.addConversion">Add Operation</a></li>
-                      <li><a data-bind="click: $root.deleteConversion">Remove Operation</a></li>
-                      <li><a data-bind="click: $root.addBucket">Add Bucket</a></li>
-                      <!-- ko if: $root.buckets().length > 1 -->
-                        <li><a data-bind="click: $root.removeBucket">Remove Bucket</a></li>
-                      <!-- /ko -->
-                    </ul>
-                  </div> <!-- btn-group-->
-                </div> <!-- end row-->
+                    </div>
+                    <!-- /ko -->
+                  </div>
+                </form>
+
               </div> <!-- panel body-->
             </div> <!-- panel primary -->
           </div> <!-- end row-->
