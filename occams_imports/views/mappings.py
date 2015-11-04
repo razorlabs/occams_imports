@@ -2,7 +2,6 @@
 Perform direct and imputation mappings of DRSC variables
 """
 
-from pyramid.renderers import render_to_response
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
 
@@ -19,6 +18,7 @@ def update_schema_data(data, schemas, drsc):
             attribute = {}
             attribute['variable'] = schema.attributes[attr].name
             attribute['label'] = schema.attributes[attr].title
+            attribute['datatype'] = schema.attributes[attr].type
             if schema.attributes[attr].type == u'choice':
                 choices = []
                 for choice in schema.attributes[attr].choices:

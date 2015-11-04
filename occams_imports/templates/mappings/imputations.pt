@@ -100,6 +100,11 @@
                                 id="site_variables"></select>
 
                       </div> <!-- end col 6-->
+                      <div data-bind="with: $parent.selectedAttribute">
+                        <div class="col-sm-3">
+                          <code data-bind="text: datatype"></code>
+                        </div>
+                      </div>
                       </div> <!-- end with selected form -->
                     </div> <!-- end form group -->
                     <hr >
@@ -200,6 +205,11 @@
                                            value: $root.selectedDRSCAttribute"
                                 class="form-control"></select>
                      </div> <!-- end col 6 -->
+                    <div data-bind="with: $root.selectedDRSCAttribute">
+                      <div class="col-sm-3">
+                        <code data-bind="text: datatype"></code>
+                      </div>
+                    </div>
                   </div> <!-- end selected drsc form-->
                   <div id="loading"
                        style="display: none;"

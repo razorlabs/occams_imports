@@ -10,7 +10,7 @@ function choiceImputationModel(name, label){
   }, self);
 }
 
-function attributeImputationModel(variable, label, choices){
+function attributeImputationModel(variable, label, choices, datatype){
   'use strict'
 
   var self = this;
@@ -18,6 +18,7 @@ function attributeImputationModel(variable, label, choices){
   self.variable = ko.observable(variable);
   self.label = ko.observable(label);
   self.choices = ko.observableArray([]);
+  self.datatype = ko.observable(datatype);
 
   var choicesLength = choices.length;
 
@@ -38,9 +39,11 @@ function formImputationModel(name, publish_date, attributes){
   var attributeLength = attributes.length;
 
   for (var i = 0; i < attributeLength; i++){
+    console.log('Datatype: ' + attributes[i].datatype);
     self.attributes.push(
       new attributeImputationModel(
-        attributes[i].variable, attributes[i].label, attributes[i].choices));
+        attributes[i].variable, attributes[i].label,
+        attributes[i].choices, attributes[i].datatype));
   }
 }
 
@@ -320,7 +323,8 @@ function imputationViewModel(){
       var json = $.parseJSON(data);
 
       $.each(json.forms, function(){
-        var form = new formImputationModel(this.name, this.publish_date, this.attributes);
+        var form = new formImputationModel(this.name, this.publish_date,
+                                           this.attributes);
         if (this.site != 'DRSC'){
           self.forms.push(form);
         }
