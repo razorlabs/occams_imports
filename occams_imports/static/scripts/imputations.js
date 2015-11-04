@@ -233,29 +233,6 @@ function imputationViewModel(){
     self.logicalOperators.pop()
   }
 
-  self.initOperatorAndValues = function(){
-    //Sets values for operator and value to empty
-    //if it's first element in a new conversion
-      var lastConversion = false;
-      ko.utils.arrayForEach(self.conversions(), function(conversion){
-
-        if (lastConversion === true){
-          //this means this is the first conversion in a new bucket
-          //remove illogical operators and values
-          conversion.value('');
-          conversion.selectedOperator('');
-          lastConversion = false;
-        }
-
-        //this means the next conversion will be the new conversion
-        //in a new bucket
-        //ideally this would update via the UI
-        if (conversion.newConversion() === true){
-          lastConversion = true;
-        }
-    });
-  }
-
   self.saveImputation = function(){
     'use strict'
 
