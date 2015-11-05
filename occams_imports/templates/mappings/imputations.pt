@@ -1,0 +1,411 @@
+<html metal:use-macro="load: ../master.pt">
+  <metal:content-slot fill-slot="content-slot">
+    <div style="display: none;" data-bind="visible: isReady">
+    <header class="page-header">
+      <h1 i18n:translate="">Imputation Mapping</h1>
+    </header>
+    <p i18n:translate="" class="lead">
+        This interface was designed so you can map variables using imputations.
+    </p>
+    <div data-bind="css: { 'alert': true, 'alert-danger': isDanger, 'alert-info': isInfo,
+                   'alert-success': isSuccess }">
+      <strong data-bind="text: msgType"></strong>
+      <span data-bind="text: msg"></span>
+    </div>
+
+      <div class="col-md-6">
+        <div data-bind="foreach: buckets">
+          <div class="row">
+            <div class="panel panel-primary">
+              <div class="panel-heading">Conversion
+                <!-- ko if: $root.buckets().length > 1 -->
+                <div class="col-md-1 pull-right">
+                  <a href="#"
+                     class="text-primary"
+                     data-bind="click: $root.removeBucket">
+                    <span class="glyphicon glyphicon-trash"
+                          style="color:white"></span>
+                  </a>
+                </div>
+                <!-- /ko -->
+              </div>
+              <div class="panel-body">
+                <form class="form-horizontal"
+                      role="form"
+                      data-bind="foreach: conversions">
+
+                   <!-- first bucket should not display operators-->
+                  <div data-bind="if: ($index() > 0)">
+                    <div class="row">
+                      <div class="col-sm-offset-3 col-sm-3">
+                        <select data-bind="options: $data.mathOperators,
+                                           value: $data.selectedOperator,
+                                           optionsCaption: 'Select...'"
+                                class="form-control"></select>
+                      </div>
+                      <div class="col-sm-3">
+                        <div data-bind="if: $data.selectedOperator">
+                        <select data-bind="options: $data.operatorChoices,
+                                           value: $data.selectedOperatorChoice,
+                                           optionsCaption: 'Select...'"
+                                class="form-control"></select>
+                      </div>
+                    </div>
+                      <div data-bind="if: $data.selectedOperatorChoice() == 'By value'">
+                        <div class="col-sm-3">
+                          <input class="form-control"
+                                 data-bind="value: value"
+                                 type="number"></input>
+                        </div>
+                      </div> <!-- end if 'by value' -->
+                    </div> <!-- end row -->
+                    <hr />
+                  </div> <!-- end if not first conversion -->
+
+                  <div data-bind="if: $data.selectedOperatorChoice() == 'By variable' || $index() == 0">
+                  <div class="form-group">
+                    <label class="control-label col-sm-3"
+                           for="site_forms">Form:</label>
+                    <div class="col-sm-6">
+                      <select data-bind="options: $root.forms,
+                                         optionsText: 'name',
+                                         value: $data.selectedForm,
+                                         optionsCaption: 'Select a form...'"
+                              class="form-control"
+                              id="site_forms"></select>
+                      </div> <!-- end col 6-->
+                      <div class="col-sm-3">
+                        <div data-bind="ifnot: $data.selectedForm">
+                          <input type="text"
+                                 readonly="readonly"
+                                 class="form-control"
+                                 placeholder="Publish date"></input>
+                        </div>
+                        <div data-bind="with: $data.selectedForm">
+                          <input data-bind="value: $data.publish_date"
+                                 readonly="readonly"
+                                 type="text"
+                                 class="form-control"></input>
+                        </div> <!-- end with selected form -->
+                      </div>
+                    </div> <!-- end form group-->
+
+                  <div class="form-group">
+                    <label class="control-label col-sm-3"
+                           for="site_variables">Variable:</label>
+                      <div data-bind="ifnot: $data.selectedForm">
+                        <div class="col-sm-6">
+                         <input type="text"
+                               readonly="readonly"
+                               class="form-control"
+                               id="site_variables"
+                               placeholder="Variable to be mapped"></input>
+                        </div> <!-- end col 6-->
+                      </div> <!-- if not selected form -->
+                    <div data-bind="with: $data.selectedForm">
+                      <div class="col-sm-6">
+                        <select data-bind="options: $data.attributes,
+                                           optionsText: 'variable',
+                                           value: $parent.selectedAttribute"
+                                class="form-control"
+                                id="site_variables"></select>
+
+                      </div> <!-- end col 6-->
+                      <div data-bind="with: $parent.selectedAttribute">
+                        <div class="col-sm-3">
+                           <a href="#" data-bind="text: datatype, tooltip: { title: label, placement: 'bottom' }"></a>
+                        </div>
+                      </div>
+                      </div> <!-- end with selected form -->
+                    </div> <!-- end form group -->
+                    <hr >
+                  </div> <!-- end if 'By variable is selected' -->
+
+                </form> <!-- end foreach conversions -->
+
+                <form class="form-horizontal">
+                  <div class="form-group">
+                    <div class="col-md-2 col-md-offset-3">
+                      <button type="button"
+                              class="btn btn-default dropdown-toggle"
+                              data-toggle="dropdown">options
+                        <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a data-bind="click: $root.addConversion">Add Operation</a></li>
+                        <!-- ko if: $data.conversions().length > 1 -->
+                        <li><a data-bind="click: $root.deleteConversion">Remove Operation</a></li>
+                        <!-- /ko -->
+                      </ul>
+                    </div> <!-- btn-group-->
+
+                    <div class="col-md-1 col-md-offset-4">
+                      <button type="button"
+                              class="btn btn-default"
+                              data-bind="click: $root.addBucket">
+                         <span class="glyphicon glyphicon-plus-sign"></span>
+                       </button>
+                    </div>
+                  </div>
+                </form>
+
+              </div> <!-- panel body-->
+            </div> <!-- panel primary -->
+          </div> <!-- end row-->
+        </div> <!-- end foreach buckets -->
+      </div> <!-- end col 6 -->
+
+      <div class="col-md-6" style="padding-right: 0px">
+        <div class="panel panel-primary">
+          <div class="panel-heading">Imputation</div>
+          <div class="panel-body">
+            <form class="form-horizontal" role="form">
+              <div class="form-group">
+                <label class="control-label col-sm-3"
+                       for="direct_forms">Form:</label>
+                <div class="col-sm-6">
+                  <select data-bind="options: drsc_forms,
+                                     optionsText: 'name',
+                                     value: $data.selectedDRSCForm,
+                                     optionsCaption: 'Select a form...'"
+                          class="form-control"
+                          id="direct_forms"></select>
+                  </div> <!-- end col 6-->
+                  <div class="col-sm-3">
+                    <div data-bind="ifnot: $data.selectedDRSCForm">
+                      <input type="text"
+                             readonly="readonly"
+                             class="form-control"
+                             placeholder="Publish date"></input>
+                    </div>
+                    <div data-bind="with: $data.selectedDRSCForm">
+                      <input data-bind="value: $data.publish_date"
+                             readonly="readonly"
+                             type="text"
+                             id="direct_version"
+                             class="form-control"></input>
+                    </div> <!-- end with selected form -->
+                  </div>
+                </div> <!-- end form group-->
+
+              <div class="form-group">
+                <label class="control-label col-sm-3"
+                       for="direct_variables">Variable:</label>
+                  <div data-bind="ifnot: selectedDRSCForm">
+                    <div class="col-sm-6">
+                     <input type="text"
+                           readonly="readonly"
+                           class="form-control"
+                           placeholder="Variable to be mapped"></input>
+                    </div> <!-- end col 6 -->
+                  </div> <!-- end selected drsc form -->
+                  <div data-bind="with: selectedDRSCForm">
+                    <div class="col-sm-6">
+                        <select data-bind="options: attributes,
+                                           optionsText: 'variable',
+                                           value: $root.selectedDRSCAttribute"
+                                class="form-control"></select>
+                     </div> <!-- end col 6 -->
+                    <div data-bind="with: $root.selectedDRSCAttribute">
+                      <div class="col-sm-3">
+                        <a href="#" data-bind="text: datatype, tooltip: { title: label, placement: 'bottom' }"></a>
+                      </div>
+                    </div>
+                  </div> <!-- end selected drsc form-->
+                  <div id="loading"
+                       style="display: none;"
+                       data-bind="visible: isLoading">
+                    <div class="col-sm-1">
+                      <div class="throbber-loader"></div>
+                    </div>
+                  </div>
+              </div> <!-- end form group -->
+
+            </form>
+        <hr>
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="control-label col-md-5"
+                for="direct_forms">Imputation Eval Operator:</label>
+                  <div class="col-sm-3">
+                    <select data-bind="options: $root.conditions,
+                                       value: $root.selectedImputationComparison,
+                                       optionsCaption: 'Select...'"
+                            class="form-control"></select>
+                  </div> <!-- end col 3-->
+                <div data-bind="if: $root.selectedImputationComparison">
+                  <!-- ko if: $root.imputations().length == 0 -->
+                  <div class="col-md-1 col-md-offset-1">
+                    <button type="button"
+                            class="btn btn-default"
+                            data-bind="click: $root.addImputation">
+                      <span class="glyphicon glyphicon-plus-sign"></span>
+                    </button>
+                  </div>
+                  <!-- /ko -->
+                </div>
+              </div> <!-- end form-group -->
+          </form>
+          <!-- ko if: $root.imputations().length > 0 -->
+          <hr>
+          <form class="form-horizontal">
+
+              <div data-bind="foreach: imputations">
+                <div class="form-group">
+
+                  <div class="col-md-3 col-md-offset-1">
+                    <select data-bind="options: $data.operators,
+                                       value: $data.selectedOperator,
+                                       optionsCaption: 'Select...'"
+                            class="form-control"></select>
+                  </div> <!-- end col 3-->
+                  <div class="col-md-3">
+                  <!-- ko if: $data.selectedOperator -->
+                  <!-- ko ifnot: $data.selectedLogical -->
+                  <input data-bind="value: $data.selectedValue"
+                         type="text"
+                         class="form-control"></input>
+                  <!-- /ko-->
+                  <!-- /ko-->
+                  </div>
+                  <div class="col-md-1 col-md-offset-1">
+                    <button type="button"
+                            class="btn btn-default"
+                            data-bind="click: $root.addImputation">
+                      <span class="glyphicon glyphicon-plus-sign"></span>
+                    </button>
+                  </div>
+                  <div class="col-md-1">
+                    <button type="button"
+                            class="btn btn-default"
+                            data-bind="click: $root.deleteImputation">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                  </div>
+                  <!-- ko if: $data.selectedLogical -->
+                  <div class="col-md-1">
+                    <button type="button"
+                            class="btn btn-default">
+                        <span class="glyphicon glyphicon-arrow-down"></span>
+                    </button>
+                  </div>
+                  <!-- /ko -->
+                </div> <!-- end form-group -->
+              </div> <!-- end foreach imputations -->
+            </form>
+            <!-- /ko -->
+
+        <hr>
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="control-label col-sm-5"
+                for="direct_forms">Bucket Eval Operator:</label>
+                  <div class="col-sm-2">
+                    <select data-bind="options: $root.conditions,
+                                       value: $root.selectedBucketComparison"
+                            class="form-control"></select>
+                  </div> <!-- end col 6-->
+            </div>
+          </form>
+          <hr>
+            <form class="form-horizontal">
+            <div class="form-group">
+              <label class="control-label col-md-5"
+                     for="conversion_label">Conversion Description:</label>
+                <div class="col-md-6">
+                  <input type="text"
+                         class="form-control"
+                         id="conversion_label"
+                         data-bind="value: $root.conversionLabel"></input>
+                </div>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label col-md-5"
+                     for="imputation_label">Imputation Description:</label>
+                <div class="col-md-6">
+                  <input type="text"
+                         class="form-control"
+                         id="imputation_label"
+                         data-bind="value: $root.imputationLabel"></input>
+                </div>
+            </div>
+          </form>
+          <hr>
+          <form class="form-horizontal">
+            <!-- If choice, give user ability to select map to -->
+            <div data-bind="with: selectedDRSCAttribute">
+              <div data-bind="if: choices().length != 0">
+                <div class="form-group">
+                  <label class="control-label col-sm-2"
+                         for="direct_version">Map to:</label>
+                  <div class="col-sm-6">
+                    <select data-bind="options: choices,
+                                   optionsText: 'mapToOptions',
+                                   value: $root.selectedMapTo"
+                            class="form-control"></select>
+                    </div>
+                  </div>
+                </div>
+              <!-- If no choice, display variable name for users info -->
+              <div data-bind="if: choices().length == 0">
+                <div class="form-group">
+                  <label class="control-label col-sm-2"
+                         for="direct_version">Maps to:</label>
+                  <div class="col-sm-6">
+                    <input type="text"
+                           readonly="readonly"
+                           class="form-control"
+                           data-bind="value: variable"></input>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            <div class="row">
+              <label class="control-label col-sm-2"
+                     for="confidence">Confidence:</label>
+              <div class="col-sm-2">
+                  <input type="number"
+                         class="form-control"
+                         id="confidence"
+                         min="1"
+                         max="3"
+                         data-bind="value: confidence"></input>
+              </div>
+              <div class="col-md-5">
+              <!-- ko if: $root.confidence() == "1" -->
+              <h6>No/little manipulation/interpretation</h6>
+              <!-- /ko -->
+
+              <!-- ko if: $root.confidence() == "2" -->
+              <h6>Some manipulation/interpretation</h6>
+              <!-- /ko -->
+
+              <!-- ko if: $root.confidence() == "3" -->
+              <h6>Significant manipulation/interpretation</h6>
+              <!-- /ko -->
+              </div>
+              <div class="col-md-2">
+                <button class="btn btn-primary btn-lg"
+                        type="button"
+                        data-bind="click: saveImputation">Map</button>
+              </div>
+            </div> <!--end row -->
+          </form>
+          </div> <!-- end panel body -->
+        </div> <!-- end panel primary -->
+      </div> <!--end col 6 -->
+    </div> <!-- end is ready -->
+  </metal:content-slot>
+
+  <metal:javascript-slot fill-slot="javascript-extras-slot">
+    <script type="text/javascript">
+      $(function(){
+        'use strict';
+        ko.applyBindings(new imputationViewModel());
+      });
+    </script>
+  </metal:javascript-slot>
+
+</html>
