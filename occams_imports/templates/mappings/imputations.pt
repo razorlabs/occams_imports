@@ -246,11 +246,12 @@
                 </div>
               </div> <!-- end form-group -->
           </form>
-              <!-- ko if: $root.imputations().length > 0 -->
-              <hr>
+          <!-- ko if: $root.imputations().length > 0 -->
+          <hr>
           <form class="form-horizontal">
-            <div class="form-group">
+
               <div data-bind="foreach: imputations">
+                <div class="form-group">
 
                   <div class="col-md-3 col-md-offset-1">
                     <select data-bind="options: $data.operators,
