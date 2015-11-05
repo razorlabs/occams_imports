@@ -223,109 +223,80 @@
 
             </form>
         <hr>
-            <div class="row">
-              <div class="col-md-2">
-                <select data-bind="options: conditions,
-                                   value: selectedComparisonCondition"
-                        class="form-control"
-                        id="operator"
-                        name="operator"></select>
-              </div>
-              <div class="col-md-4">
-                <button type="button"
-                        class="btn btn-default dropdown-toggle"
-                        data-toggle="dropdown">
-                  Comparison Operator
-                <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a href="#"
-                         data-bind="click: addComparisonOperator">Add</a></li>
-                  <li><a href="#"
-                         data-bind="click: deleteComparisonOperator">Remove</a></li>
-                </ul>
-              </div> <!-- end col 4 -->
-
-              <div class="col-md-4">
-                <button type="button"
-                        class="btn btn-default dropdown-toggle"
-                        data-toggle="dropdown">
-                  Logical Operator
-                <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a href="#"
-                         data-bind="click: addLogicalOperator">Add</a></li>
-                  <li><a href="#"
-                         data-bind="click: deleteLogicalOperator">Remove</a></li>
-                </ul>
-              </div> <!-- end col 4 -->
-            </div> <!-- end row -->
-
-            <div data-bind="foreach: comparisonOperators">
-              <div class="row">
-                <br />
-                <div class="col-md-2">
-                  <select data-bind="options: operators,
-                                     value: selectedOperator"
-                          class="form-control"></select>
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="control-label col-md-5"
+                for="direct_forms">Imputation Eval Operator:</label>
+                  <div class="col-sm-3">
+                    <select data-bind="options: $root.conditions,
+                                       value: $root.selectedImputationComparison,
+                                       optionsCaption: 'Select...'"
+                            class="form-control"></select>
+                  </div> <!-- end col 3-->
+                <div data-bind="if: $root.selectedImputationComparison">
+                  <!-- ko if: $root.imputations().length == 0 -->
+                  <div class="col-md-1 col-md-offset-1">
+                    <button type="button"
+                            class="btn btn-default"
+                            data-bind="click: $root.addImputation">
+                      <span class="glyphicon glyphicon-plus-sign"></span>
+                    </button>
+                  </div>
+                  <!-- /ko -->
                 </div>
-                <div class="col-md-3">
-                  <input type="text"
-                         class="form-control"
-                         data-bind="value: value">
-                  </input>
-                </div>
-              </div> <!-- end row -->
-            </div> <!-- end foreach comparisonOperators -->
+              </div> <!-- end form-group -->
+          </form>
+              <!-- ko if: $root.imputations().length > 0 -->
+              <hr>
+          <form class="form-horizontal">
+            <div class="form-group">
+              <div data-bind="foreach: imputations">
 
-            <div data-bind="foreach: logicalOperators">
-              <div class="row">
-                <br />
-                <div class="col-md-2">
-                  <select data-bind="options: operators,
-                                     value: selectedOperator"
-                          class="form-control"></select>
-                </div> <!-- end col 2 -->
+                  <div class="col-md-3 col-md-offset-1">
+                    <select data-bind="options: $data.operators,
+                                       value: $data.selectedOperator,
+                                       optionsCaption: 'Select...'"
+                            class="form-control"></select>
+                  </div> <!-- end col 3-->
+                  <div class="col-md-3">
+                  <!-- ko if: $data.selectedOperator -->
+                  <input data-bind="value: $data.selectedValue"
+                         type="text"
+                         class="form-control"></input>
+                  <!-- /ko-->
+                  </div>
+                  <div class="col-md-1 col-md-offset-1">
+                    <button type="button"
+                            class="btn btn-default"
+                            data-bind="click: $root.addImputation">
+                      <span class="glyphicon glyphicon-plus-sign"></span>
+                    </button>
+                  </div>
+                  <div class="col-md-1">
+                    <button type="button"
+                            class="btn btn-default"
+                            data-bind="click: $root.deleteImputation">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                  </div>
+                  <!-- ko if: $data.selectedLogical -->
+                  <div class="col-md-1">
+                    <button type="button"
+                            class="btn btn-default">
+                        <span class="glyphicon glyphicon-arrow-down"></span>
+                    </button>
+                  </div>
+                  <!-- /ko -->
+                </div> <!-- end form-group -->
+              </div> <!-- end foreach imputations -->
+            </form>
+            <!-- /ko -->
 
-                <div class="col-md-4">
-                  <button type="button"
-                          class="btn btn-default dropdown-toggle"
-                          data-toggle="dropdown">
-                    Comparison Operator
-                  <span class="caret"></span>
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a href="#"
-                           data-bind="click: addComparisonOperator">Add</a></li>
-                    <li><a href="#"
-                           data-bind="click: deleteComparisonOperator">Remove</a></li>
-                  </ul>
-                </div> <!-- end col 4 -->
-              </div> <!-- end row -->
-
-                <div data-bind="foreach: comparisons">
-                  <div class="row">
-                    <br />
-                    <div class="col-md-2 col-md-offset-2">
-                      <select data-bind="options: operators,
-                                         value: selectedOperator"
-                              class="form-control"></select>
-                    </div>
-                    <div class="col-md-3">
-                      <input type="text"
-                             class="form-control"
-                             data-bind="value: value">
-                      </input>
-                    </div> <!-- end col 2 -->
-                  </div> <!-- end row -->
-                </div> <!-- end foreach comparisons -->
-            </div> <!-- end foreach logicalOperators -->
-          <hr>
+        <hr>
           <form class="form-horizontal">
             <div class="form-group">
               <label class="control-label col-sm-5"
-                for="direct_forms">Bucket Evaluation Operator:</label>
+                for="direct_forms">Bucket Eval Operator:</label>
                   <div class="col-sm-2">
                     <select data-bind="options: $root.conditions,
                                        value: $root.selectedBucketComparison"

@@ -66,66 +66,6 @@ function formImputationModel(name, publish_date, attributes){
   }
 }
 
-function comparisonModel(){
-  'use strict';
-
-  var self = this;
-
-  self.operators = ko.observableArray(['==', '!=', '>', '<', '>=', '<=']);
-  self.selectedOperator = ko.observable();
-  self.value = ko.observable();
-}
-
-comparisonModel.prototype.toJSON = function() {
-  // remove unnecessary operators attribute to clean up
-  // ko.JSON results
-  'use strict'
-
-  var self = this;
-
-  var copy = ko.toJS(self);
-  delete copy.operators;
-
-  return copy;
-}
-
-function logicalModel(){
-  'use strict'
-
-  var self = this;
-
-  self.operators = ko.observableArray(['and', 'or']);
-  self.comparisons = ko.observableArray([]);
-  self.selectedOperator = ko.observable();
-
-  self.addComparisonOperator = function(){
-    'use strict'
-
-    var self = this;
-    self.comparisons.push(new comparisonModel());
-  }
-
-  self.deleteComparisonOperator = function(){
-    'use strict'
-
-    var self = this;
-    self.comparisons.pop()
-  }
-}
-
-logicalModel.prototype.toJSON = function() {
-  // remove unnecessary operators attribute to clean up
-  // ko.JSON results
-  'use strict'
-
-  var self = this;
-
-  var copy = ko.toJS(self);
-  delete copy.operators;
-
-  return copy;
-}
-
 function conversionModel(){
   'use strict'
 
@@ -166,23 +106,53 @@ function bucketModel(){
   self.conversions = ko.observableArray([new conversionModel()]);
 }
 
+function imputationModel(){
+  'use strict'
+
+  var self = this;
+
+  /* if the user is an and or 'or' operation
+  limit the number of options as and/or nesting is not supported */
+  self.operators = ko.pureComputed(function(){
+    if(self.inAndOr()){
+      return ['==', '!=', '>', '<', '>=', '<=']
+    }
+    else{
+      return ['and', 'or', '==', '!=', '>', '<', '>=', '<=']
+    }
+  }, self);
+
+  self.selectedOperator = ko.observable();
+  self.selectedValue = ko.observable();
+  self.inAndOr = ko.observable(false);
+
+  //flag if logical operator is selected
+  self.selectedLogical = ko.pureComputed(function(){
+    if(['and', 'or'].indexOf(self.selectedOperator()) > -1){
+      return true
+    }
+    else{
+      return false
+    }
+  }, self);
+}
+
 function imputationViewModel(){
   'use strict';
 
   var self = this;
 
-  self.conditions = ko.observableArray(['any', 'all']);
+  self.conditions = ko.observableArray(['all', 'any']);
   self.selectedBucketComparison = ko.observable();
-  self.selectedComparisonCondition = ko.observable();
-  self.comparisonOperators = ko.observableArray([]);
-  self.logicalOperators = ko.observableArray([]);
+  self.selectedImputationComparison = ko.observable();
+  self.imputations = ko.observableArray([]);
+
   self.confidence = ko.observable(1);
 
   self.isReady = ko.observableArray(false);
   self.isLoading = ko.observable(true);
 
   self.forms = ko.observableArray();
-
   self.buckets = ko.observableArray();
 
   self.drsc_forms = ko.observableArray();
@@ -199,17 +169,12 @@ function imputationViewModel(){
   self.msg = ko.observable('Please wait until form loading is complete.');
   self.isInfo = ko.observable(true);
 
-  self.addLogicalOperator = function(){
-    self.logicalOperators.push(new logicalModel());
-
+  self.addImputation = function(){
+    self.imputations.push(new imputationModel());
   }
 
-  self.addComparisonOperator = function(){
-    'use strict'
-
-    var self = this;
-
-    self.comparisonOperators.push(new comparisonModel());
+  self.deleteImputation = function(imputation){
+    self.imputations.remove(imputation);
   }
 
   self.addConversion = function(bucket){
@@ -233,26 +198,10 @@ function imputationViewModel(){
     self.buckets.remove(bucket);
   }
 
-  self.deleteComparisonOperator = function(){
-    'use strict'
-
-    var self = this;
-
-    self.comparisonOperators.pop()
-  }
-
   self.deleteConversion = function(bucket){
     'use strict'
 
     bucket.conversions.pop()
-  }
-
-  self.deleteLogicalOperator = function(){
-    'use strict'
-
-    var self = this;
-
-    self.logicalOperators.pop()
   }
 
   self.saveImputation = function(){
@@ -286,8 +235,6 @@ function imputationViewModel(){
 
 
     else {
-
-      //self.initOperatorAndValues();
 
       var data = ko.toJSON({buckets: self.buckets(),
                             //get first conversion form to determine site on server
