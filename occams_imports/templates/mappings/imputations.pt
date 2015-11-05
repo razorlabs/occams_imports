@@ -324,8 +324,8 @@
           <hr>
           <form class="form-horizontal">
             <div class="form-group">
-              <label class="control-label col-sm-4"
-                for="direct_forms">Bucket Evaluation:</label>
+              <label class="control-label col-sm-5"
+                for="direct_forms">Bucket Evaluation Operator:</label>
                   <div class="col-sm-3">
                     <select data-bind="options: $root.conditions,
                                        value: $root.selectedBucketComparison"
@@ -336,8 +336,8 @@
           <hr>
             <form class="form-horizontal">
             <div class="form-group">
-              <label class="control-label col-md-4"
-                     for="conversion_label">Conversion Label:</label>
+              <label class="control-label col-md-5"
+                     for="conversion_label">Conversion Description:</label>
                 <div class="col-md-6">
                   <input type="text"
                          class="form-control"
@@ -347,8 +347,8 @@
             </div>
 
             <div class="form-group">
-              <label class="control-label col-md-4"
-                     for="imputation_label">Imputation Label:</label>
+              <label class="control-label col-md-5"
+                     for="imputation_label">Imputation Description:</label>
                 <div class="col-md-6">
                   <input type="text"
                          class="form-control"
