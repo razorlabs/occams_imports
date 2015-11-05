@@ -169,8 +169,11 @@ function imputationViewModel(){
   self.msg = ko.observable('Please wait until form loading is complete.');
   self.isInfo = ko.observable(true);
 
-  self.addImputation = function(){
-    self.imputations.push(new imputationModel());
+  self.addImputation = function(imputation){
+
+    var index = self.imputations.indexOf(imputation);
+    self.imputations.splice(index + 1, 0, new imputationModel());
+    //self.imputations.push(new imputationModel());
   }
 
   self.deleteImputation = function(imputation){
