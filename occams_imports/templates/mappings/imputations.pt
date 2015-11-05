@@ -326,7 +326,7 @@
             <div class="form-group">
               <label class="control-label col-sm-5"
                 for="direct_forms">Bucket Evaluation Operator:</label>
-                  <div class="col-sm-3">
+                  <div class="col-sm-2">
                     <select data-bind="options: $root.conditions,
                                        value: $root.selectedBucketComparison"
                             class="form-control"></select>
