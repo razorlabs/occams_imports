@@ -7,22 +7,12 @@ import sys
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 REQUIRES = [
-    'alembic',                          # Database table upgrades
-    'humanize',                         # human readable measurements
-    'six',                              # Py 2 & 3 compatibilty
-
     'occams',
     'occams_datastore'
 ]
 
 EXTRAS = {
-    'test': [
-        'pytest',
-        'pytest-cov',
-        'WebTest',
-        'beautifulsoup4',
-        'mock'
-    ]
+    'test': []
 }
 
 
