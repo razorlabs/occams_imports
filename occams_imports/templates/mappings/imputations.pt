@@ -321,7 +321,18 @@
                   </div> <!-- end row -->
                 </div> <!-- end foreach comparisons -->
             </div> <!-- end foreach logicalOperators -->
-
+          <hr>
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="control-label col-sm-4"
+                for="direct_forms">Bucket Evaluation:</label>
+                  <div class="col-sm-3">
+                    <select data-bind="options: $root.conditions,
+                                       value: $root.selectedBucketComparison"
+                            class="form-control"></select>
+                  </div> <!-- end col 6-->
+            </div>
+          </form>
           <hr>
             <form class="form-horizontal">
             <div class="form-group">

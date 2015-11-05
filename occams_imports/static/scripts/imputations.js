@@ -172,6 +172,7 @@ function imputationViewModel(){
   var self = this;
 
   self.conditions = ko.observableArray(['any', 'all']);
+  self.selectedBucketComparison = ko.observable();
   self.selectedComparisonCondition = ko.observable();
   self.comparisonOperators = ko.observableArray([]);
   self.logicalOperators = ko.observableArray([]);
