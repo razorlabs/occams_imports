@@ -1,43 +1,55 @@
 import argparse
 import sys
 
-from sqlalchemy import engine_from_config, create_engine
+from alembic.config import Config
+from alembic import command
+from pyramid.paster import bootstrap, setup_logging
+import transaction
 
-from occams_imports import models
+from occams_datastore import models as datastore
+
+from .. import models
+
 
 parser = argparse.ArgumentParser(description='Initialize database')
-
-# Either one works
-parser.add_argument('-c', '--config', metavar='INI')
-parser.add_argument('-d', '--db', type=create_engine, metavar='URL')
+parser.add_argument(
+    'config',
+    metavar='INI',
+    help='Installs using an existing application INI')
+parser.add_argument(
+    '-w', '--workflow',
+    action='store_true',
+    help='Also installs the workflow states')
 
 
 def main(argv=sys.argv):
     args = parser.parse_args(argv[1:])
 
-    if args.config:
-        try:
-            from pyramid.paster import get_appsettings, setup_logging
-        except ImportError:
-            raise Exception(u'This option may only be used if using Pyramid')
-        else:
-            config_uri = args.config_url
-            setup_logging(config_uri)
-            settings = get_appsettings(config_uri)
-            engine = engine_from_config(settings, 'app.db.')
+    setup_logging(args.config)
+    env = bootstrap(args.config)
+    alembic_cfg = Config(args.config)
 
-    elif args.db:
-        import logging
-        # Configure the logger if not already done so by a wrapper application
-        sa_logger = logging.getLogger('sqlalchemy.engine')
-        if not sa_logger.handlers:
-            logging.basicConfig()
-            sa_logger.setLevel(logging.INFO)
-        engine = args.db
+    db_session = env['request'].db_session
 
-    else:
-        print(u'Must specify either CONFIG or URL')
-        parser.print_help()
-        exit(0)
+    with transaction.manager:
+        datastore.DataStoreModel.metadata.create_all(db_session.bind, checkfirst=True)
+        models.Base.metadata.create_all(db_session.bind, checkfirst=True)
 
-    models.Base.metadata.create_all(engine)
+        alembic_cfg.attributes['connection'] = db_session.bind.connect()
+        command.stamp(alembic_cfg, 'head')
+
+        if args.workflow:
+            blame = models.User(key=alembic_cfg.get_main_option('blame'))
+            db_session.add(blame)
+            db_session.flush()
+
+            db_session.info['blame'] = blame
+
+            db_session.add_all([
+                models.State(name=u'pending-entry', title=u'Pending Entry'),
+                models.State(name=u'in-pogress', title=u'In Progress'),
+                models.State(name=u'pending-review', title=u'Pending Review'),
+                models.State(name=u'pending-correction',
+                             title=u'Pending Correction'),
+                models.State(name=u'complete', title=u'Complete'),
+            ])
