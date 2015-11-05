@@ -17,7 +17,18 @@
         <div data-bind="foreach: buckets">
           <div class="row">
             <div class="panel panel-primary">
-              <div class="panel-heading">Conversion</div>
+              <div class="panel-heading">Conversion
+                <!-- ko if: $root.buckets().length > 1 -->
+                <div class="col-md-1 pull-right">
+                  <a href="#"
+                     class="text-primary"
+                     data-bind="click: $root.removeBucket">
+                    <span class="glyphicon glyphicon-trash"
+                          style="color:white"></span>
+                  </a>
+                </div>
+                <!-- /ko -->
+              </div>
               <div class="panel-body">
                 <form class="form-horizontal"
                       role="form"
@@ -130,21 +141,11 @@
 
                     <div class="col-md-1 col-md-offset-4">
                       <button type="button"
-                              class="btn btn-primary"
+                              class="btn btn-default"
                               data-bind="click: $root.addBucket">
                          <span class="glyphicon glyphicon-plus-sign"></span>
                        </button>
                     </div>
-
-                    <!-- ko if: $root.buckets().length > 1 -->
-                    <div class="col-md-1">
-                    <button type="button"
-                            class="btn btn-primary"
-                            data-bind="click: $root.removeBucket">
-                        <span class="glyphicon glyphicon-trash"></span>
-                    </button>
-                    </div>
-                    <!-- /ko -->
                   </div>
                 </form>
 
