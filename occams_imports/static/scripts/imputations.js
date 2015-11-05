@@ -106,7 +106,7 @@ function bucketModel(){
   self.conversions = ko.observableArray([new conversionModel()]);
 }
 
-function imputationModel(){
+function imputationModel(andOr){
   'use strict'
 
   var self = this;
@@ -124,7 +124,7 @@ function imputationModel(){
 
   self.selectedOperator = ko.observable();
   self.selectedValue = ko.observable();
-  self.inAndOr = ko.observable(false);
+  self.inAndOr = ko.observable(andOr);
 
   //flag if logical operator is selected
   self.selectedLogical = ko.pureComputed(function(){
@@ -170,10 +170,17 @@ function imputationViewModel(){
   self.isInfo = ko.observable(true);
 
   self.addImputation = function(imputation){
+    var andOr = false;
+
+    if (self.imputations().length != 0){
+      if(['and', 'or'].indexOf(imputation.selectedOperator())){
+        andOr = true;
+      }
+    }
 
     var index = self.imputations.indexOf(imputation);
-    self.imputations.splice(index + 1, 0, new imputationModel());
-    //self.imputations.push(new imputationModel());
+    self.imputations.splice(index + 1, 0, new imputationModel(andOr));
+
   }
 
   self.deleteImputation = function(imputation){

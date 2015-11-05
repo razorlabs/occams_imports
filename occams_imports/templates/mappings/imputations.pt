@@ -261,9 +261,11 @@
                   </div> <!-- end col 3-->
                   <div class="col-md-3">
                   <!-- ko if: $data.selectedOperator -->
+                  <!-- ko ifnot: $data.selectedLogical -->
                   <input data-bind="value: $data.selectedValue"
                          type="text"
                          class="form-control"></input>
+                  <!-- /ko-->
                   <!-- /ko-->
                   </div>
                   <div class="col-md-1 col-md-offset-1">
