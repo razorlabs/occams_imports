@@ -1,0 +1,201 @@
+<html metal:use-macro="load: ../master.pt">
+  <metal:content-slot fill-slot="content-slot">
+
+    <header class="page-header">
+      <h1>Imputation Visualization Demo</h1>
+    </header>
+    <br />
+    <br />
+
+    <div id="container" style="width: 600px; height: 250px; margin: 0 auto"></div>
+
+  </metal:content-slot>
+
+  <metal:javascript-slot fill-slot="javascript-extras-slot">
+
+    <script>
+    $(function () {
+        $('#container').highcharts({
+            credits: {
+                enabled: false
+            },
+            chart: {
+                backgroundColor: 'white',
+                events: {
+                    load: function () {
+
+                        // Draw the flow chart
+                        var ren = this.renderer,
+                            colors = Highcharts.getOptions().colors,
+                            rightArrow = ['M', 0, 0, 'L', 100, 0, 'L', 95, 5, 'M', 100, 0, 'L', 95, -5],
+                            leftArrow = ['M', 100, 0, 'L', 0, 0, 'L', 5, 5, 'M', 0, 0, 'L', 5, -5];
+
+
+
+                        // Separator, client from service
+                        ren.path(['M', 120, 40, 'L', 120, 330])
+                            .attr({
+                                'stroke-width': 2,
+                                stroke: 'silver',
+                                dashstyle: 'dash'
+                            })
+                            .add();
+
+                        // Separator, CLI from service
+                        ren.path(['M', 420, 40, 'L', 420, 330])
+                            .attr({
+                                'stroke-width': 2,
+                                stroke: 'silver',
+                                dashstyle: 'dash'
+                            })
+                            .add();
+
+                        // Headers
+                        ren.label('Condom use always', 440, 60)
+                            .css({
+                                fontWeight: 'bold'
+                            })
+                            .add();
+
+                        // CCTG q5
+                        ren.label('CCTG 594<br />Var: q5', 10, 82)
+                            .attr({
+                                fill: colors[7],
+                                stroke: 'white',
+                                'stroke-width': 2,
+                                padding: 5,
+                                r: 5
+                            })
+                            .css({
+                                color: 'white'
+                            })
+                            .add()
+                            .shadow(true);
+
+                        // Arrow from cctg to percentage conversion
+                        ren.path(rightArrow)
+                            .attr({
+                                'stroke-width': 2,
+                                stroke: 'red'
+                            })
+                            .translate(90, 125)
+                            .add();
+
+                        ren.label('Likert to percentage', 90, 100)
+                            .css({
+                                fontSize: '11px',
+                                color: 'red'
+                            })
+                            .add();
+
+                        ren.label('Percentage<br />Conversion', 210, 107)
+                            .attr({
+                                r: 5,
+                                width: 100,
+                                stroke: 'gray',
+                                'stroke-width': 2,
+                                fill: colors[1]
+                            })
+                            .css({
+                                color: 'white',
+                            })
+                            .add();
+
+                        // CCTG q6
+                        ren.label('CCTG 594<br />Var: q6', 10, 130)
+                            .attr({
+                                fill: colors[7],
+                                stroke: 'white',
+                                'stroke-width': 2,
+                                padding: 5,
+                                r: 5
+                            })
+                            .css({
+                                color: 'white',
+                                width: '100px'
+                            })
+                            .add()
+                            .shadow(true);
+
+                        // Yes
+                        ren.label('Yes', 450, 95)
+                            .attr({
+                                fill: 'gray',
+                                stroke: 'white',
+                                'stroke-width': 2,
+                                padding: 5,
+                                r: 5
+                            })
+                            .css({
+                                color: 'white',
+                                width: '100px'
+                            })
+                            .add()
+                            .shadow(true);
+
+                        // No
+                        ren.label('No', 450, 125)
+                            .attr({
+                                fill: 'gray',
+                                stroke: 'white',
+                                'stroke-width': 2,
+                                padding: 5,
+                                r: 5
+                            })
+                            .css({
+                                color: 'white',
+                                width: '100px'
+                            })
+                            .add()
+                            .shadow(true);
+
+                        // Arrow from Percentage conversion to Yes
+                        ren.path(rightArrow)
+                            .attr({
+                                'stroke-width': 2,
+                                stroke: 'red'
+                            })
+                            .translate(330, 110)
+                            .add();
+
+                        ren.label('100%', 340, 90)
+                            .css({
+                                color: 'red',
+                                fontSize: '11px'
+                            })
+                            .add();
+
+                        // Arrow from Percentage conversion to result
+                        ren.path(rightArrow)
+                            .attr({
+                                'stroke-width': 2,
+                                stroke: 'red'
+                            })
+                            .translate(330, 135)
+                            .add();
+
+                        ren.label('not 100%', 340, 115)
+                            .css({
+                                color: 'red',
+                                fontSize: '11px'
+                            })
+                            .add();
+
+
+                    }
+                }
+            },
+            title: {
+                text: 'UCSD condom_use_always visual mapping:',
+                style: {
+                    color: 'black'
+                }
+            }
+
+        });
+    });
+    </script>
+  </metal:javascript-slot>
+</html>
+
+

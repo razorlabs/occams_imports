@@ -5,8 +5,6 @@ import pkg_resources
 from pyramid.i18n import TranslationStringFactory
 import wtforms_json; wtforms_json.init()  # flake8: noqa
 
-from occams import Session
-
 
 log = logging.getLogger('occams').getChild(__name__)
 

@@ -1,17 +1,14 @@
-from pyramid.security import Allow, Authenticated, ALL_PERMISSIONS
-from sqlalchemy import orm
-from sqlalchemy.ext.declarative import declared_attr
+from pyramid.security import Allow, Authenticated
 import sqlalchemy as sa
 from sqlalchemy import orm
-from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.dialects.postgresql import JSON
 
-from occams_datastore.models import *  # flake8: noqa
-from occams_studies.models import *   # flake8: noqa
+from occams_datastore.models import (
+    ModelClass,
+    Schema,
+    Referenceable, Modifiable)
 
-from . import Session
-
-
-Base = ModelClass('Base')
+Base = ModelClass(u'Base')
 
 
 class groups:
@@ -49,9 +46,50 @@ class Resource(object):
         self.request = request
 
 
-
 class RootFactory(Resource):
 
     __acl__ = [
         (Allow, Authenticated, 'view')
-        ]
+    ]
+
+
+class ImportFactory(Resource):
+    __acl__ = [
+        (Allow, 'administrator', 'import'),
+        (Allow, 'manager', 'import')
+    ]
+
+
+class Import(Base, Referenceable, Modifiable):
+    __tablename__ = 'import'
+
+    site = sa.Column(
+        sa.String(10),
+        nullable=False,
+        doc='A string distinguishing a site(ucsd, ucla, etc.)')
+
+    schema_id = sa.Column(sa.Integer())
+
+    schema = orm.relationship(
+        Schema,
+        primaryjoin=(schema_id == Schema.id),
+        foreign_keys=[schema_id],
+        backref=orm.backref(
+            name='import',
+            cascade='all, delete-orphan'))
+
+
+class Mapper(Base, Referenceable, Modifiable):
+    __tablename__ = 'mapper'
+
+    schema_id = sa.Column(sa.Integer())
+
+    schema = orm.relationship(
+        Schema,
+        primaryjoin=(schema_id == Schema.id),
+        foreign_keys=[schema_id],
+        backref=orm.backref(
+            name='mapped',
+            cascade='all, delete-orphan'))
+
+    mapped = sa.Column(JSON)

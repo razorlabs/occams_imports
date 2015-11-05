@@ -1,0 +1,6 @@
+<html metal:use-macro="load: ../master.pt">
+  <metal:content-slot fill-slot="content-slot">
+  <header class="page-header"><h2>Imputation Visualizations</h2></header>
+    <h5>This page is currently in development.</h5>
+  </metal:content-slot>
+</html>

@@ -32,6 +32,8 @@ def includeme(config):
         rel('bower_components/select2/select2.min.js'),
         rel('bower_components/moment/min/moment.min.js'),
         rel('bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js'),
+        rel('bower_components/highcharts/highcharts.js'),
+        rel('bower_components/highcharts/modules/exporting.js'),
         # App-specific scripts can be loaded in any order
         Bundle(
             *[os.path.join(root, filename)
@@ -48,6 +50,7 @@ def includeme(config):
             output=rel('gen/limis-main.%(version)s.css')),
         Bundle(rel('bower_components/select2/select2.css'), filters='cssrewrite'),
         rel('bower_components/select2-bootstrap-css/select2-bootstrap.css'),
+        rel('bower_components/css-spinners/css/spinners.css'),
         output=rel('gen/imports.%(version)s.css')))
 
     log.debug('Assets configurated')

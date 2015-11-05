@@ -1,0 +1,78 @@
+<html metal:use-macro="load: ../master.pt">
+  <metal:content-slot fill-slot="content-slot">
+
+    <br />
+
+      <h1 i18n:translate="">Upload iForm Codebook</h1>
+      <p i18n:translate="" class="lead">
+        This service was designed so you can upload the structure of your eCRF's
+        into the OCCAMS system.
+      </p>
+
+    <form
+        role="form"
+        name="upload_iform"
+        method="POST"
+        autocomplete="on"
+        enctype="multipart/form-data"
+        action="${request.route_path('imports.codebooks_iform_status')}">
+
+      <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
+
+      <h3>Step 1</h3>
+      <div class="row">
+        <div class="form-group col-lg-3">
+            <p i18n:translate="">Select site:</p>
+            <select class="form-control" id="site" name="site">
+              <option>DRSC</option>
+              <option>EBAC</option>
+              <option>LAC</option>
+              <option>UCLA</option>
+              <option>UCSD</option>
+            </select>
+        </div>
+      </div>
+      <hr>
+
+      <h3>Step 2</h3>
+      <p i18n:translate="">Select codebook to upload: </p>
+      <input type="file" name="codebook" required>
+      <hr>
+
+      <h3>Step 3</h3>
+      <p i18n:translate="">Select an upload mode: </p>
+
+      <p>
+        <div class="radio">
+          <label><input type="radio"
+                        name="mode"
+                        value="dry"
+                        i18n:translate="">Validate - Data not saved to db</label>
+        </div>
+      </p>
+
+      <p>
+        <div class="radio">
+          <label>
+            <input type="radio"
+                   name="mode"
+                   value="default"
+                   checked="checked"
+                   i18n:translate="">Only upload forms if all records validate
+          </label>
+        </div>
+      </p>
+      <br />
+
+      <br />
+
+      <button
+          type="submit"
+          name="submit"
+          class="btn btn-lg btn-primary"
+          i18n:translate="">Upload file</button>
+
+    </form>
+
+  </metal:content-slot>
+</html>

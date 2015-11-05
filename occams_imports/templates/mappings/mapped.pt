@@ -1,0 +1,123 @@
+<html metal:use-macro="load: ../master.pt">
+  <metal:content-slot fill-slot="content-slot">
+  <header class="page-header">
+    <div class="pull-right">
+      <a href="${request.route_path('imports.main')}">
+        <span class="fa fa-chevron-left fa-lg"></span>
+      </a>
+    </div> <!-- pull-right-->
+    <h1 i18n:translate="">Mapped Variables</h1>
+  </header>
+  <div class="panel panel-primary">
+    <div class="panel-heading">DRSC form/variable info</div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-3">
+            <table class="table table-hover table-striped">
+              <thead>
+                <tr>
+                  <th>DRSC Form</th>
+                  <th>Publish Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td tal:content="drsc_form"></td>
+                  <td tal:content="drsc_publish_date"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+         <table class="table table-hover table-striped">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Confidence</th>
+                <th>Label</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr tal:repeat="form drsc_form_rows">
+                <td>
+                  <div tal:condition="form.variable">
+                    <code tal:content="form.variable"></code>
+                  </div>
+                </td>
+                <td tal:content="form.description"></td>
+                <td tal:content="form.type"></td>
+                <td tal:content="form.confidence"></td>
+                <td tal:content="form.label"></td>
+                <td>
+                  <div tal:condition="form.key">
+                    <code tal:content="form.key"></code>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+      </div>
+  </div>
+
+  <br />
+  <br />
+  <div class="panel panel-primary">
+    <div class="panel-heading">Mapping info</div>
+      <div class="panel-body">
+        <table class="table table-hover table-striped">
+          <thead>
+            <tr>
+              <th>Variable</th>
+              <th>Desc</th>
+              <th>Type</th>
+              <th>Site</th>
+              <th>Form</th>
+              <th>Label</th>
+              <th>Value</th>
+              <th>Mapped Variable</th>
+              <th>Mapped Label</th>
+              <th>Mapped Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr tal:repeat="form mappings_form_rows">
+              <td>
+                <div tal:condition="form.variable">
+                  <code tal:content="form.variable"></code>
+                </div>
+              </td>
+              <td tal:content="form.description"></td>
+              <td tal:content="form.type"></td>
+              <td tal:content="form.site"></td>
+              <td tal:content="form.form"></td>
+              <td tal:content="form.label"></td>
+              <td>
+                <div tal:condition="form.value">
+                  <code tal:content="form.value"></code>
+                </div>
+              </td>
+              <td>
+                <div tal:condition="form.mapped_variable">
+                  <code tal:content="form.mapped_variable"></code>
+                </div>
+              </td>
+              <td tal:content="form.mapped_label"></td>
+              <td>
+                <div tal:condition="form.mapped_value">
+                  <code tal:content="form.mapped_value"></code>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  </div>
+
+
+  </metal:content-slot>
+
+</html>
