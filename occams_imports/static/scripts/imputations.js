@@ -26,8 +26,8 @@ function choiceImputationModel(name, label){
   self.name = ko.observable(name);
   self.label = ko.observable(label);
   self.mapToOptions = ko.pureComputed(function(){
-    return name + ' - ' + label;
-  }, self);
+    return self.name() + ' - ' + self.label();
+  });
 }
 
 function attributeImputationModel(variable, label, choices, datatype){
