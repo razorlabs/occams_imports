@@ -399,7 +399,7 @@
     </div> <!-- end is ready -->
   </metal:content-slot>
 
-  <metal:javascript-slot fill-slot="javascript-extras-slot">
+  <metal:javascript-slot fill-slot="javascript-slot">
     <script type="text/javascript">
       $(function(){
         'use strict';

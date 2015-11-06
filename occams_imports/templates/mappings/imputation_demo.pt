@@ -11,7 +11,7 @@
 
   </metal:content-slot>
 
-  <metal:javascript-slot fill-slot="javascript-extras-slot">
+  <metal:javascript-slot fill-slot="javascript-slot">
 
     <script>
     $(function () {
