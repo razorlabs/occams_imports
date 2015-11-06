@@ -4,9 +4,15 @@ Roster for direct and imputation mappings of DRSC variables
 This is a listing of mapped variables
 """
 
+import json
+
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
 from pyramid.renderers import render_to_response
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+
+from occams_datastore import models as datastore
+from occams_imports import models as models
 
 
 @view_config(
@@ -26,10 +32,6 @@ def index(context, request):
     xhr=True,
     renderer='json')
 def get_schemas(context, request):
-    import json
-    from occams_datastore import models as datastore
-    from occams_imports import models as models
-
     check_csrf_token(request)
     db_session = request.db_session
 
@@ -68,12 +70,6 @@ def get_schemas(context, request):
     xhr=True,
     renderer='json')
 def delete_mappings(context, request):
-    import json
-
-    from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-
-    from occams_imports import models as models
-
     check_csrf_token(request)
     db_session = request.db_session
 
@@ -115,9 +111,6 @@ def delete_mappings(context, request):
     request_method='GET',
     renderer='../templates/mappings/mapped.pt')
 def get_schemas_mapped(context, request):
-    from occams_datastore import models as datastore
-    from occams_imports import models as models
-
     db_session = request.db_session
 
     mappings = db_session.query(models.Mapper).filter(

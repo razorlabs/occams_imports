@@ -5,11 +5,17 @@ This data is the structure of the schemas and attributes for forms not the
 collected data
 """
 
-from pyramid.renderers import render_to_response
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
 
 from occams.utils.forms import wtferrors
+from occams_datastore import models as datastore
+from occams_forms.views.field import FieldFormFactory
+
+from occams_imports import models
+from occams_imports.parsers import parse
+from occams_imports.parsers import iform_json
+from occams_imports.parsers import convert_qds_to_occams
 
 
 @view_config(
@@ -42,22 +48,19 @@ def qds(context, request):
 @view_config(
     route_name='imports.codebooks_occams_status',
     permission='import',
-    request_method='POST')
+    request_method='POST',
+    renderer='../templates/codebooks/status.pt')
 @view_config(
     route_name='imports.codebooks_iform_status',
     permission='import',
-    request_method='POST')
+    request_method='POST',
+    renderer='../templates/codebooks/status.pt')
 @view_config(
     route_name='imports.codebooks_qds_status',
     permission='import',
-    request_method='POST')
+    request_method='POST',
+    renderer='../templates/codebooks/status.pt')
 def insert_codebooks(context, request):
-    from occams_datastore import models as datastore
-    from occams_imports import models
-    from occams_forms.views.field import FieldFormFactory
-    from occams_imports.parsers import parse
-    from occams_imports.parsers import iform_json as iform
-    from occams_imports.parsers import convert_qds_to_occams as qds
     """
     Insert appropriate records to the database
 
@@ -84,7 +87,7 @@ def insert_codebooks(context, request):
 
     if request.path_info == u'/imports/codebooks/iform/status':
 
-        converted_codebook = iform.convert(codebook)
+        converted_codebook = iform_json.convert(codebook)
 
         records = parse.parse(converted_codebook)
 
@@ -104,7 +107,8 @@ def insert_codebooks(context, request):
         elif request.POST['delimiter'] == u'tab':
             delimiter = '\t'
 
-        converted_codebook = qds.convert(codebook, delimiter=delimiter)
+        converted_codebook = convert_qds_to_occams.convert(
+            codebook, delimiter=delimiter)
 
         records = parse.parse(converted_codebook)
 
@@ -191,9 +195,9 @@ def insert_codebooks(context, request):
                     schema=schema
                 )
 
-                Session.add(imported)
+                db_session.add(imported)
 
-                Session.flush()
+                db_session.flush()
 
                 forms_inserted += 1
 
@@ -230,12 +234,11 @@ def insert_codebooks(context, request):
     fields_evaluated = len(records)
     error_count = len(errors)
 
-    return render_to_response(
-        '../templates/codebooks/status.pt',
-        {'fields_evaluated': fields_evaluated,
-         'errors': errors,
-         'error_count': error_count,
-         'fields_inserted': fields_inserted,
-         'forms_inserted': forms_inserted,
-         'forms': forms},
-         request=request)
+    return {
+        'fields_evaluated': fields_evaluated,
+        'errors': errors,
+        'error_count': error_count,
+        'fields_inserted': fields_inserted,
+        'forms_inserted': forms_inserted,
+        'forms': forms
+    }

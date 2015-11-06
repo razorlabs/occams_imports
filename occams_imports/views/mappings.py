@@ -2,13 +2,20 @@
 Perform direct and imputation mappings of DRSC variables
 """
 
+from datetime import datetime
+import json
+from operator import itemgetter
+
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
+from sqlalchemy.orm import joinedload
+
+from occams_datastore import models as datastore
+from occams_imports import models as models
 
 
 def update_schema_data(data, schemas, drsc):
     """Converts sql alchemy schema objects to dictionary for rendering"""
-    from operator import itemgetter
 
     site = u'DRSC' if drsc else u''
 
@@ -81,11 +88,6 @@ def occams_imputation_demo(context, request):
     xhr=True,
     renderer='json')
 def get_schemas(context, request):
-    import json
-    from sqlalchemy.orm import joinedload
-    from occams_datastore import models as datastore
-    from occams_imports import models as models
-
     check_csrf_token(request)
     db_session = request.db_session
 
@@ -115,12 +117,6 @@ def get_schemas(context, request):
     xhr=True,
     renderer='json')
 def mappings_direct_map(context, request):
-    import json
-    from datetime import datetime
-
-    from occams_datastore import models as datastore
-    from occams_imports import models as models
-
     check_csrf_token(request)
     db_session = request.db_session
 
@@ -178,12 +174,6 @@ def mappings_direct_map(context, request):
     xhr=True,
     renderer='json')
 def mappings_imputations_map(context, request):
-    import json
-    from datetime import datetime
-
-    from occams_datastore import models as datastore
-    from occams_imports import models as models
-
     check_csrf_token(request)
     db_session = request.db_session
 
