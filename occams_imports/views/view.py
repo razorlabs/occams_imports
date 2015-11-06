@@ -10,10 +10,10 @@ from pyramid.renderers import render_to_response
 
 
 @view_config(
-    route_name='imports.main',
+    route_name='imports.index',
     permission='view',
     renderer='../templates/main/view.pt')
-def main(context, request):
+def index(context, request):
     """
     """
     return {}

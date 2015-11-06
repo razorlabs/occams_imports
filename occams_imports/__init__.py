@@ -19,7 +19,7 @@ def includeme(config):
         'name': 'imports',
         'title': _(u'Imports'),
         'package': 'occams_imports',
-        'route': 'imports.main',
+        'route': 'imports.index',
         'version': __version__
     }
 
