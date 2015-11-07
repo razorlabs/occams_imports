@@ -9,49 +9,11 @@ from operator import itemgetter
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
 from sqlalchemy.orm import joinedload
+import wtforms
 
 from occams_datastore import models as datastore
 from occams_imports import models as models
 
-
-def update_schema_data(data, schemas, drsc):
-    """Converts sql alchemy schema objects to dictionary for rendering"""
-
-    site = u'DRSC' if drsc else u''
-
-    for schema in schemas:
-        attributes = []
-        for attr in sorted(schema.attributes):
-            attribute = {}
-            attribute['variable'] = schema.attributes[attr].name
-            attribute['label'] = schema.attributes[attr].title
-            attribute['datatype'] = schema.attributes[attr].type
-            if schema.attributes[attr].type == u'choice':
-                choices = []
-                for choice in schema.attributes[attr].choices:
-                    name = schema.attributes[attr].choices[choice].name
-                    title = schema.attributes[attr].choices[choice].title
-                    order = schema.attributes[attr].choices[choice].order
-                    choices.append(
-                        {u'name': name, u'label': title, u'order': order}
-                    )
-                    # choices need to be sorted for display in mappings table
-                    choices = sorted(choices, key=itemgetter('order'))
-
-            else:
-                choices = []
-
-            attribute['choices'] = choices
-            attributes.append(attribute)
-
-        data['forms'].append({
-            u'name': schema.name,
-            u'publish_date': schema.publish_date.strftime('%Y-%m-%d'),
-            u'attributes': attributes,
-            u'site': site
-        })
-
-    return data
 
 
 @view_config(
@@ -86,28 +48,117 @@ def occams_imputation_demo(context, request):
     permission='view',
     request_method='GET',
     xhr=True,
+    request_param='vocabulary=available_schemata',
     renderer='json')
 def get_schemas(context, request):
-    check_csrf_token(request)
     db_session = request.db_session
 
-    schemas = db_session.query(datastore.Schema).options(
-        joinedload('attributes').joinedload('choices')).filter(
-        datastore.Schema.id == models.Import.schema_id).filter(
-        models.Import.site != 'DRSC').order_by(datastore.Schema.name).all()
+    class SearchForm(wtforms.Form):
+        is_target = wtforms.BooleanField(
+            validators=[wtforms.validators.Optional()])
+        term = wtforms.StringField(
+            validators=[wtforms.validators.Optional()])
 
-    drsc_schemas = db_session.query(datastore.Schema).options(
-        joinedload('attributes').joinedload('choices')).filter(
-        datastore.Schema.id == models.Import.schema_id).filter(
-        models.Import.site == 'DRSC').all()
+    search_form = SearchForm(request.GET)
+    search_form.validate()
 
-    data = {}
-    data['forms'] = []
+    data = search_form.data
 
-    data = update_schema_data(data, schemas, drsc=False)
-    data = update_schema_data(data, drsc_schemas, drsc=True)
+    schemata_query = (
+        db_session.query(datastore.Schema)
+        .filter(datastore.Schema.id == models.Import.schema_id)
+    )
 
-    return json.dumps(data)
+    # TODO: Need to implement sites at the form level
+    if data['is_target']:
+        schemata_query = schemata_query.filter(models.Import.site == 'DRSC')
+    else:
+        schemata_query = schemata_query.filter(models.Import.site != 'DRSC')
+
+    if data['term']:
+        schemata_query = (
+            schemata_query
+            .filter(models.Schema.name.ilike('%{}%'.format(data['term']))))
+
+    schemata_query = (
+        schemata_query
+        .order_by(datastore.Schema.name)
+        .limit(25)
+    )
+
+    def schema2json(schema):
+        return {
+            u'name': schema.name,
+            u'publish_date': schema.publish_date,
+            u'attributes': [],
+            'site': u'DRSC' if data['is_target'] else u''
+        }
+
+    return {
+        'forms': [schema2json(schema) for schema in schemata_query]
+    }
+
+
+@view_config(
+    route_name='imports.schemas',
+    permission='view',
+    request_method='GET',
+    xhr=True,
+    request_param='vocabulary=available_attributes',
+    renderer='json')
+def get_attributes(context, request):
+    db_session = request.db_session
+
+    class SearchForm(wtforms.Form):
+        schema = wtforms.StringField(
+            validators=[wtforms.validators.InputRequired()])
+        term = wtforms.StringField(
+            validators=[wtforms.validators.Optional()])
+
+    search_form = SearchForm(request.GET)
+
+    if not search_form.validate():
+        return {}
+
+    data = search_form.data
+
+    attributes_query = (
+        db_session.query(datastore.Attribute)
+        .options(joinedload('choices'))
+        .join(datastore.Schema)
+        .filter(datastore.Schema.name == data['schema'])
+    )
+
+    if data['term']:
+        attributes_query = (
+            attributes_query
+            .filter(models.Attribute.name.ilike('%{}%'.format(data['term']))))
+
+    attributes_query = (
+        attributes_query
+        .order_by(datastore.Attribute.name)
+        .limit(25)
+    )
+
+    def choice2json(choice):
+        return {
+            u'name': choice.name,
+            u'label': choice.title,
+            u'order': choice.order
+        }
+
+    def attribute2json(attribute):
+        return {
+            'variable': attribute.name,
+            'label': attribute.title,
+            'datatype': attribute.type,
+            'choices': [
+                choice2json(choice) for choice in attribute.iterchoices()]
+        }
+
+    return {
+        'attributes': [attribute2json(schema) for schema in attributes_query]
+    }
 
 
 @view_config(

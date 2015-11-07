@@ -58,6 +58,42 @@ function conversionModel(){
   self.selectedForm = ko.observable();
   self.selectedAttribute = ko.observable();
   self.value = ko.observable();
+
+  self.select2AttributeParams = function(term, page){
+    return {
+      vocabulary: 'available_attributes',
+      schema: self.selectedForm().name,
+      term: term
+    };
+  };
+
+  self.select2AttributeResults = function(data){
+    return {
+        results: data.attributes.map(function(value){
+          return new attributeImputationModel(
+            value.variable, value.label, value.choices, value.datatype)
+        })
+    };
+  };
+
+  self.select2SchemaParams = function(term, page){
+    return {
+      vocabulary: 'available_schemata',
+      is_target: false,
+      term: term
+    };
+  };
+
+  self.select2SchemaResults = function(data){
+    return {
+        results: data.forms.map(function(value){
+          return new formImputationModel(
+            value.name, value.publish_date, value.attributes);
+        })
+    };
+  };
+
+
 }
 
 conversionModel.prototype.toJSON = function(){
@@ -267,31 +303,6 @@ function imputationViewModel(){
     }
   }
 
-  //get initial form data
-  $.ajax({
-    url: '/imports/schemas',
-    method: 'GET',
-    headers: {'X-CSRF-Token': $.cookie('csrf_token')},
-    beforeSend: function(){
-      self.isReady(true);
-      self.buckets.push(new bucketModel());
-    },
-    success: function(data, textStatus, jqXHR){
-      var json = $.parseJSON(data);
-
-      $.each(json.forms, function(){
-        var form = new formImputationModel(this.name, this.publish_date,
-                                           this.attributes);
-        if (this.site != 'DRSC'){
-          self.forms.push(form);
-        }
-        else{
-          self.drsc_forms.push(form);
-        }
-      });
-    },
-    complete: function(){
-      self.isLoading(false);
-  }
-  });
+  self.buckets.push(new bucketModel());
+  self.isLoading(false);
 }

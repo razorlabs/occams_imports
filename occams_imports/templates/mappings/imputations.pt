@@ -19,14 +19,14 @@
             <div class="panel panel-primary">
               <div class="panel-heading">Conversion
                 <!-- ko if: $root.buckets().length > 1 -->
-                <div class="col-md-1 pull-right">
-                  <a href="#"
-                     class="text-primary"
-                     data-bind="click: $root.removeBucket">
-                    <span class="glyphicon glyphicon-trash"
-                          style="color:white"></span>
-                  </a>
-                </div>
+                  <div class="col-md-1 pull-right">
+                    <a href="#"
+                       class="text-primary"
+                       data-bind="click: $root.removeBucket">
+                      <span class="glyphicon glyphicon-trash"
+                            style="color:white"></span>
+                    </a>
+                  </div>
                 <!-- /ko -->
               </div>
               <div class="panel-body">
@@ -40,14 +40,16 @@
                       <div class="col-sm-offset-3 col-sm-3">
                         <select data-bind="options: $data.mathOperators,
                                            value: $data.selectedOperator,
-                                           optionsCaption: 'Select...'"
+                                           optionsCaption: 'Select...',
+                                           select2: {}"
                                 class="form-control"></select>
                       </div>
                       <div class="col-sm-3">
                         <div data-bind="if: $data.selectedOperator">
                         <select data-bind="options: $data.operatorChoices,
                                            value: $data.selectedOperatorChoice,
-                                           optionsCaption: 'Select...'"
+                                           optionsCaption: 'Select...',
+                                           select2: {}"
                                 class="form-control"></select>
                       </div>
                     </div>
@@ -67,12 +69,23 @@
                     <label class="control-label col-sm-3"
                            for="site_forms">Form:</label>
                     <div class="col-sm-6">
-                      <select data-bind="options: $root.forms,
-                                         optionsText: 'name',
-                                         value: $data.selectedForm,
-                                         optionsCaption: 'Select a form...'"
-                              class="form-control"
-                              id="site_forms"></select>
+                      <input type="hidden"
+                             class="form-control"
+                             data-placeholder="Select a form..."
+                             i18n:attributes="data-placeholder"
+                             id="site_forms"
+                             tal:define="
+                                ajax  request.route_path('imports.schemas');"
+                             data-bind="selectedData: $data.selectedForm,
+                                        dataKey: 'name',
+                                        dataLabel: 'name',
+                                        select2: {
+                                          ajax: {
+                                              url: '${ajax}',
+                                              data: $data.select2SchemaParams,
+                                              results: $data.select2SchemaResults,
+                                          }
+                                        }" />
                       </div> <!-- end col 6-->
                       <div class="col-sm-3">
                         <div data-bind="ifnot: $data.selectedForm">
@@ -104,12 +117,23 @@
                       </div> <!-- if not selected form -->
                     <div data-bind="with: $data.selectedForm">
                       <div class="col-sm-6">
-                        <select data-bind="options: $data.attributes,
-                                           optionsText: 'variable',
-                                           value: $parent.selectedAttribute"
-                                class="form-control"
-                                id="site_variables"></select>
-
+                        <input type="hidden"
+                               class="form-control"
+                               data-placeholder="Variable to be mapped"
+                               i18n:attributes="data-placeholder"
+                               id="site_variables"
+                               tal:define="
+                                  ajax  request.route_path('imports.schemas');"
+                               data-bind="selectedData: $parent.selectedAttribute,
+                                          dataKey: 'variable',
+                                          dataLabel: 'variable',
+                                          select2: {
+                                            ajax: {
+                                                url: '${ajax}',
+                                                data: $parent.select2AttributeParams,
+                                                results: $parent.select2AttributeResults,
+                                            }
+                                          }" />
                       </div> <!-- end col 6-->
                       <div data-bind="with: $parent.selectedAttribute">
                         <div class="col-sm-3">
@@ -230,7 +254,10 @@
                   <div class="col-sm-3">
                     <select data-bind="options: $root.conditions,
                                        value: $root.selectedImputationComparison,
-                                       optionsCaption: 'Select...'"
+                                       optionsCaption: 'Select...',
+                                       select2: {
+                                         minimumResultsForSearch: -1
+                                       }"
                             class="form-control"></select>
                   </div> <!-- end col 3-->
                 <div data-bind="if: $root.selectedImputationComparison">
@@ -302,7 +329,10 @@
                 for="direct_forms">Bucket Eval Operator:</label>
                   <div class="col-sm-2">
                     <select data-bind="options: $root.conditions,
-                                       value: $root.selectedBucketComparison"
+                                       value: $root.selectedBucketComparison,
+                                       select2: {
+                                         minimumResultsForSearch: -1
+                                       }"
                             class="form-control"></select>
                   </div> <!-- end col 6-->
             </div>
