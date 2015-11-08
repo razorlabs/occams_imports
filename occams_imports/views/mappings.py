@@ -132,7 +132,8 @@ def get_attributes(context, request):
     if data['term']:
         attributes_query = (
             attributes_query
-            .filter(models.Attribute.name.ilike('%{}%'.format(data['term']))))
+            .filter(datastore.Attribute.name.ilike(
+                '%{}%'.format(data['term']))))
 
     attributes_query = (
         attributes_query
