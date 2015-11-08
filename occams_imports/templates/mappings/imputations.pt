@@ -13,6 +13,8 @@
       <span data-bind="text: msg"></span>
     </div>
 
+    <div class="row">
+
       <div class="col-md-6">
         <div data-bind="foreach: buckets">
           <div class="row">
@@ -188,12 +190,23 @@
                 <label class="control-label col-sm-3"
                        for="direct_forms">Form:</label>
                 <div class="col-sm-6">
-                  <select data-bind="options: drsc_forms,
-                                     optionsText: 'name',
-                                     value: $data.selectedDRSCForm,
-                                     optionsCaption: 'Select a form...'"
-                          class="form-control"
-                          id="direct_forms"></select>
+                  <input type="hidden"
+                         class="form-control"
+                         data-placeholder="Select a form..."
+                         i18n:attributes="data-placeholder"
+                         id="direct_forms"
+                         tal:define="
+                            ajax  request.route_path('imports.schemas');"
+                         data-bind="selectedData: $data.selectedDRSCForm,
+                                    dataKey: 'name',
+                                    dataLabel: 'name',
+                                    select2: {
+                                      ajax: {
+                                          url: '${ajax}',
+                                          data: $data.select2SchemaParams,
+                                          results: $data.select2SchemaResults,
+                                      }
+                                    }" />
                   </div> <!-- end col 6-->
                   <div class="col-sm-3">
                     <div data-bind="ifnot: $data.selectedDRSCForm">
@@ -225,10 +238,24 @@
                   </div> <!-- end selected drsc form -->
                   <div data-bind="with: selectedDRSCForm">
                     <div class="col-sm-6">
-                        <select data-bind="options: attributes,
-                                           optionsText: 'variable',
-                                           value: $root.selectedDRSCAttribute"
-                                class="form-control"></select>
+                        <input type="hidden"
+                               class="form-control"
+                               data-placeholder="Variable to be mapped"
+                               i18n:attributes="data-placeholder"
+                               id="site_variables"
+                               tal:define="
+                                  ajax  request.route_path('imports.schemas');"
+                               data-bind="selectedData: $parent.selectedDRSCAttribute,
+                                          dataKey: 'variable',
+                                          dataLabel: 'variable',
+                                          select2: {
+                                            ajax: {
+                                                url: '${ajax}',
+                                                data: $parent.select2DRSCAttributeParams,
+                                                results: $parent.select2DRSCAttributeResults,
+                                            }
+                                          }" />
+
                      </div> <!-- end col 6 -->
                     <div data-bind="with: $root.selectedDRSCAttribute">
                       <div class="col-sm-3">
@@ -283,7 +310,10 @@
                   <div class="col-md-3 col-md-offset-1">
                     <select data-bind="options: $data.operators,
                                        value: $data.selectedOperator,
-                                       optionsCaption: 'Select...'"
+                                       optionsCaption: 'Select...',
+                                       select2: {
+                                         minimumResultsForSearch: -1
+                                       }"
                             class="form-control"></select>
                   </div> <!-- end col 3-->
                   <div class="col-md-3">
@@ -372,7 +402,8 @@
                   <div class="col-sm-6">
                     <select data-bind="options: choices,
                                    optionsText: 'mapToOptions',
-                                   value: $root.selectedMapTo"
+                                   value: $root.selectedMapTo,
+                                   select2: {}"
                             class="form-control"></select>
                     </div>
                   </div>
@@ -395,38 +426,34 @@
             <div class="row">
               <label class="control-label col-sm-2"
                      for="confidence">Confidence:</label>
-              <div class="col-sm-2">
-                  <input type="number"
-                         class="form-control"
+              <div class="col-sm-10">
+                <select class="form-control"
                          id="confidence"
-                         min="1"
-                         max="3"
-                         data-bind="value: confidence"></input>
-              </div>
-              <div class="col-md-5">
-              <!-- ko if: $root.confidence() == "1" -->
-              <h6>No/little manipulation/interpretation</h6>
-              <!-- /ko -->
-
-              <!-- ko if: $root.confidence() == "2" -->
-              <h6>Some manipulation/interpretation</h6>
-              <!-- /ko -->
-
-              <!-- ko if: $root.confidence() == "3" -->
-              <h6>Significant manipulation/interpretation</h6>
-              <!-- /ko -->
-              </div>
-              <div class="col-md-2">
-                <button class="btn btn-primary btn-lg"
-                        type="button"
-                        data-bind="click: saveImputation">Map</button>
+                         data-bind="value: confidence, select2: {}"
+                         data-placeholder="Select confidence level...">
+                  <option value=""></option>
+                  <option value="1">1 - No/little manipulation/interpretation</option>
+                  <option value="2">2 - Some manipulation/interpretation</option>
+                  <option value="3">3 - Significant manipulation/interpretation</option>
+                  <option value="4"></option>
+                </select>
               </div>
             </div> <!--end row -->
           </form>
           </div> <!-- end panel body -->
         </div> <!-- end panel primary -->
       </div> <!--end col 6 -->
+    </div> <!-- end row -->
+
     </div> <!-- end is ready -->
+      <hr />
+
+      <div class="pull-right">
+        <button class="btn btn-primary btn-lg"
+                type="button"
+                data-bind="click: saveImputation">Map</button>
+      </div>
+
   </metal:content-slot>
 
   <metal:javascript-slot fill-slot="javascript-slot">

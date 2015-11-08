@@ -8,6 +8,7 @@ function choiceImputationModel(name, label){
   self.mapToOptions = ko.pureComputed(function(){
     return self.name() + ' - ' + self.label();
   });
+
 }
 
 function attributeImputationModel(variable, label, choices, datatype){
@@ -302,6 +303,40 @@ function imputationViewModel(){
       });*/
     }
   }
+
+  self.select2SchemaParams = function(term, page){
+    return {
+      vocabulary: 'available_schemata',
+      is_target: true,
+      term: term
+    };
+  };
+
+  self.select2SchemaResults = function(data){
+    return {
+        results: data.forms.map(function(value){
+          return new formImputationModel(
+            value.name, value.publish_date, value.attributes);
+        })
+    };
+  };
+
+  self.select2DRSCAttributeParams = function(term, page){
+    return {
+      vocabulary: 'available_attributes',
+      schema: self.selectedDRSCForm().name,
+      term: term
+    };
+  };
+
+  self.select2DRSCAttributeResults = function(data){
+    return {
+        results: data.attributes.map(function(value){
+          return new attributeImputationModel(
+            value.variable, value.label, value.choices, value.datatype)
+        })
+    };
+  };
 
   self.buckets.push(new bucketModel());
   self.isLoading(false);
