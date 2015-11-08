@@ -10,6 +10,8 @@ log = logging.getLogger('occams').getChild(__name__)
 
 _ = TranslationStringFactory(__name__)
 
+__prefix__ = '/imports'
+__title__ = _(u'Imports')
 __version__ = pkg_resources.require(__name__)[0].version
 
 
