@@ -3,6 +3,8 @@ function Mapping(data){
 
   var self = this;
 
+  self.availableOperators = LOGICAL;
+
   self.title = ko.observable();
   self.description = ko.observable();
 
@@ -10,6 +12,14 @@ function Mapping(data){
   self.confidence = ko.observable();
   self.condition = ko.observable(ALL);
   self.buckets = ko.observableArray();
+
+  self.bucketsLength = ko.pureComputed(function(){
+    return self.buckets().length;
+  });
+
+  self.hasMultipleBuckets = ko.pureComputed(function(){
+    return self.bucketsLength() > 1;
+  });
 
   self.update = function(data){
     data = data || {};

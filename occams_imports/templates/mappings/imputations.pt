@@ -51,19 +51,60 @@
             <!-- /ko --> <!-- /with -->
           <!-- /ko --> <!-- /with -->
 
+          <div class="form-group">
+            <label class="control-label col-sm-2">Match</label>
+            <!-- ko if: hasMultipleBuckets -->
+              <div class="col-sm-2">
+                  <select class="form-control"
+                          data-bind="options: availableOperators,
+                                     optionsText: 'title',
+                                     optionsCaption: 'Select...',
+                                     value: condition,
+                                     select2: {}"></select>
+              </div>
+              <div class="col-sm-8">
+                <p class="form-control-static"><strong>of the following groups:</strong></p>
+              </div>
+            <!-- /ko -->
+            <!-- ko ifnot: hasMultipleBuckets -->
+              <div class="col-sm-10">
+                <p class="form-control-static"><strong>the following group:</strong></p>
+              </div>
+            <!-- /ko -->
+          </div> <!-- /.form-group -->
+
           <hr />
 
           <!-- ko template: {name: 'bucketTemplate', foreach: buckets} --><!-- /ko -->
 
+          <div>
+            <div class="pull-right">
+              <button class="btn btn-default">
+                <span class="fa fa-plus"></span>
+                <span>Add another bucket</span>
+              </button>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+
           <hr />
 
           <div class="form-group">
-            <label class="col-md-2 control-label">Description</label>
-            <div class="col-md-10">
-              <textarea class="form-control"
-                        name="description"
-                        data-bind="value: description"></textarea>
+            <label class="control-label col-sm-2 required"
+                   for="confidence">Confidence</label>
+            <div class="col-sm-5">
+              <select class="form-control"
+                       id="confidence"
+                       data-bind="value: confidence, select2: {}"
+                       data-placeholder="Select confidence level...">
+                <option value=""></option>
+                <option value="1">1 - No/little manipulation/interpretation</option>
+                <option value="2">2 - Some manipulation/interpretation</option>
+                <option value="3">3 - Significant manipulation/interpretation</option>
+                <option value="4"></option>
+              </select>
             </div>
+
           </div> <!-- /.form-group -->
 
         <!-- /ko -->
@@ -125,7 +166,7 @@
                                        optionsCaption: 'Select...',
                                        select2: {minimumResultsForSearch: -1}"></select>
                   </div>
-                  <div class="col-sm-3">
+                  <div class="col-sm-2">
                     <select class="form-control"
                             data-bind="select2: {minimumResultsForSearch: -1}">
                       <option></option>
@@ -135,10 +176,29 @@
                   </div>
 
                   <!-- ko if: byValue -->
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                       <input class="form-control" type="number" data-bind="value: value" />
                     </div>
                   <!-- /ko -->
+
+                  <div data-bind="css: {
+                        'col-sm-8': byVariable,
+                        'col-sm-6': byValue
+                        }">
+                    <div class="btn-group pull-right">
+                      <button type="button"
+                              class="btn btn-default"
+                              data-bind="click: $root.addBucket">
+                         <span class="fa fa-minus"></span>
+                      </button>
+                      <button type="button"
+                              class="btn btn-default"
+                              data-bind="click: $root.addBucket">
+                         <span class="fa fa-plus"></span>
+                      </button>
+                    </div>
+                  </div>
+
                 </div> <!-- /.form-group -->
               <!-- /ko  --> <!-- /if operator -->
 
@@ -151,34 +211,6 @@
             <!-- /ko --> <!-- /foreach conversions-->
 
           </form>
-
-          <form class="form-horizontal">
-            <div class="form-group">
-              <div class="col-md-2 col-md-offset-3">
-                <button type="button"
-                        class="btn btn-default dropdown-toggle"
-                        data-toggle="dropdown">options
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a data-bind="click: $root.addConversion">Add Operation</a></li>
-                  <!-- ko if: $data.conversions().length > 1 -->
-                  <li><a data-bind="click: $root.deleteConversion">Remove Operation</a></li>
-                  <!-- /ko -->
-                </ul>
-              </div> <!-- btn-group-->
-
-              <div class="col-md-1 col-md-offset-4">
-                <button type="button"
-                        class="btn btn-default"
-                        data-bind="click: $root.addBucket">
-                   <span class="glyphicon glyphicon-plus-sign"></span>
-                 </button>
-              </div>
-            </div>
-          </form>
-
-          <hr />
 
           <form class="form-horizontal">
 
@@ -195,10 +227,13 @@
                                          value: operator,
                                          select2: {}"></select>
                   </div>
+                  <div class="col-sm-8">
+                    <p class="form-control-static"><strong>of the following rules:</strong></p>
+                  </div>
                 <!-- /ko -->
                 <!-- ko ifnot: hasMultiple -->
                   <div class="col-sm-10">
-                    <strong>the followlling rule</strong>
+                    <p class="form-control-static"><strong>the following rule:</strong></p>
                   </div>
                 <!-- /ko -->
               </div> <!-- /.form-group -->
@@ -218,6 +253,25 @@
                     <input type="text"
                            class="form-control"
                            data-bind="value: value" />
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="btn-group pull-right">
+                      <button type="button"
+                              class="btn btn-default"
+                              data-bind="click: $root.addBucket">
+                         <span class="fa fa-minus"></span>
+                      </button>
+                      <button type="button"
+                              class="btn btn-default"
+                              data-bind="click: $root.addBucket">
+                         <span class="fa fa-level-down"></span>
+                      </button>
+                      <button type="button"
+                              class="btn btn-default"
+                              data-bind="click: $root.addBucket">
+                         <span class="fa fa-plus"></span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               <!-- /ko -->
