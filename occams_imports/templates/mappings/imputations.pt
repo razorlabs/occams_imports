@@ -91,6 +91,15 @@
 
           <div class="form-group">
             <label class="control-label col-sm-2 required"
+                   for="confidence">Description</label>
+            <div class="col-sm-5">
+              <textarea class="form-control"
+                        data-bind="value: description"></textarea>
+            </div>
+          </div> <!-- /.form-group -->
+
+          <div class="form-group">
+            <label class="control-label col-sm-2 required"
                    for="confidence">Confidence</label>
             <div class="col-sm-5">
               <select class="form-control"
@@ -104,7 +113,6 @@
                 <option value="4"></option>
               </select>
             </div>
-
           </div> <!-- /.form-group -->
 
         <!-- /ko -->
@@ -310,7 +318,7 @@
                               }" />
             <div class="input-group-addon">
               <!-- ko with: schema -->
-                <span>v</span><span data-bind="text: publish_date"></span>
+                <code data-bind="text: publish_date"></code>
               <!-- /ko --> <!-- /with -->
             </div> <!-- /.input-group-addon -->
           </div> <!-- /.input-group -->

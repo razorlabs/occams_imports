@@ -6,7 +6,7 @@
     <div class="pull-right">
       <div class="btn-group">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-          <span class="glyphicon glyphicon-plus"></span>
+          <span class="fa fa-plus"></span>
           Mapping
           <span class="caret"></span>
         </button>
@@ -114,7 +114,7 @@
     <button class="btn btn-danger btn-lg"
             type="button"
             data-bind="click: deleteRows">
-      <span class="glyphicon glyphicon-trash"></span>
+      <span class="fa fa-trash"></span>
       <span>Delete Selected</span>
     </button>
   </div>
