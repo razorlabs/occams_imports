@@ -15,6 +15,31 @@ function MappingView(data){
               choice : {name: '1', title: 'Yes'}
               };
 
+var MUL = 'MUL'
+  , DIV = 'DIV'
+  , ADD = 'ADD'
+  , SUB = 'SUB'
+;
+
+var ARITHMETIC = [MUL, DIV, ADD, SUB];
+var MAX_NESTING = 2;
+
+var ANY = 'ANY'
+  , ALL = 'ALL'
+
+  , EQ = 'EQ'
+  , NE = 'NE'
+  , LT = 'LT'
+  , LTE = 'LTE'
+  , GT = 'GT'
+  , GTE = 'GTE'
+
+  , LOGICAL = [ANY, ALL]
+  , COMPARISON = [EQ, NE, LT, LTE, GT, GTE]
+;
+
+
+
 
   self.mapping = new Mapping({
     title: 'something',
@@ -22,19 +47,19 @@ function MappingView(data){
     target: variable,
     confidence: 1,
     condition: ALL,
-    buckets: [
+    groups: [
       {
         conversions: [
           {
             operator: null,
             value: variable,
           },
-          {operator: 'multiply', value: 1},
-          {operator: 'divide', value: variable},
-          {operator: 'add', value: 3.3},
+          {operator: MUL, value: 1},
+          {operator: DIV, value: variable},
+          {operator: ADD, value: 3.3},
         ],
-        imputation: {
-          operator: 'ALL',
+        logic: {
+          operator: ALL,
           imputations: [
             {operator: EQ, value: 100},
             {operator: LTE, value: 50},
@@ -44,11 +69,11 @@ function MappingView(data){
       },
       {
         conversions: [
-          {operator: 'multiply', value: 1},
-          {operator: 'divide', value: 2},
-          {operator: 'add', value: variable},
+          {operator: MUL, value: 1},
+          {operator: DIV, value: 2},
+          {operator: ADD, value: variable},
         ],
-        imputation: {
+        logic: {
           operator: ALL,
           imputations: [
             {operator: EQ, value: 100},

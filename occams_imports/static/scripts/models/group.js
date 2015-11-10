@@ -1,14 +1,10 @@
-function Bucket(data){
+function Group(data){
   'use strict';
-
   var self = this;
 
   self.title = ko.observable();
-
   self.conversions = ko.observableArray();
-
-  // Root imputation list
-  self.imputation = ko.observable();
+  self.logic = ko.observable();
 
   self.conversionsLength = ko.pureComputed(function(){
     return self.conversions().length();
@@ -19,7 +15,7 @@ function Bucket(data){
     self.conversions((data.conversions || []).map(function(value){
       return new Conversion(value);
     }));
-    self.imputation(new ImputationList(data.imputation));
+    self.logic(new ImputationList(data.logic));
   };
 
   self.update(data);

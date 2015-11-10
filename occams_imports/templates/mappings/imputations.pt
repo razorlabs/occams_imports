@@ -53,20 +53,20 @@
 
           <div class="form-group">
             <label class="control-label col-sm-2">Match</label>
-            <!-- ko if: hasMultipleBuckets -->
+            <!-- ko if: hasMultipleGroups -->
               <div class="col-sm-2">
                   <select class="form-control"
-                          data-bind="options: availableOperators,
-                                     optionsText: 'title',
-                                     optionsCaption: 'Select...',
-                                     value: condition,
-                                     select2: {}"></select>
+                          data-bind="value: condition,
+                                     select2: {minimumResultsForSearch: -1}">
+                    <option value="ANY">Any</option>
+                    <option value="ALL">All</option>
+                  </select>
               </div>
               <div class="col-sm-8">
                 <p class="form-control-static"><strong>of the following groups:</strong></p>
               </div>
             <!-- /ko -->
-            <!-- ko ifnot: hasMultipleBuckets -->
+            <!-- ko ifnot: hasMultipleGroups -->
               <div class="col-sm-10">
                 <p class="form-control-static"><strong>the following group:</strong></p>
               </div>
@@ -75,13 +75,13 @@
 
           <hr />
 
-          <!-- ko template: {name: 'bucketTemplate', foreach: buckets} --><!-- /ko -->
+          <!-- ko template: {name: 'groupTemplate', foreach: groups} --><!-- /ko -->
 
           <div>
             <div class="pull-right">
               <button class="btn btn-default">
                 <span class="fa fa-plus"></span>
-                <span>Add another bucket</span>
+                <span>Add another group</span>
               </button>
             </div>
             <div class="clearfix"></div>
@@ -143,7 +143,7 @@
     </script>
 
 
-    <script type="text/html" id="bucketTemplate">
+    <script type="text/html" id="groupTemplate">
       <div class="panel panel-default">
 
         <div class="panel-heading">
@@ -161,7 +161,7 @@
 
             <!-- ko foreach: conversions -->
 
-              <!-- first bucket should not display operators-->
+              <!-- first group should not display operators-->
               <!-- ko if: operator -->
                 <!--ko if: $index == 0 -->
                   <hr />
@@ -169,17 +169,21 @@
                 <div class="form-group">
                   <div class="col-sm-2">
                     <select class="form-control"
-                            data-bind="options: mathOperators,
-                                       value: operator,
-                                       optionsCaption: 'Select...',
-                                       select2: {minimumResultsForSearch: -1}"></select>
+                            data-bind="value: operator,
+                                       select2: {minimumResultsForSearch: -1}">
+                      <option value=""></option>
+                      <option value="ADD">Add</option>
+                      <option value="SUB">Sub</option>
+                      <option value="MUL">Multiply</option>
+                      <option value="DIV">Divide</option>
+                    </select>
                   </div>
                   <div class="col-sm-2">
                     <select class="form-control"
                             data-bind="select2: {minimumResultsForSearch: -1}">
                       <option></option>
-                      <option data-bind="attr: {selected: byValue}">By Value </option>
-                      <option data-bind="attr: {selected: byVariable}">By Variable</option>
+                      <option data-bind="VAL">By Value </option>
+                      <option data-bind="VAR">By Variable</option>
                     </select>
                   </div>
 
@@ -222,18 +226,18 @@
 
           <form class="form-horizontal">
 
-            <!-- ko with: imputation -->
+            <!-- ko with: logic -->
 
               <div class="form-group">
                 <label class="control-label col-sm-2">Match</label>
                 <!-- ko if: hasMultiple -->
                   <div class="col-sm-2">
                       <select class="form-control"
-                              data-bind="options: availableOperators,
-                                         optionsText: 'title',
-                                         optionsCaption: 'Select...',
-                                         value: operator,
-                                         select2: {}"></select>
+                              data-bind="value: operator,
+                                         select2: {}">
+                        <option value="ALL" i18n:translate="">All</option>
+                        <option value="ANY" i18n:translate="">Any</option>
+                      </select>
                   </div>
                   <div class="col-sm-8">
                     <p class="form-control-static"><strong>of the following rules:</strong></p>
@@ -248,21 +252,24 @@
 
               <!-- ko foreach: imputations -->
                 <div class="form-group">
-                  <div class="col-sm-offset-2 col-sm-2">
+                  <div class="col-sm-offset-2 col-sm-3">
                     <select class="form-control"
-                            data-bind="options: availableOperators,
-                                       optionsText: 'title',
-                                       optionsCaption: 'Select...',
-                                       optionsValue: 'name',
-                                       value: operator,
-                                       select2: {minimumResultsForSearch: -1}"></select>
+                            data-bind="value: operator,
+                                       select2: {minimumResultsForSearch: -1}">
+                      <option value="EQ">is equal to</option>
+                      <option value="NE">is not equal to</option>
+                      <option value="LT">is less than</option>
+                      <option value="LTE">is less than or equal to</option>
+                      <option value="GT">is greater than</option>
+                      <option value="GTE">is greater than or equal to</option>
+                    </select>
                   </div>
                   <div class="col-sm-2">
                     <input type="text"
                            class="form-control"
                            data-bind="value: value" />
                   </div>
-                  <div class="col-sm-6">
+                  <div class="col-sm-5">
                     <div class="btn-group pull-right">
                       <button type="button"
                               class="btn btn-default"
@@ -289,6 +296,16 @@
           </form>
 
         </div> <!-- /.panel-body -->
+
+        <div class="panel-footer">
+          <div class="pull-right">
+            <button class="btn btn-default">
+              <span class="fa fa-copy"></span>
+              <span>Copy this group</span>
+            </button>
+          </div>
+          <div class="clearfix"></div>
+        </div> <!-- /.panel-footer -->
 
       </div> <!-- /.panel -->
     </script>

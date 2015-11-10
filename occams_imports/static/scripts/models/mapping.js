@@ -3,22 +3,20 @@ function Mapping(data){
 
   var self = this;
 
-  self.availableOperators = LOGICAL;
-
   self.title = ko.observable();
   self.description = ko.observable();
 
   self.target = ko.observable();
   self.confidence = ko.observable();
-  self.condition = ko.observable(ALL);
-  self.buckets = ko.observableArray();
+  self.condition = ko.observable('ALL');
+  self.groups = ko.observableArray();
 
-  self.bucketsLength = ko.pureComputed(function(){
-    return self.buckets().length;
+  self.groupsLength = ko.pureComputed(function(){
+    return self.groups().length;
   });
 
-  self.hasMultipleBuckets = ko.pureComputed(function(){
-    return self.bucketsLength() > 1;
+  self.hasMultipleGroups = ko.pureComputed(function(){
+    return self.groupsLength() > 1;
   });
 
   self.update = function(data){
@@ -26,8 +24,8 @@ function Mapping(data){
     self.target(new Variable(data.target));
     self.confidence(data.conversion);
     self.condition(data.condition);
-    self.buckets((data.buckets || []).map(function(value){
-      return new Bucket(value);
+    self.groups((data.groups || []).map(function(value){
+      return new Group(value);
     }));
   }
 

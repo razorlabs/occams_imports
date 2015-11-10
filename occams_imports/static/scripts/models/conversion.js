@@ -1,25 +1,19 @@
-//var ARITHMETIC = ['multiply', 'divide', 'add', 'subtract'];
-var ARITHMETIC = ['multiply', 'divide', 'add', 'subtract'];
-var CHOICES = ['By variable', 'By value'];
-
 function Conversion (data){
   'use strict';
 
   var self = this;
 
-  self.mathOperators = ARITHMETIC;
-  self.operatorChoices = CHOICES;
-  self.selectedOperatorChoice = ko.observable();
-
   self.operator = ko.observable();
   self.value = ko.observable();
 
   self.byVariable = ko.pureComputed(function(){
-    return self.value() instanceof Variable;
+    var value = self.value();
+    return value && value instanceof Variable;
   });
 
   self.byValue = ko.pureComputed(function(){
-    return !self.byVariable();
+    var value = self.value();
+    return value && !(value instanceof Variable);
   });
 
   self.update = function(data){
