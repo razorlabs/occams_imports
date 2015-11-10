@@ -1,466 +1,313 @@
 <html metal:use-macro="load: ../master.pt">
   <metal:content-slot fill-slot="content-slot">
+
+    <!-- ko ifnot: isReady -->
+      <div class="text-center">
+        <span i18n:translate="">Loading...</span>
+        <span class="fa fa-refresh fa-spin"></span>
+      </div>
+    <!-- /ko -->
+
     <div style="display: none;" data-bind="visible: isReady">
-    <header class="page-header">
-      <h1 i18n:translate="">Imputation Mapping</h1>
-    </header>
-    <p i18n:translate="" class="lead">
-        This interface was designed so you can map variables using imputations.
-    </p>
-    <div data-bind="css: { 'alert': true, 'alert-danger': isDanger, 'alert-info': isInfo,
-                   'alert-success': isSuccess }">
-      <strong data-bind="text: msgType"></strong>
-      <span data-bind="text: msg"></span>
-    </div>
+      <header class="page-header">
+        <h1 i18n:translate="">Imputation Mapping</h1>
+      </header>
 
-    <div class="row">
+      <!-- ko template: {name: 'alertTemplate', data: alert, if: alert} -->
+      <!-- /ko -->
 
-      <div class="col-md-6">
-        <div data-bind="foreach: buckets">
-          <div class="row">
-            <div class="panel panel-primary">
-              <div class="panel-heading">Conversion
-                <!-- ko if: $root.buckets().length > 1 -->
-                  <div class="col-md-1 pull-right">
-                    <a href="#"
-                       class="text-primary"
-                       data-bind="click: $root.removeBucket">
-                      <span class="glyphicon glyphicon-trash"
-                            style="color:white"></span>
-                    </a>
+      <form class="form-horizontal">
+
+        <!-- ko with: mapping -->
+
+          <!-- ko template: {name: 'variableTemplate', data: target} --><!-- /ko -->
+
+          <!-- ko with: target -->
+            <!-- ko with: attribute -->
+              <!-- ko if: hasChoices -->
+                <div class="form-group">
+                  <label class="control-label required col-sm-2"
+                         for="direct_version">Map To:</label>
+                  <div class="col-sm-6">
+                    <input type="hidden"
+                           class="form-control"
+                           data-placeholder="Choice to be mapped"
+                           i18n:attributes="data-placeholder"
+                           tal:define="
+                              ajax  request.route_path('imports.schemas');"
+                           data-bind="selectedData: $parent.choice,
+                                      dataKey: 'name',
+                                      dataLabel: 'toString',
+                                      select2: {
+                                        ajax: {
+                                            url: '${ajax}',
+                                            data: $parent.select2AttributeParams,
+                                            results: $parent.select2AttributeResults,
+                                        }
+                                      }" />
+                  </div>
+                </div> <!-- /.form-group -->
+              <!-- /ko --> <!-- /if -->
+            <!-- /ko --> <!-- /with -->
+          <!-- /ko --> <!-- /with -->
+
+          <hr />
+
+          <!-- ko template: {name: 'bucketTemplate', foreach: buckets} --><!-- /ko -->
+
+          <hr />
+
+          <div class="form-group">
+            <label class="col-md-2 control-label">Description</label>
+            <div class="col-md-10">
+              <textarea class="form-control"
+                        name="description"
+                        data-bind="value: description"></textarea>
+            </div>
+          </div> <!-- /.form-group -->
+
+        <!-- /ko -->
+
+        <hr />
+
+        <div class="pull-right">
+          <a class="btn btn-link"
+             href="${request.current_route_path(_route='imports.index')}">
+            Cancel
+          </a>
+          <button class="btn btn-primary"
+                  type="button"
+                  data-bind="click: saveImputation">Save</button>
+        </div>
+
+      </form>
+
+    </div> <!-- /isReady -->
+
+    <script type="text/html" id="alertTemplate">
+      <div data-bind="css: css">
+        <!-- ko if: title -->
+          <strong data-bind="text: title"></strong>
+        <!-- /ko -->
+        <span data-bind="text: message"></span>
+      </div>
+    </script>
+
+
+    <script type="text/html" id="bucketTemplate">
+      <div class="panel panel-default">
+
+        <div class="panel-heading">
+          <div class="pull-right">
+            <button type="button" class="close" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="clearfix"></div>
+        </div> <!-- /.panel-heading -->
+
+        <div class="panel-body">
+
+          <form class="form-horizontal" role="form">
+
+            <!-- ko foreach: conversions -->
+
+              <!-- first bucket should not display operators-->
+              <!-- ko if: operator -->
+                <!--ko if: $index == 0 -->
+                  <hr />
+                <!-- /ko -->
+                <div class="form-group">
+                  <div class="col-sm-2">
+                    <select class="form-control"
+                            data-bind="options: mathOperators,
+                                       value: operator,
+                                       optionsCaption: 'Select...',
+                                       select2: {minimumResultsForSearch: -1}"></select>
+                  </div>
+                  <div class="col-sm-3">
+                    <select class="form-control"
+                            data-bind="select2: {minimumResultsForSearch: -1}">
+                      <option></option>
+                      <option data-bind="attr: {selected: byValue}">By Value </option>
+                      <option data-bind="attr: {selected: byVariable}">By Variable</option>
+                    </select>
+                  </div>
+
+                  <!-- ko if: byValue -->
+                    <div class="col-sm-3">
+                      <input class="form-control" type="number" data-bind="value: value" />
+                    </div>
+                  <!-- /ko -->
+                </div> <!-- /.form-group -->
+              <!-- /ko  --> <!-- /if operator -->
+
+              <!-- ko if: byVariable -->
+                <!-- ko template: { name: 'variableTemplate', data: value } --><!-- /ko -->
+              <!-- /ko --> <!-- /if -->
+
+              <hr />
+
+            <!-- /ko --> <!-- /foreach conversions-->
+
+          </form>
+
+          <form class="form-horizontal">
+            <div class="form-group">
+              <div class="col-md-2 col-md-offset-3">
+                <button type="button"
+                        class="btn btn-default dropdown-toggle"
+                        data-toggle="dropdown">options
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a data-bind="click: $root.addConversion">Add Operation</a></li>
+                  <!-- ko if: $data.conversions().length > 1 -->
+                  <li><a data-bind="click: $root.deleteConversion">Remove Operation</a></li>
+                  <!-- /ko -->
+                </ul>
+              </div> <!-- btn-group-->
+
+              <div class="col-md-1 col-md-offset-4">
+                <button type="button"
+                        class="btn btn-default"
+                        data-bind="click: $root.addBucket">
+                   <span class="glyphicon glyphicon-plus-sign"></span>
+                 </button>
+              </div>
+            </div>
+          </form>
+
+          <hr />
+
+          <form class="form-horizontal">
+
+            <!-- ko with: imputation -->
+
+              <div class="form-group">
+                <label class="control-label col-sm-2">Match</label>
+                <!-- ko if: hasMultiple -->
+                  <div class="col-sm-2">
+                      <select class="form-control"
+                              data-bind="options: availableOperators,
+                                         optionsText: 'title',
+                                         optionsCaption: 'Select...',
+                                         value: operator,
+                                         select2: {}"></select>
                   </div>
                 <!-- /ko -->
-              </div>
-              <div class="panel-body">
-                <form class="form-horizontal"
-                      role="form"
-                      data-bind="foreach: conversions">
-
-                   <!-- first bucket should not display operators-->
-                  <div data-bind="if: ($index() > 0)">
-                    <div class="row">
-                      <div class="col-sm-offset-3 col-sm-3">
-                        <select data-bind="options: $data.mathOperators,
-                                           value: $data.selectedOperator,
-                                           optionsCaption: 'Select...',
-                                           select2: {}"
-                                class="form-control"></select>
-                      </div>
-                      <div class="col-sm-3">
-                        <div data-bind="if: $data.selectedOperator">
-                        <select data-bind="options: $data.operatorChoices,
-                                           value: $data.selectedOperatorChoice,
-                                           optionsCaption: 'Select...',
-                                           select2: {}"
-                                class="form-control"></select>
-                      </div>
-                    </div>
-                      <div data-bind="if: $data.selectedOperatorChoice() == 'By value'">
-                        <div class="col-sm-3">
-                          <input class="form-control"
-                                 data-bind="value: value"
-                                 type="number"></input>
-                        </div>
-                      </div> <!-- end if 'by value' -->
-                    </div> <!-- end row -->
-                    <hr />
-                  </div> <!-- end if not first conversion -->
-
-                  <div data-bind="if: $data.selectedOperatorChoice() == 'By variable' || $index() == 0">
-                  <div class="form-group">
-                    <label class="control-label col-sm-3"
-                           for="site_forms">Form:</label>
-                    <div class="col-sm-6">
-                      <input type="hidden"
-                             class="form-control"
-                             data-placeholder="Select a form..."
-                             i18n:attributes="data-placeholder"
-                             id="site_forms"
-                             tal:define="
-                                ajax  request.route_path('imports.schemas');"
-                             data-bind="selectedData: $data.selectedForm,
-                                        dataKey: 'name',
-                                        dataLabel: 'name',
-                                        select2: {
-                                          ajax: {
-                                              url: '${ajax}',
-                                              data: $data.select2SchemaParams,
-                                              results: $data.select2SchemaResults,
-                                          }
-                                        }" />
-                      </div> <!-- end col 6-->
-                      <div class="col-sm-3">
-                        <div data-bind="ifnot: $data.selectedForm">
-                          <input type="text"
-                                 readonly="readonly"
-                                 class="form-control"
-                                 placeholder="Publish date"></input>
-                        </div>
-                        <div data-bind="with: $data.selectedForm">
-                          <input data-bind="value: $data.publish_date"
-                                 readonly="readonly"
-                                 type="text"
-                                 class="form-control"></input>
-                        </div> <!-- end with selected form -->
-                      </div>
-                    </div> <!-- end form group-->
-
-                  <div class="form-group">
-                    <label class="control-label col-sm-3"
-                           for="site_variables">Variable:</label>
-                      <div data-bind="ifnot: $data.selectedForm">
-                        <div class="col-sm-6">
-                         <input type="text"
-                               readonly="readonly"
-                               class="form-control"
-                               id="site_variables"
-                               placeholder="Variable to be mapped"></input>
-                        </div> <!-- end col 6-->
-                      </div> <!-- if not selected form -->
-                    <div data-bind="with: $data.selectedForm">
-                      <div class="col-sm-6">
-                        <input type="hidden"
-                               class="form-control"
-                               data-placeholder="Variable to be mapped"
-                               i18n:attributes="data-placeholder"
-                               id="site_variables"
-                               tal:define="
-                                  ajax  request.route_path('imports.schemas');"
-                               data-bind="selectedData: $parent.selectedAttribute,
-                                          dataKey: 'variable',
-                                          dataLabel: 'variable',
-                                          select2: {
-                                            ajax: {
-                                                url: '${ajax}',
-                                                data: $parent.select2AttributeParams,
-                                                results: $parent.select2AttributeResults,
-                                            }
-                                          }" />
-                      </div> <!-- end col 6-->
-                      <div data-bind="with: $parent.selectedAttribute">
-                        <div class="col-sm-3">
-                           <a href="#" data-bind="text: datatype, tooltip: { title: label, placement: 'bottom' }"></a>
-                        </div>
-                      </div>
-                      </div> <!-- end with selected form -->
-                    </div> <!-- end form group -->
-                    <hr >
-                  </div> <!-- end if 'By variable is selected' -->
-
-                </form> <!-- end foreach conversions -->
-
-                <form class="form-horizontal">
-                  <div class="form-group">
-                    <div class="col-md-2 col-md-offset-3">
-                      <button type="button"
-                              class="btn btn-default dropdown-toggle"
-                              data-toggle="dropdown">options
-                        <span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li><a data-bind="click: $root.addConversion">Add Operation</a></li>
-                        <!-- ko if: $data.conversions().length > 1 -->
-                        <li><a data-bind="click: $root.deleteConversion">Remove Operation</a></li>
-                        <!-- /ko -->
-                      </ul>
-                    </div> <!-- btn-group-->
-
-                    <div class="col-md-1 col-md-offset-4">
-                      <button type="button"
-                              class="btn btn-default"
-                              data-bind="click: $root.addBucket">
-                         <span class="glyphicon glyphicon-plus-sign"></span>
-                       </button>
-                    </div>
+                <!-- ko ifnot: hasMultiple -->
+                  <div class="col-sm-10">
+                    <strong>the followlling rule</strong>
                   </div>
-                </form>
+                <!-- /ko -->
+              </div> <!-- /.form-group -->
 
-              </div> <!-- panel body-->
-            </div> <!-- panel primary -->
-          </div> <!-- end row-->
-        </div> <!-- end foreach buckets -->
-      </div> <!-- end col 6 -->
-
-      <div class="col-md-6" style="padding-right: 0px">
-        <div class="panel panel-primary">
-          <div class="panel-heading">Imputation</div>
-          <div class="panel-body">
-            <form class="form-horizontal" role="form">
-              <div class="form-group">
-                <label class="control-label col-sm-3"
-                       for="direct_forms">Form:</label>
-                <div class="col-sm-6">
-                  <input type="hidden"
-                         class="form-control"
-                         data-placeholder="Select a form..."
-                         i18n:attributes="data-placeholder"
-                         id="direct_forms"
-                         tal:define="
-                            ajax  request.route_path('imports.schemas');"
-                         data-bind="selectedData: $data.selectedDRSCForm,
-                                    dataKey: 'name',
-                                    dataLabel: 'name',
-                                    select2: {
-                                      ajax: {
-                                          url: '${ajax}',
-                                          data: $data.select2SchemaParams,
-                                          results: $data.select2SchemaResults,
-                                      }
-                                    }" />
-                  </div> <!-- end col 6-->
-                  <div class="col-sm-3">
-                    <div data-bind="ifnot: $data.selectedDRSCForm">
-                      <input type="text"
-                             readonly="readonly"
-                             class="form-control"
-                             placeholder="Publish date"></input>
-                    </div>
-                    <div data-bind="with: $data.selectedDRSCForm">
-                      <input data-bind="value: $data.publish_date"
-                             readonly="readonly"
-                             type="text"
-                             id="direct_version"
-                             class="form-control"></input>
-                    </div> <!-- end with selected form -->
-                  </div>
-                </div> <!-- end form group-->
-
-              <div class="form-group">
-                <label class="control-label col-sm-3"
-                       for="direct_variables">Variable:</label>
-                  <div data-bind="ifnot: selectedDRSCForm">
-                    <div class="col-sm-6">
-                     <input type="text"
-                           readonly="readonly"
-                           class="form-control"
-                           placeholder="Variable to be mapped"></input>
-                    </div> <!-- end col 6 -->
-                  </div> <!-- end selected drsc form -->
-                  <div data-bind="with: selectedDRSCForm">
-                    <div class="col-sm-6">
-                        <input type="hidden"
-                               class="form-control"
-                               data-placeholder="Variable to be mapped"
-                               i18n:attributes="data-placeholder"
-                               id="site_variables"
-                               tal:define="
-                                  ajax  request.route_path('imports.schemas');"
-                               data-bind="selectedData: $parent.selectedDRSCAttribute,
-                                          dataKey: 'variable',
-                                          dataLabel: 'variable',
-                                          select2: {
-                                            ajax: {
-                                                url: '${ajax}',
-                                                data: $parent.select2DRSCAttributeParams,
-                                                results: $parent.select2DRSCAttributeResults,
-                                            }
-                                          }" />
-
-                     </div> <!-- end col 6 -->
-                    <div data-bind="with: $root.selectedDRSCAttribute">
-                      <div class="col-sm-3">
-                        <a href="#" data-bind="text: datatype, tooltip: { title: label, placement: 'bottom' }"></a>
-                      </div>
-                    </div>
-                  </div> <!-- end selected drsc form-->
-                  <div id="loading"
-                       style="display: none;"
-                       data-bind="visible: isLoading">
-                    <div class="col-sm-1">
-                      <div class="throbber-loader"></div>
-                    </div>
-                  </div>
-              </div> <!-- end form group -->
-
-            </form>
-        <hr>
-          <form class="form-horizontal">
-            <div class="form-group">
-              <label class="control-label col-md-5"
-                for="direct_forms">Imputation Eval Operator:</label>
-                  <div class="col-sm-3">
-                    <select data-bind="options: $root.conditions,
-                                       value: $root.selectedImputationComparison,
-                                       optionsCaption: 'Select...',
-                                       select2: {
-                                         minimumResultsForSearch: -1
-                                       }"
-                            class="form-control"></select>
-                  </div> <!-- end col 3-->
-                <div data-bind="if: $root.selectedImputationComparison">
-                  <!-- ko if: $root.imputations().length == 0 -->
-                  <div class="col-md-1 col-md-offset-1">
-                    <button type="button"
-                            class="btn btn-default"
-                            data-bind="click: $root.addImputation">
-                      <span class="glyphicon glyphicon-plus-sign"></span>
-                    </button>
-                  </div>
-                  <!-- /ko -->
-                </div>
-              </div> <!-- end form-group -->
-          </form>
-          <!-- ko if: $root.imputations().length > 0 -->
-          <hr>
-          <form class="form-horizontal">
-
-              <div data-bind="foreach: imputations">
+              <!-- ko foreach: imputations -->
                 <div class="form-group">
-
-                  <div class="col-md-3 col-md-offset-1">
-                    <select data-bind="options: $data.operators,
-                                       value: $data.selectedOperator,
+                  <div class="col-sm-offset-2 col-sm-2">
+                    <select class="form-control"
+                            data-bind="options: availableOperators,
+                                       optionsText: 'title',
                                        optionsCaption: 'Select...',
-                                       select2: {
-                                         minimumResultsForSearch: -1
-                                       }"
-                            class="form-control"></select>
-                  </div> <!-- end col 3-->
-                  <div class="col-md-3">
-                  <!-- ko if: $data.selectedOperator -->
-                  <!-- ko ifnot: $data.selectedLogical -->
-                  <input data-bind="value: $data.selectedValue"
-                         type="text"
-                         class="form-control"></input>
-                  <!-- /ko-->
-                  <!-- /ko-->
+                                       optionsValue: 'name',
+                                       value: operator,
+                                       select2: {minimumResultsForSearch: -1}"></select>
                   </div>
-                  <div class="col-md-1 col-md-offset-1">
-                    <button type="button"
-                            class="btn btn-default"
-                            data-bind="click: $root.addImputation">
-                      <span class="glyphicon glyphicon-plus-sign"></span>
-                    </button>
-                  </div>
-                  <div class="col-md-1">
-                    <button type="button"
-                            class="btn btn-default"
-                            data-bind="click: $root.deleteImputation">
-                        <span class="glyphicon glyphicon-trash"></span>
-                    </button>
-                  </div>
-                  <!-- ko if: $data.selectedLogical -->
-                  <div class="col-md-1">
-                    <button type="button"
-                            class="btn btn-default">
-                        <span class="glyphicon glyphicon-arrow-down"></span>
-                    </button>
-                  </div>
-                  <!-- /ko -->
-                </div> <!-- end form-group -->
-              </div> <!-- end foreach imputations -->
-            </form>
-            <!-- /ko -->
-
-        <hr>
-          <form class="form-horizontal">
-            <div class="form-group">
-              <label class="control-label col-sm-5"
-                for="direct_forms">Bucket Eval Operator:</label>
                   <div class="col-sm-2">
-                    <select data-bind="options: $root.conditions,
-                                       value: $root.selectedBucketComparison,
-                                       select2: {
-                                         minimumResultsForSearch: -1
-                                       }"
-                            class="form-control"></select>
-                  </div> <!-- end col 6-->
-            </div>
-          </form>
-          <hr>
-            <form class="form-horizontal">
-            <div class="form-group">
-              <label class="control-label col-md-5"
-                     for="conversion_label">Conversion Description:</label>
-                <div class="col-md-6">
-                  <input type="text"
-                         class="form-control"
-                         id="conversion_label"
-                         data-bind="value: $root.conversionLabel"></input>
-                </div>
-            </div>
-
-            <div class="form-group">
-              <label class="control-label col-md-5"
-                     for="imputation_label">Imputation Description:</label>
-                <div class="col-md-6">
-                  <input type="text"
-                         class="form-control"
-                         id="imputation_label"
-                         data-bind="value: $root.imputationLabel"></input>
-                </div>
-            </div>
-          </form>
-          <hr>
-          <form class="form-horizontal">
-            <!-- If choice, give user ability to select map to -->
-            <div data-bind="with: selectedDRSCAttribute">
-              <div data-bind="if: choices().length != 0">
-                <div class="form-group">
-                  <label class="control-label col-sm-2"
-                         for="direct_version">Map to:</label>
-                  <div class="col-sm-6">
-                    <select data-bind="options: choices,
-                                   optionsText: 'mapToOptions',
-                                   value: $root.selectedMapTo,
-                                   select2: {}"
-                            class="form-control"></select>
-                    </div>
-                  </div>
-                </div>
-              <!-- If no choice, display variable name for users info -->
-              <div data-bind="if: choices().length == 0">
-                <div class="form-group">
-                  <label class="control-label col-sm-2"
-                         for="direct_version">Maps to:</label>
-                  <div class="col-sm-6">
                     <input type="text"
-                           readonly="readonly"
                            class="form-control"
-                           data-bind="value: variable"></input>
-                    </div>
+                           data-bind="value: value" />
                   </div>
                 </div>
-              </div>
+              <!-- /ko -->
 
-            <div class="row">
-              <label class="control-label col-sm-2"
-                     for="confidence">Confidence:</label>
-              <div class="col-sm-10">
-                <select class="form-control"
-                         id="confidence"
-                         data-bind="value: confidence, select2: {}"
-                         data-placeholder="Select confidence level...">
-                  <option value=""></option>
-                  <option value="1">1 - No/little manipulation/interpretation</option>
-                  <option value="2">2 - Some manipulation/interpretation</option>
-                  <option value="3">3 - Significant manipulation/interpretation</option>
-                  <option value="4"></option>
-                </select>
-              </div>
-            </div> <!--end row -->
+            <!-- /ko --> <!-- /with -->
+
           </form>
-          </div> <!-- end panel body -->
-        </div> <!-- end panel primary -->
-      </div> <!--end col 6 -->
-    </div> <!-- end row -->
 
-    </div> <!-- end is ready -->
-      <hr />
+        </div> <!-- /.panel-body -->
 
-      <div class="pull-right">
-        <button class="btn btn-primary btn-lg"
-                type="button"
-                data-bind="click: saveImputation">Map</button>
-      </div>
+      </div> <!-- /.panel -->
+    </script>
+
+    <script type="text/html" id="variableTemplate">
+      <div class="form-group">
+
+        <label class="control-label required col-sm-2"
+               for="site_forms">Variable:</label>
+
+        <div class="col-sm-6">
+          <div class="input-group select2-bootstrap-append">
+            <input type="hidden"
+                   class="form-control"
+                   data-placeholder="Select a form..."
+                   i18n:attributes="data-placeholder"
+                   tal:define="ajax  request.route_path('imports.schemas');"
+                   data-bind="selectedData: schema,
+                              dataKey: 'name',
+                              dataLabel: 'name',
+                              select2: {
+                                ajax: {
+                                    url: '${ajax}',
+                                    data: $data.select2SchemaParams,
+                                    results: $data.select2SchemaResults,
+                                }
+                              }" />
+            <div class="input-group-addon">
+              <!-- ko with: schema -->
+                <span>v</span><span data-bind="text: publish_date"></span>
+              <!-- /ko --> <!-- /with -->
+            </div> <!-- /.input-group-addon -->
+          </div> <!-- /.input-group -->
+        </div> <!-- /.col-sm-5-->
+
+        <div class="col-sm-4">
+          <div class="input-group select2-bootstrap-append">
+            <!-- ko ifnot: attribute -->
+              <input type="text"
+                     readonly="readonly"
+                     class="form-control"
+                     placeholder="Variable to be mapped"></input>
+              <span class="input-group-addon">Type</span>
+            <!-- /ko --><!-- /ifnot -->
+            <!-- ko if: attribute -->
+              <input type="hidden"
+                     class="form-control"
+                     data-placeholder="Variable to be mapped"
+                     i18n:attributes="data-placeholder"
+                     tal:define="
+                        ajax  request.route_path('imports.schemas');"
+                     data-bind="selectedData: attribute,
+                                dataKey: 'name',
+                                dataLabel: 'name',
+                                select2: {
+                                  ajax: {
+                                      url: '${ajax}',
+                                      data: $parent.select2AttributeParams,
+                                      results: $parent.select2AttributeResults,
+                                  }
+                                }" />
+              <!-- ko with: attribute -->
+                <span class="input-group-addon">
+                  <a href="#" data-bind="text: type, tooltip: { title: title, placement: 'bottom' }"></a>
+                </span>
+              <!-- /ko -->
+            <!-- /ko --> <!-- /if -->
+          </div> <!-- /.input-group -->
+        </div> <!-- /.col-sm-5 -->
+
+      </div> <!-- /.form-group -->
+
+    </script> <!-- /#variableTemplate -->
+
 
   </metal:content-slot>
 
   <metal:javascript-slot fill-slot="javascript-slot">
     <script type="text/javascript">
       $(function(){
-        'use strict';
-        ko.applyBindings(new imputationViewModel());
+        ko.applyBindings(new MappingView());
       });
     </script>
   </metal:javascript-slot>
