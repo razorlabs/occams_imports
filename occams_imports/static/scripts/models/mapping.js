@@ -1,9 +1,7 @@
 function Mapping(data){
   'use strict';
-
   var self = this;
 
-  self.title = ko.observable();
   self.description = ko.observable();
 
   self.target = ko.observable();
@@ -22,7 +20,7 @@ function Mapping(data){
   self.update = function(data){
     data = data || {};
     self.target(new Variable(data.target));
-    self.confidence(data.conversion);
+    self.confidence(data.confidence);
     self.condition(data.condition);
     self.groups((data.groups || []).map(function(value){
       return new Group(value);

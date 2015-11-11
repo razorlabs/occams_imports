@@ -1,6 +1,5 @@
 function Schema (data){
   'use strict';
-
   var self = this;
 
   self.name = ko.observable();

@@ -54,8 +54,6 @@ def get_schemas(context, request):
     db_session = request.db_session
 
     class SearchForm(wtforms.Form):
-        is_target = wtforms.BooleanField(
-            validators=[wtforms.validators.Optional()])
         term = wtforms.StringField(
             validators=[wtforms.validators.Optional()])
 
@@ -68,12 +66,6 @@ def get_schemas(context, request):
         db_session.query(datastore.Schema)
         .filter(datastore.Schema.id == models.Import.schema_id)
     )
-
-    # TODO: Need to implement sites at the form level
-    if data['is_target']:
-        schemata_query = schemata_query.filter(models.Import.site == 'DRSC')
-    else:
-        schemata_query = schemata_query.filter(models.Import.site != 'DRSC')
 
     if data['term']:
         schemata_query = (
@@ -91,11 +83,10 @@ def get_schemas(context, request):
             u'name': schema.name,
             u'publish_date': schema.publish_date,
             u'attributes': [],
-            'site': u'DRSC' if data['is_target'] else u''
         }
 
     return {
-        'forms': [schema2json(schema) for schema in schemata_query]
+        'schemata': [schema2json(schema) for schema in schemata_query]
     }
 
 

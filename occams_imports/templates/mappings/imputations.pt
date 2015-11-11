@@ -20,7 +20,14 @@
 
         <!-- ko with: mapping -->
 
-          <!-- ko template: {name: 'variableTemplate', data: target} --><!-- /ko -->
+          <div class="form-group">
+            <label class="control-label required col-sm-2"
+                   for="direct_version">Target Variable</label>
+            <div class="col-sm-10">
+              <!-- ko template: {name: 'variableWidgetTemplate', data: target} -->
+              <!-- /ko -->
+            </div>
+          </div>
 
           <!-- ko with: target -->
             <!-- ko with: attribute -->
@@ -215,7 +222,12 @@
               <!-- /ko  --> <!-- /if operator -->
 
               <!-- ko if: byVariable -->
-                <!-- ko template: { name: 'variableTemplate', data: value } --><!-- /ko -->
+                <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-10">
+                    <!-- ko template: { name: 'variableWidgetTemplate', data: value } -->
+                    <!-- /ko -->
+                  </div>
+                </div>
               <!-- /ko --> <!-- /if -->
 
               <hr />
@@ -310,27 +322,22 @@
       </div> <!-- /.panel -->
     </script>
 
-    <script type="text/html" id="variableTemplate">
-      <div class="form-group">
-
-        <label class="control-label required col-sm-2"
-               for="site_forms">Variable:</label>
-
-        <div class="col-sm-6">
+    <script type="text/html" id="variableWidgetTemplate">
+      <div class="row">
+        <div class="col-sm-7">
           <div class="input-group select2-bootstrap-append">
             <input type="hidden"
                    class="form-control"
-                   data-placeholder="Select a form..."
-                   i18n:attributes="data-placeholder"
                    tal:define="ajax  request.route_path('imports.schemas');"
+                   data-placeholder="Selected a form..."
                    data-bind="selectedData: schema,
                               dataKey: 'name',
                               dataLabel: 'name',
                               select2: {
                                 ajax: {
                                     url: '${ajax}',
-                                    data: $data.select2SchemaParams,
-                                    results: $data.select2SchemaResults,
+                                    data: $root.querySchemaData,
+                                    results: $root.parseSchemaResults,
                                 }
                               }" />
             <div class="input-group-addon">
@@ -341,7 +348,7 @@
           </div> <!-- /.input-group -->
         </div> <!-- /.col-sm-5-->
 
-        <div class="col-sm-4">
+        <div class="col-sm-5">
           <div class="input-group select2-bootstrap-append">
             <!-- ko ifnot: attribute -->
               <input type="text"
@@ -350,11 +357,9 @@
                      placeholder="Variable to be mapped"></input>
               <span class="input-group-addon">Type</span>
             <!-- /ko --><!-- /ifnot -->
-            <!-- ko if: attribute -->
+            <!-- ko if: schema -->
               <input type="hidden"
                      class="form-control"
-                     data-placeholder="Variable to be mapped"
-                     i18n:attributes="data-placeholder"
                      tal:define="
                         ajax  request.route_path('imports.schemas');"
                      data-bind="selectedData: attribute,
@@ -363,8 +368,8 @@
                                 select2: {
                                   ajax: {
                                       url: '${ajax}',
-                                      data: $parent.select2AttributeParams,
-                                      results: $parent.select2AttributeResults,
+                                      data: $root.queryAttributeDataFor(schema().name()),
+                                      results: $root.parseAttributeResults
                                   }
                                 }" />
               <!-- ko with: attribute -->
@@ -375,9 +380,7 @@
             <!-- /ko --> <!-- /if -->
           </div> <!-- /.input-group -->
         </div> <!-- /.col-sm-5 -->
-
-      </div> <!-- /.form-group -->
-
+      </div><!-- /.row -->
     </script> <!-- /#variableTemplate -->
 
 

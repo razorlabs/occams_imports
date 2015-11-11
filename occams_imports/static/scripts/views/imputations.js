@@ -9,81 +9,7 @@ function MappingView(data){
 
   self.alert = ko.observable();
 
-  var variable= {
-              schema: {name: 'cctg_blah_blah', publish_date: '2015-09-18'},
-              attribute : {name: 'foo', title: 'Do you foo?', type: 'choice'},
-              choice : {name: '1', title: 'Yes'}
-              };
-
-var MUL = 'MUL'
-  , DIV = 'DIV'
-  , ADD = 'ADD'
-  , SUB = 'SUB'
-;
-
-var ARITHMETIC = [MUL, DIV, ADD, SUB];
-var MAX_NESTING = 2;
-
-var ANY = 'ANY'
-  , ALL = 'ALL'
-
-  , EQ = 'EQ'
-  , NE = 'NE'
-  , LT = 'LT'
-  , LTE = 'LTE'
-  , GT = 'GT'
-  , GTE = 'GTE'
-
-  , LOGICAL = [ANY, ALL]
-  , COMPARISON = [EQ, NE, LT, LTE, GT, GTE]
-;
-
-
-
-
-  self.mapping = new Mapping({
-    title: 'something',
-    description: 'something something',
-    target: variable,
-    confidence: 1,
-    condition: ALL,
-    groups: [
-      {
-        conversions: [
-          {
-            operator: null,
-            value: variable,
-          },
-          {operator: MUL, value: 1},
-          {operator: DIV, value: variable},
-          {operator: ADD, value: 3.3},
-        ],
-        logic: {
-          operator: ALL,
-          imputations: [
-            {operator: EQ, value: 100},
-            {operator: LTE, value: 50},
-            {operator: GT, value: 30},
-          ]
-        },
-      },
-      {
-        conversions: [
-          {operator: MUL, value: 1},
-          {operator: DIV, value: 2},
-          {operator: ADD, value: variable},
-        ],
-        logic: {
-          operator: ALL,
-          imputations: [
-            {operator: EQ, value: 100},
-            {operator: LTE, value: 50},
-            {operator: GT, value: 30},
-          ]
-        },
-      }
-    ]
-  });
+  self.mapping = new Mapping();
 
   //self.addImputation = function(imputation){
     //var andOr = false;
@@ -239,5 +165,49 @@ var ANY = 'ANY'
 
   //self.buckets.push(new bucketModel());
   //self.isLoading(false);
+  //
+
+  self.querySchemaData = function(term, page){
+    return {
+      vocabulary: 'available_schemata',
+      term: term
+    };
+  };
+
+  self.parseSchemaResults = function(data){
+    return {
+        results: data.schemata.map(function(value){
+          return new Schema(value);
+        })
+    };
+  };
+
+  self.queryAttributeData = function(term, page){
+    return {
+      vocabulary: 'available_attributes',
+      schema: self.mapping().schema().name,
+      term: term
+    };
+  };
+
+  self.queryAttributeDataFor = function(schema_name){
+    console.log(schema_name);
+    return function(term, page){
+      return {
+        vocabulary: 'available_attributes',
+        schema: schema_name,
+        term: term
+      };
+    };
+  }
+
+  self.parseAttributeResults = function(data){
+    return {
+        results: data.attributes.map(function(value){
+          return new Attribuet(value);
+        })
+    };
+  };
+
   self.isReady(true);
 }

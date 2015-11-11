@@ -1,6 +1,5 @@
 function Choice (data){
   'use strict';
-
   var self = this;
 
   self.name = ko.observable();
