@@ -120,7 +120,7 @@
           </a>
           <button class="btn btn-primary"
                   type="button"
-                  data-bind="click: saveImputation">Save</button>
+                  data-bind="click: $root.saveMapping">Save</button>
         </div>
 
       </form>
