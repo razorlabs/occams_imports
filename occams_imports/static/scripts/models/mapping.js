@@ -11,7 +11,7 @@ function Mapping(data){
   self.groups = ko.observableArray();
 
   self.condition.subscribe(function(newValue){
-    if (newValue != 'ALL' || newValue != 'ANY'){
+    if (newValue != 'ALL' && newValue != 'ANY'){
       self.condition('ALL');
     }
   });
