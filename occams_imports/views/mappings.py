@@ -276,7 +276,7 @@ def mappings_direct_map(context, request):
 
 
 @view_config(
-    route_name='imports.mappings.imputation.map',
+    route_name='imports.mappings.imputation',
     permission='view',
     request_method='POST',
     xhr=True,
@@ -285,8 +285,10 @@ def mappings_imputations_map(context, request):
     check_csrf_token(request)
     db_session = request.db_session
 
-    site_name = request.json['site']['name']
-    site_publish_date = request.json['site']['publish_date']
+    # TODO - find a better way to obtain the site
+    schema_obj = request.json[u'groups'][0][u'conversions'][0][u'value'][u'schema']
+    site_name = schema_obj[u'name']
+    site_publish_date = schema_obj['publish_date']
 
     site_import = db_session.query(models.Import).filter(
         datastore.Schema.name == site_name).filter(
@@ -296,35 +298,38 @@ def mappings_imputations_map(context, request):
     site = site_import.site
 
     mapping = {}
-    mapping['drsc_name'] = request.json['drsc']['name']
-    mapping['drsc_publish_date'] = request.json['drsc']['publish_date']
-    mapping['drsc_variable'] = request.json['selected_drsc']['variable']
-    mapping['drsc_label'] = request.json['selected_drsc']['label']
+    drsc = request.json[u'target'][u'schema']
+    drsc_attribute = request.json[u'target'][u'attribute']
+    mapping['drsc_name'] = drsc[u'name']
+    mapping['drsc_publish_date'] = drsc[u'publish_date']
+    mapping['drsc_variable'] = drsc_attribute[u'name']
+
+    mapping['drsc_label'] = drsc_attribute[u'title']
     mapping['site'] = site
 
     mapping['mapping_type'] = u'imputation'
 
     mapping['mapping'] = {}
-    mapping['mapping']['confidence'] = request.json['confidence']
-    mapping['mapping']['conversions'] = request.json['conversions']
-    mapping['mapping']['maps_to'] = request.json['maps_to']
-    selected_comparison = request.json['selected_comparison_condition']
-    mapping['mapping']['selected_comparison_condition'] = selected_comparison
-    mapping['mapping']['logical'] = request.json['logical']
-    mapping['mapping']['comparison'] = request.json['comparison']
+    mapping['mapping']['confidence'] = request.json[u'confidence']
+    mapping['mapping']['groups'] = request.json[u'groups']
+
+    mapping['mapping']['maps_to'] = request.json[u'targetChoice']
+    mapping['mapping']['condition'] = request.json[u'condition']
 
     mapping['mapping']['forms'] = []
 
-    for conversion in request.json['conversions']:
-        form_name = conversion['selectedForm']['name']
-        variable = conversion['selectedAttribute']['variable']
-        mapping['mapping']['forms'].append([form_name, variable])
+    for group in request.json[u'groups']:
+        for conversion in group[u'conversions']:
+            if isinstance(conversion[u'value'], dict):
+                form_name = conversion[u'value'][u'schema'][u'name']
+                variable = conversion[u'value'][u'attribute'][u'name']
+                mapping['mapping']['forms'].append([form_name, variable])
 
     publish_date = datetime.strptime(
-        request.json['drsc']['publish_date'], '%Y-%m-%d')
+        drsc['publish_date'], '%Y-%m-%d')
 
     schema = db_session.query(models.Schema).filter(
-        datastore.Schema.name == request.json['drsc']['name'],
+        datastore.Schema.name == drsc['name'],
         datastore.Schema.publish_date == publish_date.date()
     ).one()
 
@@ -336,4 +341,4 @@ def mappings_imputations_map(context, request):
     db_session.add(mapped_obj)
     db_session.flush()
 
-    return json.dumps({})
+    return {'__next__': request.route_path('imports.index')}
