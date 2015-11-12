@@ -11,7 +11,7 @@ function MappingView(data){
 
   self.saveMapping = function(){
 
-    var data = ko.toJS(self.mapping());
+    var data = ko.toJSON(self.mapping);
     console.log('Sending data:', data);
 
     $.ajax({
