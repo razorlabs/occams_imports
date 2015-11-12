@@ -69,7 +69,11 @@
         .select2(select2Settings)
         .on('change', function(){
           // Re-validate this field so that "required" error messages do not linger
-          $(this).valid();
+          // Only validate if jquery validator is enabled
+          var $this = $(this);
+          if ($this.hasOwnProperty('valid')){
+            $this.valid();
+          }
         })
         .on('select2-blur', function(){
           // Trigger focusout on underlying element for validation
