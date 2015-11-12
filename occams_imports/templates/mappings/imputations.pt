@@ -22,10 +22,10 @@
 
           <div class="form-group">
             <label class="control-label required col-sm-2"
-                   for="direct_version">Target Variable</label>
+                   for="direct_version"
+                   i18n:translate="">Target Variable</label>
             <div class="col-sm-10">
-              <!-- ko template: {name: 'variableWidgetTemplate', data: target} -->
-              <!-- /ko -->
+              <variable-widget params="isTarget: true, variable: target" />
             </div>
           </div>
 
@@ -34,24 +34,12 @@
               <!-- ko if: hasChoices -->
                 <div class="form-group">
                   <label class="control-label required col-sm-2"
-                         for="direct_version">Map To:</label>
+                         for="direct_version">Map To</label>
                   <div class="col-sm-6">
-                    <input type="hidden"
-                           class="form-control"
-                           data-placeholder="Choice to be mapped"
-                           i18n:attributes="data-placeholder"
-                           tal:define="
-                              ajax  request.route_path('imports.schemas');"
-                           data-bind="selectedData: $parent.choice,
-                                      dataKey: 'name',
-                                      dataLabel: 'toString',
-                                      select2: {
-                                        ajax: {
-                                            url: '${ajax}',
-                                            data: $parent.select2AttributeParams,
-                                            results: $parent.select2AttributeResults,
-                                        }
-                                      }" />
+                    <choice-widget params="
+                        schema: $parent.schema,
+                        attribute: $parent.attribute,
+                        choice: $parents[1].targetChoice" />
                   </div>
                 </div> <!-- /.form-group -->
               <!-- /ko --> <!-- /if -->
@@ -82,11 +70,11 @@
 
           <hr />
 
-          <!-- ko template: {name: 'groupTemplate', foreach: groups} --><!-- /ko -->
+          <!-- ko template: {name: 'group-template', foreach: groups} --><!-- /ko -->
 
           <div>
             <div class="pull-right">
-              <button class="btn btn-default">
+              <button class="btn btn-default" data-bind="click: addGroup">
                 <span class="fa fa-plus"></span>
                 <span>Add another group</span>
               </button>
@@ -97,7 +85,7 @@
           <hr />
 
           <div class="form-group">
-            <label class="control-label col-sm-2 required"
+            <label class="control-label col-sm-2"
                    for="confidence">Description</label>
             <div class="col-sm-5">
               <textarea class="form-control"
@@ -117,7 +105,6 @@
                 <option value="1">1 - No/little manipulation/interpretation</option>
                 <option value="2">2 - Some manipulation/interpretation</option>
                 <option value="3">3 - Significant manipulation/interpretation</option>
-                <option value="4"></option>
               </select>
             </div>
           </div> <!-- /.form-group -->
@@ -150,12 +137,15 @@
     </script>
 
 
-    <script type="text/html" id="groupTemplate">
+    <script type="text/html" id="group-template">
       <div class="panel panel-default">
 
         <div class="panel-heading">
           <div class="pull-right">
-            <button type="button" class="close" aria-label="Close">
+            <button type="button"
+                    class="close"
+                    aria-label="Close"
+                    data-bind="click: $parent.removeGroup">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -169,32 +159,33 @@
             <!-- ko foreach: conversions -->
 
               <!-- first group should not display operators-->
-              <!-- ko if: operator -->
-                <!--ko if: $index == 0 -->
-                  <hr />
-                <!-- /ko -->
+              <!--ko if: $index() >  0 -->
+                <hr />
                 <div class="form-group">
                   <div class="col-sm-2">
                     <select class="form-control"
+                            data-placeholder="Operator"
+                            i18n:translate="data-placeholder"
                             data-bind="value: operator,
                                        select2: {minimumResultsForSearch: -1}">
                       <option value=""></option>
                       <option value="ADD">Add</option>
-                      <option value="SUB">Sub</option>
+                      <option value="SUB">Subtract<doption>
                       <option value="MUL">Multiply</option>
                       <option value="DIV">Divide</option>
                     </select>
                   </div>
                   <div class="col-sm-2">
                     <select class="form-control"
-                            data-bind="select2: {minimumResultsForSearch: -1}">
-                      <option></option>
-                      <option data-bind="VAL">By Value </option>
-                      <option data-bind="VAR">By Variable</option>
+                            data-bind="
+                              event: {change: changeType},
+                              select2: {minimumResultsForSearch: -1}">
+                      <option value="VAL">By Value </option>
+                      <option value="VAR">By Variable</option>
                     </select>
                   </div>
 
-                  <!-- ko if: byValue -->
+                  <!-- ko ifnot: byVariable -->
                     <div class="col-sm-2">
                       <input class="form-control" type="number" data-bind="value: value" />
                     </div>
@@ -207,42 +198,53 @@
                     <div class="btn-group pull-right">
                       <button type="button"
                               class="btn btn-default"
-                              data-bind="click: $root.addBucket">
+                              data-bind="click: $parent.removeConversion">
                          <span class="fa fa-minus"></span>
                       </button>
                       <button type="button"
                               class="btn btn-default"
-                              data-bind="click: $root.addBucket">
+                              data-bind="click: $parent.addConversion">
                          <span class="fa fa-plus"></span>
                       </button>
                     </div>
                   </div>
 
                 </div> <!-- /.form-group -->
-              <!-- /ko  --> <!-- /if operator -->
+              <!-- /ko --> <!-- /if -->
 
               <!-- ko if: byVariable -->
                 <div class="form-group">
-                  <div class="col-sm-offset-2 col-sm-10">
-                    <!-- ko template: { name: 'variableWidgetTemplate', data: value } -->
-                    <!-- /ko -->
+                  <!-- ko if: $index() == 0 -->
+                    <label class="control-label col-sm-2">Source Variable</label>
+                  <!-- /ko -->
+                  <div class="col-sm-10"
+                       data-bind="css: {'col-sm-offset-2': $index() > 0}">
+                    <variable-widget params="isTarget: false, variable: value" />
                   </div>
                 </div>
               <!-- /ko --> <!-- /if -->
 
-              <hr />
+              <!-- ko if: $index() == 0 && !$parent.hasMultipleConversions() -->
+                <div class="form-group">
+                  <div class="col-sm-offset-2">
+                    <button type="button"
+                            class="btn btn-link"
+                            data-bind="click: $parent.addConversion">
+                      Add additional conversions
+                    </button>
+                  </div>
+                </div>
+              <!-- /ko --><!-- /if -->
 
             <!-- /ko --> <!-- /foreach conversions-->
 
-          </form>
-
-          <form class="form-horizontal">
+            <hr />
 
             <!-- ko with: logic -->
 
               <div class="form-group">
                 <label class="control-label col-sm-2">Match</label>
-                <!-- ko if: hasMultiple -->
+                <!-- ko if: hasMultipleImputations -->
                   <div class="col-sm-2">
                       <select class="form-control"
                               data-bind="value: operator,
@@ -255,7 +257,7 @@
                     <p class="form-control-static"><strong>of the following rules:</strong></p>
                   </div>
                 <!-- /ko -->
-                <!-- ko ifnot: hasMultiple -->
+                <!-- ko ifnot: hasMultipleImputations -->
                   <div class="col-sm-10">
                     <p class="form-control-static"><strong>the following rule:</strong></p>
                   </div>
@@ -266,8 +268,11 @@
                 <div class="form-group">
                   <div class="col-sm-offset-2 col-sm-3">
                     <select class="form-control"
+                            data-placeholder="Select condition..."
+                            i18n:translate="data-placeholder"
                             data-bind="value: operator,
                                        select2: {minimumResultsForSearch: -1}">
+                      <option value=""></option>
                       <option value="EQ">is equal to</option>
                       <option value="NE">is not equal to</option>
                       <option value="LT">is less than</option>
@@ -279,29 +284,44 @@
                   <div class="col-sm-2">
                     <input type="text"
                            class="form-control"
+                           placeholder="Value"
+                           i18n:translate="placeholder"
                            data-bind="value: value" />
                   </div>
                   <div class="col-sm-5">
                     <div class="btn-group pull-right">
                       <button type="button"
                               class="btn btn-default"
-                              data-bind="click: $root.addBucket">
+                              data-bind="click: $parent.removeImpuation">
                          <span class="fa fa-minus"></span>
                       </button>
                       <button type="button"
                               class="btn btn-default"
-                              data-bind="click: $root.addBucket">
+                              data-bind="click: $parent.addSubImputation">
                          <span class="fa fa-level-down"></span>
                       </button>
                       <button type="button"
                               class="btn btn-default"
-                              data-bind="click: $root.addBucket">
+                              data-bind="click: $parent.addImputation">
                          <span class="fa fa-plus"></span>
                       </button>
                     </div>
                   </div>
                 </div>
               <!-- /ko -->
+
+              <!-- ko ifnot: hasImputations -->
+                <div class="form-group">
+                  <div class="col-sm-offset-2">
+                    <button type="button"
+                            class="btn btn-link"
+                            data-bind="click: addImputation.bind(null)">
+                      Add rule
+                    </button>
+                  </div>
+                </div>
+              <!-- /ko --><!-- /if -->
+
 
             <!-- /ko --> <!-- /with -->
 
@@ -311,7 +331,8 @@
 
         <div class="panel-footer">
           <div class="pull-right">
-            <button class="btn btn-default">
+            <button class="btn btn-default"
+                    data-bind="click: $parent.copyGroup">
               <span class="fa fa-copy"></span>
               <span>Copy this group</span>
             </button>
@@ -322,22 +343,22 @@
       </div> <!-- /.panel -->
     </script>
 
-    <script type="text/html" id="variableWidgetTemplate">
-      <div class="row">
+    <script type="text/html" id="variable-widget-template">
+      <div class="row" data-bind="with: variable">
         <div class="col-sm-7">
           <div class="input-group select2-bootstrap-append">
             <input type="hidden"
                    class="form-control"
                    tal:define="ajax  request.route_path('imports.schemas');"
-                   data-placeholder="Selected a form..."
+                   data-placeholder="Select a form..."
                    data-bind="selectedData: schema,
                               dataKey: 'name',
                               dataLabel: 'name',
                               select2: {
                                 ajax: {
                                     url: '${ajax}',
-                                    data: $root.querySchemaData,
-                                    results: $root.parseSchemaResults,
+                                    data: $parent.querySchemaData,
+                                    results: $parent.parseSchemaResults,
                                 }
                               }" />
             <div class="input-group-addon">
@@ -350,38 +371,49 @@
 
         <div class="col-sm-5">
           <div class="input-group select2-bootstrap-append">
-            <!-- ko ifnot: attribute -->
-              <input type="text"
-                     readonly="readonly"
-                     class="form-control"
-                     placeholder="Variable to be mapped"></input>
-              <span class="input-group-addon">Type</span>
-            <!-- /ko --><!-- /ifnot -->
-            <!-- ko if: schema -->
-              <input type="hidden"
-                     class="form-control"
-                     tal:define="
-                        ajax  request.route_path('imports.schemas');"
-                     data-bind="selectedData: attribute,
-                                dataKey: 'name',
-                                dataLabel: 'name',
-                                select2: {
-                                  ajax: {
-                                      url: '${ajax}',
-                                      data: $root.queryAttributeDataFor(schema().name()),
-                                      results: $root.parseAttributeResults
-                                  }
-                                }" />
+            <input type="hidden"
+                   class="form-control"
+                   data-placeholder="Select a variable..."
+                   tal:define="
+                      ajax  request.route_path('imports.schemas');"
+                   data-bind="selectedData: attribute,
+                              dataKey: 'name',
+                              dataLabel: 'name',
+                              enable: schema,
+                              select2: {
+                                ajax: {
+                                    url: '${ajax}',
+                                    data: $parent.queryAttributeData,
+                                    results: $parent.parseAttributeResults
+                                }
+                              }" />
+            <span class="input-group-addon">
               <!-- ko with: attribute -->
-                <span class="input-group-addon">
-                  <a href="#" data-bind="text: type, tooltip: { title: title, placement: 'bottom' }"></a>
-                </span>
+              <a href="#" data-bind="text: type, tooltip: { title: title, placement: 'bottom' }"></a>
               <!-- /ko -->
-            <!-- /ko --> <!-- /if -->
+            </span>
           </div> <!-- /.input-group -->
         </div> <!-- /.col-sm-5 -->
       </div><!-- /.row -->
     </script> <!-- /#variableTemplate -->
+
+    <script type="text/html" id="choice-widget-template">
+      <input type="hidden"
+             class="form-control"
+             data-placeholder="Select answer choice..."
+             i18n:attributes="data-placeholder"
+             tal:define="ajax  request.route_path('imports.schemas');"
+             data-bind="selectedData: choice,
+                        dataKey: 'name',
+                        dataLabel: 'toString',
+                        select2: {
+                          ajax: {
+                              url: '${ajax}',
+                              data: queryChoiceData,
+                              results: parseChoiceResults
+                          }
+                        }" />
+    </script>
 
 
   </metal:content-slot>

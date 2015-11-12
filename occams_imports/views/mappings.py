@@ -54,6 +54,8 @@ def get_schemas(context, request):
     db_session = request.db_session
 
     class SearchForm(wtforms.Form):
+        is_target = wtforms.BooleanField(
+            validators=[wtforms.validators.Optional()])
         term = wtforms.StringField(
             validators=[wtforms.validators.Optional()])
 
@@ -66,6 +68,12 @@ def get_schemas(context, request):
         db_session.query(datastore.Schema)
         .filter(datastore.Schema.id == models.Import.schema_id)
     )
+
+    # TODO: Need to implement sites at the form level
+    if data['is_target']:
+        schemata_query = schemata_query.filter(models.Import.site == 'DRSC')
+    else:
+        schemata_query = schemata_query.filter(models.Import.site != 'DRSC')
 
     if data['term']:
         schemata_query = (
@@ -141,15 +149,72 @@ def get_attributes(context, request):
 
     def attribute2json(attribute):
         return {
-            'variable': attribute.name,
-            'label': attribute.title,
-            'datatype': attribute.type,
-            'choices': [
-                choice2json(choice) for choice in attribute.iterchoices()]
+            'name': attribute.name,
+            'title': attribute.title,
+            'type': attribute.type,
         }
 
     return {
         'attributes': [attribute2json(schema) for schema in attributes_query]
+    }
+
+
+@view_config(
+    route_name='imports.schemas',
+    permission='view',
+    request_method='GET',
+    xhr=True,
+    request_param='vocabulary=available_choices',
+    renderer='json')
+def get_choices(context, request):
+    db_session = request.db_session
+
+    class SearchForm(wtforms.Form):
+        schema = wtforms.StringField(
+            validators=[wtforms.validators.InputRequired()])
+        attribute = wtforms.StringField(
+            validators=[wtforms.validators.InputRequired()])
+        term = wtforms.StringField(
+            validators=[wtforms.validators.Optional()])
+
+    search_form = SearchForm(request.GET)
+
+    if not search_form.validate():
+        return {}
+
+    data = search_form.data
+
+    choices_query = (
+        db_session.query(datastore.Choice)
+        .join(datastore.Attribute)
+        .join(datastore.Schema)
+        .filter(datastore.Schema.name == data['schema'])
+        .filter(datastore.Attribute.name == data['attribute'])
+    )
+
+    if data['term']:
+        pattern = '%{}%'.format(data['term'])
+        choices_query = (
+            choices_query
+            .filter(
+                datastore.Choice.name.ilike(pattern)
+                | datastore.Choice.title.ilike(pattern)))
+
+    choices_query = (
+        choices_query
+        .order_by(datastore.Choice.name)
+        .limit(25)
+    )
+
+    def choice2json(choice):
+        return {
+            u'name': choice.name,
+            u'title': choice.title,
+            u'order': choice.order
+        }
+
+    return {
+        'choices': [choice2json(choice) for choice in choices_query]
     }
 
 

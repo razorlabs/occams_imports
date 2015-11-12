@@ -6,14 +6,16 @@ function Conversion (data){
   self.value = ko.observable();
 
   self.byVariable = ko.pureComputed(function(){
-    var value = self.value();
-    return value && value instanceof Variable;
+    return self.value() instanceof Variable;
   });
 
   self.byValue = ko.pureComputed(function(){
-    var value = self.value();
-    return value && !(value instanceof Variable);
+    return !self.byVariable();
   });
+
+  self.changeType = function(data, event){
+    self.value(event.target.value == 'VAR' ? new Variable() : null);
+  };
 
   self.update = function(data){
     data = data || {};

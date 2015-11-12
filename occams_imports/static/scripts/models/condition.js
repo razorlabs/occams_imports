@@ -9,9 +9,27 @@ function ImputationList(data){
     return self.imputations().length;
   });
 
-  self.hasMultiple = ko.pureComputed(function(){
+  self.hasImputations = ko.pureComputed(function(){
+    return self.imputationsLength() > 0;
+  });
+
+  self.hasMultipleImputations = ko.pureComputed(function(){
     return self.imputationsLength() > 1;
   });
+
+  self.addImputation = function(after){
+    var index = after ? self.imputations.indexOf(after) : self.imputationsLength();
+    self.imputations.splice(index + 1, 0, new Imputation());
+  };
+
+  self.addSubImputation = function(after){
+    var index = after ? self.imputations.indexOf(after) : self.imputationsLength();
+    self.imputations.splice(index + 1, 0, new ImputationList());
+  };
+
+  self.removeImpuation = function(imputation){
+    self.imputations.remove(imputation);
+  };
 
   self.update = function(data){
     data = data || {};
