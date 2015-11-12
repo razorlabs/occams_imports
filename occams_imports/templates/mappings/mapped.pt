@@ -2,7 +2,7 @@
   <metal:content-slot fill-slot="content-slot">
   <header class="page-header">
     <div class="pull-right">
-      <a href="${request.route_path('imports.main')}">
+      <a href="${request.route_path('imports.index')}">
         <span class="fa fa-chevron-left fa-lg"></span>
       </a>
     </div> <!-- pull-right-->
