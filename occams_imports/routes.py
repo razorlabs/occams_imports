@@ -23,7 +23,6 @@ def includeme(config):
     config.add_route('imports.mappings.direct',             '/mappings/direct',           factory=models.RootFactory)
     config.add_route('imports.mappings.direct.map',         '/mappings/direct/map',       factory=models.RootFactory)
     config.add_route('imports.mappings.imputation',         '/mappings/imputation',       factory=models.RootFactory)
-    config.add_route('imports.mappings.imputation.map',     '/mappings/imputation/map',   factory=models.RootFactory)
     config.add_route('imports.schemas',                     '/schemas',                   factory=models.RootFactory)
     config.add_route('imports.mappings.view',               '/mappings/view',             factory=models.RootFactory)
     config.add_route('imports.mappings.view_mapped',        '/mappings/view_mapped',      factory=models.RootFactory)
