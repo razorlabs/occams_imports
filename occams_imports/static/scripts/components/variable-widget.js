@@ -5,6 +5,16 @@ function VariableComponent(params){
   self.isTarget = params.isTarget;
   self.variable = params.variable;
 
+  self.nextSchemaSearch  = function(variable, term){
+    var schema = self.variable().schema();
+    return schema ? schema.name() : null;
+  };
+
+  self.nextAttributeSearch = function(variable, term){
+    var attribute = self.variable().attribute();
+    return attribute? attribute.name() : null;
+  };
+
   self.querySchemaData = function(term, page){
     return {
       vocabulary: 'available_schemata',

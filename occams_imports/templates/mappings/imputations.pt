@@ -355,10 +355,11 @@
                               dataKey: 'name',
                               dataLabel: 'name',
                               select2: {
+                                nextSearchTerm: $parent.nextSchemaSearch,
                                 ajax: {
                                     url: '${ajax}',
                                     data: $parent.querySchemaData,
-                                    results: $parent.parseSchemaResults,
+                                    results: $parent.parseSchemaResults
                                 }
                               }" />
             <div class="input-group-addon">
@@ -381,6 +382,7 @@
                               dataLabel: 'name',
                               enable: schema,
                               select2: {
+                                nextSearchTerm: $parent.nextAttributeSearch,
                                 ajax: {
                                     url: '${ajax}',
                                     data: $parent.queryAttributeData,
