@@ -1,7 +1,10 @@
 <html metal:use-macro="load: ../master.pt">
   <metal:content-slot fill-slot="content-slot">
+    <div id="loading" class="text-center">
+       Loading <i class="fa fa-spin fa-refresh"></i>
+    </div>
     <div class='col-sm-12'>
-      <h1>EBAC - condom_use_always</h1>
+      <h1 id="demo_title"></h1>
       <br />
       <div id="ebacImputation"></div>
     </div> <!-- end col-sm-12 -->
@@ -11,6 +14,8 @@
     <script>
     $( document ).ready(function() {
       createGraph();
+      $('#loading').remove();
+      $('#demo_title').text('EBAC - condom_use_always');
     });
     </script>
   </metal:javascript-slot>
