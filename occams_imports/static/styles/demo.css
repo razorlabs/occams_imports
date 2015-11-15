@@ -1,0 +1,19 @@
+.connection-wrap {
+    display: none
+}
+
+.marker-arrowhead {
+    display: none
+}
+
+.link-tools {
+    display: none
+}
+
+.marker-vertices {
+    display: none
+}
+
+.element.basic.Rect {
+    cursor: auto
+}
