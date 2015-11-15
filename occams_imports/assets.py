@@ -52,6 +52,7 @@ def includeme(config):
         Bundle(rel('bower_components/select2/select2.css'), filters='cssrewrite'),
         rel('bower_components/select2-bootstrap-css/select2-bootstrap.css'),
         rel('bower_components/jointjs/joint.css'),
+        rel('styles/demo.css'),
         rel('bower_components/css-spinners/css/spinners.css'),
        # rel('styles/demo.css')
         output=rel('gen/imports.%(version)s.css')))
