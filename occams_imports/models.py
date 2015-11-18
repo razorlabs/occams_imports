@@ -73,13 +73,13 @@ class Import(ImportsModel, datastore.Referenceable, datastore.Modifiable):
     __tablename__ = 'import'
 
     site_id = sa.Column(
-        sa.ForeignKey(studies.Site.id),
+        sa.ForeignKey(studies.Site.id, ondelete='CASCADE'),
         nullable=False)
 
     site = orm.relationship(studies.Site)
 
     schema_id = sa.Column(
-        sa.ForeignKey(datastore.Schema.id),
+        sa.ForeignKey(datastore.Schema.id, ondelete='CASCADE'),
         nullable=False)
 
     schema = orm.relationship(datastore.Schema)
@@ -93,18 +93,19 @@ class Mapping(ImportsModel, datastore.Referenceable, datastore.Modifiable):
     __tablename__ = 'mapping'
 
     site_id = sa.Column(
-        sa.ForeignKey(studies.Site.id),
+        sa.ForeignKey(studies.Site.id, ondelete='CASCADE'),
         nullable=False)
 
     site = orm.relationship(studies.Site)
 
     mapped_attribute_id = sa.Column(
-        sa.ForeignKey(datastore.Attribute.id),
+        sa.ForeignKey(datastore.Attribute.id, ondelete='CASCADE'),
         nullable=False)
 
     mapped_attribute = orm.relationship(datastore.Attribute)
 
-    mapped_choice_id = sa.Column(sa.ForeignKey(datastore.Choice.id))
+    mapped_choice_id = sa.Column(
+        sa.ForeignKey(datastore.Choice.id, ondelete='CASCADE'))
 
     mapped_choice = orm.relationship(datastore.Choice)
 
