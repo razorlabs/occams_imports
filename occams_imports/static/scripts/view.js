@@ -141,7 +141,7 @@ function formListViewModel(){
     beforeSend: function(){
     },
     success: function(data, textStatus, jqXHR){
-      var json = $.parseJSON(data);
+      var json = data;
 
       $.each(json.rows, function(){
         var row = new mappedModel(this.drsc_form, this.drsc_variable, this.site,

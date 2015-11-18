@@ -32,10 +32,11 @@ def index(context, request):
     xhr=True,
     renderer='json')
 def get_schemas(context, request):
-    check_csrf_token(request)
     db_session = request.db_session
 
-    mappings = db_session.query(models.Mapper).order_by(models.Mapper.id).all()
+    mappings = (
+        db_session.query(models.Mapping)
+        .order_by(models.Mapping.id))
 
     data = {}
     data['rows'] = []
@@ -43,24 +44,24 @@ def get_schemas(context, request):
     for mapping in mappings:
         row = {}
 
-        row['drsc_form'] = mapping.mapped['drsc_name']
-        row['drsc_variable'] = mapping.mapped['drsc_variable']
-        row['site'] = mapping.mapped['site']
+        row['drsc_form'] = mapping.mapped_attribute.schema.name
+        row['drsc_variable'] = mapping.mapped_attribute.name
+        row['site'] = mapping.site.title
 
         # imputation mappings may have multiple forms and variables
-        if mapping.mapped['mapping_type'] == u'imputation':
-            row['forms'] = mapping.mapped['mapping']['forms']
+        if mapping.type == 'imputation':
+            row['forms'] = mapping.logic['forms']
 
         else:
-            row['site_form'] = mapping.mapped['mapping']['name']
-            row['site_variable'] = mapping.mapped['mapping']['variable']
+            row['site_form'] = mapping.logic['source_schema']['name']
+            row['site_variable'] = mapping.logic['source_attribute']
 
-        row['date_mapped'] = mapping.create_date.strftime('%Y-%m-%d')
+        row['date_mapped'] = mapping.create_date.date()
         row['mapped_id'] = mapping.id
 
         data['rows'].append(row)
 
-    return json.dumps(data)
+    return data
 
 
 @view_config(
@@ -81,8 +82,8 @@ def delete_mappings(context, request):
     for mapping in mappings:
         if mapping['deleteRow'] is True:
             try:
-                mapped = db_session.query(models.Mapper).filter(
-                    models.Mapper.id == mapping['mappedId']).one()
+                mapped = db_session.query(models.Mapping).filter(
+                    models.Mapping.id == mapping['mappedId']).one()
 
             except NoResultFound:
                 request.response.status = 400
@@ -113,80 +114,73 @@ def delete_mappings(context, request):
 def get_schemas_mapped(context, request):
     db_session = request.db_session
 
-    mappings = db_session.query(models.Mapper).filter(
-        models.Mapper.id == request.params['id']).one()
+    mapping = db_session.query(models.Mapping).filter(
+        models.Mapping.id == request.params['id']).one()
 
-    if mappings.mapped['mapping_type'] == u'imputation':
+    if mapping.type == u'imputation':
         return render_to_response('../templates/mappings/imputed_mapped.pt',
                                   {}, request=request)
 
-    site_import = db_session.query(models.Import).filter(
-        datastore.Schema.name == mappings.mapped['mapping']['name']).filter(
-        datastore.Schema.publish_date == mappings.mapped['mapping']['publish_date']).filter(
-        datastore.Schema.id == models.Import.schema_id).one()
-
-    site = site_import.site
+    site = mapping.site
 
     mappings_form_rows = []
     drsc_form_rows = []
 
-    if mappings.mapped['mapping_type'] == u'direct':
+    if mapping.type == u'direct':
         # get site form and choices
         # we need to display the label map on visualization page
         # site labels for choices is not available in json map in mappings tbl
-        schema_name = mappings.mapped['mapping']['name']
-        schema_publish_date = mappings.mapped['mapping']['publish_date']
-        schema = db_session.query(datastore.Schema).filter(
-            datastore.Schema.name == schema_name,
-            datastore.Schema.publish_date == schema_publish_date).one()
+        schema = (
+            db_session.query(datastore.Schema)
+            .filter_by(
+                name=mapping.logic['source_schema']['name'],
+                publish_date=mapping.logic['source_schema']['publish_date'])
+            .one())
 
-        attribute = schema.attributes[mappings.mapped['mapping']['variable']]
+        attribute = schema.attributes[mapping.logic['source_attribute']]
 
-        drsc_variable = mappings.mapped['drsc_variable']
-        if mappings.schema.attributes[drsc_variable].type == u'choice':
-            choices = mappings.schema.attributes[drsc_variable].choices
+        drsc_variable = mapping.mapped_attribute
+
+        if drsc_variable.type == u'choice':
             # data to populate drsc table
-            for choice in sorted(choices, key=lambda i: choices[i].order):
+            for choice in drsc_variable.iterchoices():
                 drsc_form_rows.append({
-                    'variable': drsc_variable,
-                    'description': mappings.schema.title,
-                    'type': mappings.schema.attributes[drsc_variable].type,
-                    'confidence': mappings.mapped['mapping']['confidence'],
-                    'label': choices[choice].title,
-                    'key': choice,
+                    'variable': drsc_variable.name,
+                    'description': schema.title,
+                    'type': drsc_variable.type,
+                    'confidence': mapping.confidence,
+                    'label': choice.title,
+                    'key': choice.name,
 
                 })
 
-            # We need all choices to diplay even if not mapped
-            choices = attribute.choices
-
-            for choice in sorted(choices, key=lambda i: choices[i].order):
+            for choice in attribute.iterchoices():
                 mapped_value = u''
                 mapped_label = u''
-                for row in mappings.mapped['mapping']['choices_map']:
-                    if choice in row['mapped'].split(','):
+                for row in mapping.logic['choices_map']:
+                    if choice.name in row['mapped'].split(','):
                         mapped_value = row['name']
                         mapped_label = row['label']
 
                 mappings_form_rows.append({
                     'variable': attribute.name,
                     'description': attribute.title,
-                    'type': mappings.schema.attributes[drsc_variable].type,
-                    'site': site,
+                    'type': mapping.mapped_attribute.type,
+                    'site': site.title,
                     'form': schema.name,
-                    'label': choices[choice].title,
-                    'value': choices[choice].name,
-                    'mapped_variable': drsc_variable,
+                    'label': choice.title,
+                    'value': choice.name,
+                    'mapped_variable': drsc_variable.name,
                     'mapped_label': mapped_label,
                     'mapped_value': mapped_value
                 })
         else:
             # no choices processing
             drsc_form_rows.append({
-                'variable': drsc_variable,
-                'description': mappings.schema.title,
-                'type': mappings.schema.attributes[drsc_variable].type,
-                'confidence': mappings.mapped['mapping']['confidence'],
+                'variable': drsc_variable.name,
+                'description': mapping.mapped_attribute.schema.title,
+                'type': mapping.mapped_attribute.type,
+                'confidence': mapping.confidence,
                 'label': u'',
                 'key': u'',
             })
@@ -194,8 +188,8 @@ def get_schemas_mapped(context, request):
             mappings_form_rows.append({
                 'variable': attribute.name,
                 'description': attribute.title,
-                'type': mappings.schema.attributes[drsc_variable].type,
-                'site': site,
+                'type': mapping.mapped_attribute.type,
+                'site': site.title,
                 'form': schema.name,
                 'label': attribute.title,
                 'value': u'',
@@ -205,8 +199,8 @@ def get_schemas_mapped(context, request):
             })
 
     return {
-        'drsc_form': mappings.schema.name,
-        'drsc_publish_date': mappings.schema.publish_date.strftime('%Y-%m-%d'),
+        'drsc_form': mapping.mapped_attribute.schema.name,
+        'drsc_publish_date': mapping.mapped_attribute.schema.publish_date,
         'drsc_form_rows': drsc_form_rows,
         'mappings_form_rows': mappings_form_rows
     }

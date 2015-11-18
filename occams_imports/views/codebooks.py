@@ -10,6 +10,7 @@ from pyramid.session import check_csrf_token
 
 from occams.utils.forms import wtferrors
 from occams_datastore import models as datastore
+from occams_studies import models as studies
 from occams_forms.views.field import FieldFormFactory
 
 from occams_imports import models
@@ -78,7 +79,12 @@ def insert_codebooks(context, request):
     dry = None
     forms = []
 
-    site = request.POST['site']
+    site_name = request.POST['site']
+
+    site = (
+        db_session.query(studies.Site)
+        .filter(studies.Site.name.ilike(site_name))
+        .one())
 
     if request.POST['mode'] == u'dry':
         dry = True

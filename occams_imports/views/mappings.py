@@ -12,14 +12,13 @@ from sqlalchemy.orm import joinedload
 import wtforms
 
 from occams_datastore import models as datastore
-from occams_imports import models as models
+from occams_studies import models as studies
+
+from .. import models
 
 
-def update_schema_data(data, schemas, drsc):
+def update_schema_data(data, schemas, site=None):
     """Converts sql alchemy schema objects to dictionary for rendering"""
-    from operator import itemgetter
-
-    site = u'DRSC' if drsc else u''
 
     for schema in schemas:
         attributes = []
@@ -50,7 +49,7 @@ def update_schema_data(data, schemas, drsc):
             u'name': schema.name,
             u'publish_date': schema.publish_date.strftime('%Y-%m-%d'),
             u'attributes': attributes,
-            u'site': site
+            u'site': site.title if site else ''
         })
 
     return data
@@ -68,26 +67,31 @@ def get_all_schemas(context, request):
     from occams_datastore import models as datastore
     from occams_imports import models as models
 
-    check_csrf_token(request)
     db_session = request.db_session
+
+    target_site = (
+        db_session.query(studies.Site)
+        .filter_by(name=u'drsc')
+        .one())
 
     schemas = db_session.query(datastore.Schema).options(
         joinedload('attributes').joinedload('choices')).filter(
         datastore.Schema.id == models.Import.schema_id).filter(
-        models.Import.site != 'DRSC').order_by(datastore.Schema.name).all()
+        models.Import.site != target_site).order_by(datastore.Schema.name).all()
 
     drsc_schemas = db_session.query(datastore.Schema).options(
         joinedload('attributes').joinedload('choices')).filter(
         datastore.Schema.id == models.Import.schema_id).filter(
-        models.Import.site == 'DRSC').all()
+        models.Import.site == target_site).all()
 
     data = {}
     data['forms'] = []
 
-    data = update_schema_data(data, schemas, drsc=False)
-    data = update_schema_data(data, drsc_schemas, drsc=True)
+    data = update_schema_data(data, schemas, None)
+    data = update_schema_data(data, drsc_schemas,  target_site)
 
     return json.dumps(data)
+
 
 @view_config(
     route_name='imports.mappings.direct',
@@ -142,11 +146,13 @@ def get_schemas(context, request):
         .filter(datastore.Schema.id == models.Import.schema_id)
     )
 
+    target_site = db_session.query(studies.Site).filter_by(name='drsc').one()
+
     # TODO: Need to implement sites at the form level
     if data['is_target']:
-        schemata_query = schemata_query.filter(models.Import.site == 'DRSC')
+        schemata_query = schemata_query.filter(models.Import.site == target_site)
     else:
-        schemata_query = schemata_query.filter(models.Import.site != 'DRSC')
+        schemata_query = schemata_query.filter(models.Import.site != target_site)
 
     if data['term']:
         schemata_query = (
@@ -301,45 +307,43 @@ def mappings_direct_map(context, request):
     check_csrf_token(request)
     db_session = request.db_session
 
-    site_import = db_session.query(models.Import).filter(
-        datastore.Schema.name == request.json['site']['name']).filter(
-        datastore.Schema.publish_date == request.json['site']['publish_date']).filter(
-        datastore.Schema.id == models.Import.schema_id).one()
+    target_site = (
+        db_session.query(studies.Site)
+        .select_from(models.Import)
+        .join(models.Import.site)
+        .filter(models.Import.schema.has(
+            name=request.json['site']['name'],
+            publish_date=request.json['site']['publish_date']))
+        .one())
 
-    site = site_import.site
+    mapped_attribute = (
+        db_session.query(datastore.Attribute)
+        .filter(
+            (datastore.Attribute.name == request.json['selected_drsc']['variable'])
+            & (datastore.Attribute.schema.has(
+                name=request.json['drsc']['name'],
+                publish_date=request.json['drsc']['publish_date'])))
+        .one())
 
-    mapping = {}
-    mapping['drsc_name'] = request.json['drsc']['name']
-    mapping['drsc_publish_date'] = request.json['drsc']['publish_date']
-    mapping['drsc_variable'] = request.json['selected_drsc']['variable']
-    mapping['drsc_label'] = request.json['selected_drsc']['label']
-    mapping['site'] = site
-
-    mapping['mapping_type'] = u'direct'
-
-    mapping['mapping'] = {}
-    mapping['mapping']['confidence'] = request.json['confidence']
-    mapping['mapping']['name'] = request.json['site']['name']
-    mapping['mapping']['publish_date'] = request.json['site']['publish_date']
-    mapping['mapping']['variable'] = request.json['selected']['variable']
-    mapping['mapping']['label'] = request.json['selected']['label']
+    logic = {
+        'source_schema':  {
+            'name': request.json['site']['name'],
+            'publish_date': request.json['site']['publish_date']
+        },
+        'source_attribute': request.json['selected']['variable']
+    }
 
     if u'choices' not in request.json['selected_drsc']:
-        mapping['mapping']['choices_map'] = None
+        logic['choices_map'] = None
     else:
-        mapping['mapping']['choices_map'] = request.json['selected_drsc']['choices']
+        logic['choices_map'] = request.json['selected_drsc']['choices']
 
-    publish_date = datetime.strptime(
-        request.json['drsc']['publish_date'], '%Y-%m-%d')
-
-    schema = db_session.query(models.Schema).filter(
-        datastore.Schema.name == request.json['drsc']['name'],
-        datastore.Schema.publish_date == publish_date.date()
-    ).one()
-
-    mapped_obj = models.Mapper(
-        schema=schema,
-        mapped=mapping
+    mapped_obj = models.Mapping(
+        site=target_site,
+        mapped_attribute=mapped_attribute,
+        type=u'direct',
+        confidence=request.json['confidence'],
+        logic=logic
     )
 
     db_session.add(mapped_obj)
@@ -362,53 +366,46 @@ def mappings_imputations_map(context, request):
     schema_obj = request.json[u'groups'][0][u'conversions'][0][u'value'][u'schema']
     site_name = schema_obj[u'name']
     site_publish_date = schema_obj['publish_date']
-
     site_import = db_session.query(models.Import).filter(
         datastore.Schema.name == site_name).filter(
         datastore.Schema.publish_date == site_publish_date).filter(
         datastore.Schema.id == models.Import.schema_id).one()
-
     site = site_import.site
 
-    mapping = {}
-    drsc = request.json[u'target'][u'schema']
-    drsc_attribute = request.json[u'target'][u'attribute']
-    mapping['drsc_name'] = drsc[u'name']
-    mapping['drsc_publish_date'] = drsc[u'publish_date']
-    mapping['drsc_variable'] = drsc_attribute[u'name']
+    mapped_attribute = (
+        db_session.query(datastore.Attribute)
+        .filter(datastore.Attribute.name == request.json[u'target'][u'attribute']['name'])
+        .filter(datastore.Attribute.schema.has(
+            name=request.json[u'target'][u'schema']['name'],
+            publish_date=request.json[u'target'][u'schema']['publish_date']))
+        .one())
 
-    mapping['drsc_label'] = drsc_attribute[u'title']
-    mapping['site'] = site
+    mapped_choice_data = request.json.get('targetChoice')
 
-    mapping['mapping_type'] = u'imputation'
+    if mapped_choice_data:
+        mapped_choice = mapped_attribute.choices[mapped_choice_data['name']]
+    else:
+        mapped_choice = None
 
-    mapping['mapping'] = {}
-    mapping['mapping']['confidence'] = request.json[u'confidence']
-    mapping['mapping']['groups'] = request.json[u'groups']
-
-    mapping['mapping']['maps_to'] = request.json[u'targetChoice']
-    mapping['mapping']['condition'] = request.json[u'condition']
-
-    mapping['mapping']['forms'] = []
-
+    logic = {}
+    logic['groups'] = request.json[u'groups']
+    logic['condition'] = request.json[u'condition']
+    logic['forms'] = []
     for group in request.json[u'groups']:
         for conversion in group[u'conversions']:
             if isinstance(conversion[u'value'], dict):
                 form_name = conversion[u'value'][u'schema'][u'name']
                 variable = conversion[u'value'][u'attribute'][u'name']
-                mapping['mapping']['forms'].append([form_name, variable])
+                logic['forms'].append([form_name, variable])
 
-    publish_date = datetime.strptime(
-        drsc['publish_date'], '%Y-%m-%d')
-
-    schema = db_session.query(models.Schema).filter(
-        datastore.Schema.name == drsc['name'],
-        datastore.Schema.publish_date == publish_date.date()
-    ).one()
-
-    mapped_obj = models.Mapper(
-        schema=schema,
-        mapped=mapping
+    mapped_obj = models.Mapping(
+        site=site,
+        mapped_attribute=mapped_attribute,
+        mapped_choice=mapped_choice,
+        confidence=request.json[u'confidence'],
+        type=u'imputation',
+        description=request.json['description'],
+        logic=logic
     )
 
     db_session.add(mapped_obj)

@@ -3,12 +3,21 @@ import sqlalchemy as sa
 from sqlalchemy import orm
 from sqlalchemy.dialects.postgresql import JSON
 
-from occams_datastore.models import (
-    ModelClass,
-    Schema,
-    Referenceable, Modifiable)
 
-Base = ModelClass(u'Base')
+from occams_datastore import models as datastore
+from occams_studies import models as studies
+
+
+class ImportsModel(datastore.Base):
+    __abstract__ = True
+    metadata = sa.MetaData(schema='imports')
+
+
+sa.event.listen(
+    ImportsModel.metadata,
+    'before_create',
+    sa.DDL('CREATE SCHEMA IF NOT EXISTS imports')
+)
 
 
 class groups:
@@ -60,36 +69,55 @@ class ImportFactory(Resource):
     ]
 
 
-class Import(Base, Referenceable, Modifiable):
+class Import(ImportsModel, datastore.Referenceable, datastore.Modifiable):
     __tablename__ = 'import'
 
-    site = sa.Column(
-        sa.String(10),
-        nullable=False,
-        doc='A string distinguishing a site(ucsd, ucla, etc.)')
+    site_id = sa.Column(
+        sa.ForeignKey(studies.Site.id),
+        nullable=False)
 
-    schema_id = sa.Column(sa.Integer())
+    site = orm.relationship(studies.Site)
 
-    schema = orm.relationship(
-        Schema,
-        primaryjoin=(schema_id == Schema.id),
-        foreign_keys=[schema_id],
-        backref=orm.backref(
-            name='import',
-            cascade='all, delete-orphan'))
+    schema_id = sa.Column(
+        sa.ForeignKey(datastore.Schema.id),
+        nullable=False)
+
+    schema = orm.relationship(datastore.Schema)
+
+    __table_args__ = (
+        sa.UniqueConstraint(site_id, schema_id),
+    )
 
 
-class Mapper(Base, Referenceable, Modifiable):
-    __tablename__ = 'mapper'
+class Mapping(ImportsModel, datastore.Referenceable, datastore.Modifiable):
+    __tablename__ = 'mapping'
 
-    schema_id = sa.Column(sa.Integer())
+    site_id = sa.Column(
+        sa.ForeignKey(studies.Site.id),
+        nullable=False)
 
-    schema = orm.relationship(
-        Schema,
-        primaryjoin=(schema_id == Schema.id),
-        foreign_keys=[schema_id],
-        backref=orm.backref(
-            name='mapped',
-            cascade='all, delete-orphan'))
+    site = orm.relationship(studies.Site)
 
-    mapped = sa.Column(JSON)
+    mapped_attribute_id = sa.Column(
+        sa.ForeignKey(datastore.Attribute.id),
+        nullable=False)
+
+    mapped_attribute = orm.relationship(datastore.Attribute)
+
+    mapped_choice_id = sa.Column(sa.ForeignKey(datastore.Choice.id))
+
+    mapped_choice = orm.relationship(datastore.Choice)
+
+    description = sa.Column(sa.UnicodeText())
+
+    confidence = sa.Column(sa.Integer(), nullable=False)
+
+    type = sa.Column(
+        sa.Enum(u'direct', u'imputation', name='mapping_type'),
+        nullable=False)
+
+    logic = sa.Column(JSON)
+
+    __table_args__ = (
+        sa.UniqueConstraint(site_id, mapped_attribute_id, mapped_choice_id),
+    )

@@ -33,7 +33,7 @@ def main(argv=sys.argv):
 
     with transaction.manager:
         datastore.DataStoreModel.metadata.create_all(db_session.bind, checkfirst=True)
-        models.Base.metadata.create_all(db_session.bind, checkfirst=True)
+        models.ImportsModel.metadata.create_all(db_session.bind, checkfirst=True)
 
         alembic_cfg.attributes['connection'] = db_session.bind.connect()
         command.stamp(alembic_cfg, 'head')
