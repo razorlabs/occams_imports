@@ -15,7 +15,7 @@
         method="POST"
         autocomplete="on"
         enctype="multipart/form-data"
-        action="${request.route_path('imports.codebooks_iform_status')}">
+        action="${request.route_path('imports.codebooks_status', format='iform')}">
 
       <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
 

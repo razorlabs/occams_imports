@@ -47,17 +47,7 @@ def qds(context, request):
 
 
 @view_config(
-    route_name='imports.codebooks_occams_status',
-    permission='import',
-    request_method='POST',
-    renderer='../templates/codebooks/status.pt')
-@view_config(
-    route_name='imports.codebooks_iform_status',
-    permission='import',
-    request_method='POST',
-    renderer='../templates/codebooks/status.pt')
-@view_config(
-    route_name='imports.codebooks_qds_status',
+    route_name='imports.codebooks_status',
     permission='import',
     request_method='POST',
     renderer='../templates/codebooks/status.pt')
@@ -90,14 +80,13 @@ def insert_codebooks(context, request):
         dry = True
 
     codebook = request.POST['codebook'].file
+    codebook_format = request.matchdict['format']
 
-    if request.path_info == u'/imports/codebooks/iform/status':
-
+    if codebook_format == u'iform':
         converted_codebook = iform_json.convert(codebook)
-
         records = parse.parse(converted_codebook)
 
-    elif request.path_info == u'/imports/codebooks/occams/status':
+    elif codebook_format == u'occams':
         if request.POST['delimiter'] == u'comma':
             delimiter = ','
 
@@ -106,7 +95,7 @@ def insert_codebooks(context, request):
 
         records = parse.parse(codebook, delimiter=delimiter)
 
-    elif request.path_info == u'/imports/codebooks/qds/status':
+    elif codebook_format == u'qds':
         if request.POST['delimiter'] == u'comma':
             delimiter = ','
 
