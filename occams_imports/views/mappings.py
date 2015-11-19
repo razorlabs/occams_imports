@@ -2,7 +2,6 @@
 Perform direct and imputation mappings of DRSC variables
 """
 
-from datetime import datetime
 import json
 from operator import itemgetter
 
@@ -62,11 +61,6 @@ def update_schema_data(data, schemas, site=None):
     xhr=True,
     renderer='json')
 def get_all_schemas(context, request):
-    import json
-    from sqlalchemy.orm import joinedload
-    from occams_datastore import models as datastore
-    from occams_imports import models as models
-
     db_session = request.db_session
 
     target_site = (
