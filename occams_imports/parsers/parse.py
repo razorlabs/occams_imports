@@ -11,6 +11,9 @@ from datetime import datetime
 import six
 import unicodecsv as csv
 
+from occams_imports.parsers import iform_json
+from occams_imports.parsers import convert_qds_to_occams
+
 
 def is_true(value):
     """
@@ -90,6 +93,31 @@ def get_choices(raw_choices):
             )
 
     return choices
+
+
+def parse_dispatch(codebook, codebook_format, delimiter):
+    """
+    Dispatch to specific parser
+
+    :codebook: codebook file
+    :codebook_format: denotes type of codebook, i.e. 'occams'
+    :delimiter: delimiter used in the codebook file
+
+    :return: list of dictionaries...a dictionary denotes a row from the csv
+    """
+    if delimiter == u'comma':
+        delimiter = ','
+    elif delimiter == u'tab':
+        delimiter = '\t'
+
+    if codebook_format == u'iform':
+        codebook = iform_json.convert(codebook)
+
+    elif codebook_format == u'qds':
+        codebook = convert_qds_to_occams.convert(
+            codebook, delimiter=delimiter)
+
+    return parse(codebook, delimiter=delimiter)
 
 
 def parse(codebook, delimiter=','):

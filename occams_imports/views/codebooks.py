@@ -15,8 +15,6 @@ from occams_forms.views.field import FieldFormFactory
 
 from occams_imports import models
 from occams_imports.parsers import parse
-from occams_imports.parsers import iform_json
-from occams_imports.parsers import convert_qds_to_occams
 
 
 @view_config(
@@ -81,32 +79,9 @@ def insert_codebooks(context, request):
 
     codebook = request.POST['codebook'].file
     codebook_format = request.matchdict['format']
+    delimiter = request.POST.get('delimiter', ',')
 
-    if codebook_format == u'iform':
-        converted_codebook = iform_json.convert(codebook)
-        records = parse.parse(converted_codebook)
-
-    elif codebook_format == u'occams':
-        if request.POST['delimiter'] == u'comma':
-            delimiter = ','
-
-        elif request.POST['delimiter'] == u'tab':
-            delimiter = '\t'
-
-        records = parse.parse(codebook, delimiter=delimiter)
-
-    elif codebook_format == u'qds':
-        if request.POST['delimiter'] == u'comma':
-            delimiter = ','
-
-        elif request.POST['delimiter'] == u'tab':
-            delimiter = '\t'
-
-        converted_codebook = convert_qds_to_occams.convert(
-            codebook, delimiter=delimiter)
-
-        records = parse.parse(converted_codebook)
-
+    records = parse.parse_dispatch(codebook, codebook_format, delimiter)
     records = parse.remove_system_entries(records)
 
     errors = []
