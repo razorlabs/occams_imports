@@ -11,8 +11,7 @@ from datetime import datetime
 import six
 import unicodecsv as csv
 
-from occams_imports.parsers import iform_json
-from occams_imports.parsers import convert_qds_to_occams
+from occams_imports.parsers import iform_json, convert_qds_to_occams
 
 
 def is_true(value):
