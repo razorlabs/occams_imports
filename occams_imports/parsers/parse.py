@@ -11,6 +11,7 @@ from datetime import datetime
 import six
 import unicodecsv as csv
 
+from occams_datastore import models as datastore
 from occams_imports.parsers import iform_json, convert_qds_to_occams
 
 
@@ -58,7 +59,6 @@ def parse_choice_string(row):
 
 
 def get_choices(raw_choices):
-    from occams_datastore import models as datastore
     """
     sample input = [[u'0', label], [u'1': label2]]
 
