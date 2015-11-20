@@ -1,11 +1,11 @@
 import pytest
 
 from occams.testing import USERID, make_environ, get_csrf_token
-# from tests.conftest import make_environ, USERID, get_csrf_token
 
 
 ALLOWED = ['administrator', 'manager']
 NOT_ALLOWED = ['editor', 'reviewer']
+
 
 class TestImports:
 
@@ -13,17 +13,26 @@ class TestImports:
     def populate(self, app, db_session):
         import transaction
         from occams_datastore import models as datastore
+        from occams_studies import models as studies
 
         # Any view-dependent data goes here
-        # Webtests will use a different scope for its transaction
         with transaction.manager:
             user = datastore.User(key=USERID)
-            db_session.info['blame'] = user
+            drsc = studies.Site(name=u'drsc', title=u'DRSC')
+            ucsd = studies.Site(name=u'ucsd', title=u'UCSD')
+            ucla = studies.Site(name=u'ucla', title=u'UCLA')
+            ebac = studies.Site(name=u'ebac', title=u'EBAC')
+            lac = studies.Site(name=u'lac', title=u'LAC')
             db_session.add(user)
+            db_session.add(drsc)
+            db_session.add(ucsd)
+            db_session.add(ucla)
+            db_session.add(ebac)
+            db_session.add(lac)
             db_session.flush()
 
     @pytest.mark.parametrize('group', ALLOWED)
-    def test_imports_occams(self, app, db_session, group):
+    def test_imports_occams(self, app, group):
         url = '/imports/codebooks/occams'
 
         environ = make_environ(userid=USERID, groups=[group])
@@ -31,16 +40,14 @@ class TestImports:
 
         assert response.status_code == 200
 
-
     @pytest.mark.parametrize('group', NOT_ALLOWED)
-    def test_imports_occams_not_allowed(self, app, db_session, group):
+    def test_imports_occams_not_allowed(self, app, group):
         url = '/imports/codebooks/occams'
 
         environ = make_environ(userid=USERID, groups=[group])
         response = app.get(url, extra_environ=environ, expect_errors=True)
 
         assert response.status_code == 403
-
 
     def test_not_authenticated_imports_occams(self, app):
         url = '/imports/codebooks/occams'
@@ -49,284 +56,320 @@ class TestImports:
 
         assert response.status_code == 401
 
+    @pytest.mark.parametrize('group', ALLOWED)
+    def test_imports_qds(self, app, group):
+        url = '/imports/codebooks/qds'
 
-    # @pytest.mark.parametrize('group', ALLOWED)
-    # def test_imports_qds(group, config, app):
-    #     url = '/imports/codebooks/qds'
+        environ = make_environ(userid=USERID, groups=[group])
+        response = app.get(url, extra_environ=environ)
 
-    #     environ = make_environ(userid=USERID, groups=[group])
-    #     response = app.get(url, extra_environ=environ)
+        assert response.status_code == 200
 
-    #     assert response.status_code == 200
+    @pytest.mark.parametrize('group', NOT_ALLOWED)
+    def test_imports_qds_not_allowed(self, app, group):
+        url = '/imports/codebooks/qds'
 
+        environ = make_environ(userid=USERID, groups=[group])
+        response = app.get(url, extra_environ=environ, expect_errors=True)
 
-    # @pytest.mark.parametrize('group', NOT_ALLOWED)
-    # def test_imports_qds_not_allowed(group, config, app):
-    #     url = '/imports/codebooks/qds'
+        assert response.status_code == 403
 
-    #     environ = make_environ(userid=USERID, groups=[group])
-    #     response = app.get(url, extra_environ=environ, expect_errors=True)
+    def test_not_authenticated_imports_qds(self, app):
+        url = '/imports/codebooks/qds'
 
-    #     assert response.status_code == 403
+        response = app.get(url, expect_errors=True)
 
+        assert response.status_code == 401
 
-    # def test_not_authenticated_imports_qds(app):
-    #     url = '/imports/codebooks/qds'
+    @pytest.mark.parametrize('group', ALLOWED)
+    def test_imports_iform(self, app, group):
+        url = '/imports/codebooks/iform'
 
-    #     response = app.get(url, expect_errors=True)
+        environ = make_environ(userid=USERID, groups=[group])
+        response = app.get(url, extra_environ=environ)
 
-    #     assert response.status_code == 401
+        assert response.status_code == 200
 
+    @pytest.mark.parametrize('group', NOT_ALLOWED)
+    def test_imports_iform_not_allowed(self, app, group):
+        url = '/imports/codebooks/iform'
 
-    # @pytest.mark.parametrize('group', ALLOWED)
-    # def test_imports_iform(group, config, app):
-    #     url = '/imports/codebooks/iform'
+        environ = make_environ(userid=USERID, groups=[group])
+        response = app.get(url, extra_environ=environ, expect_errors=True)
 
-    #     environ = make_environ(userid=USERID, groups=[group])
-    #     response = app.get(url, extra_environ=environ)
+        assert response.status_code == 403
 
-    #     assert response.status_code == 200
+    def test_not_authenticated_imports_iform(self, app):
+        url = '/imports/codebooks/iform'
 
+        response = app.get(url, expect_errors=True)
 
-    # @pytest.mark.parametrize('group', NOT_ALLOWED)
-    # def test_imports_iform_not_allowed(group, config, app):
-    #     url = '/imports/codebooks/iform'
+        assert response.status_code == 401
 
-    #     environ = make_environ(userid=USERID, groups=[group])
-    #     response = app.get(url, extra_environ=environ, expect_errors=True)
+    @pytest.mark.parametrize('group', ALLOWED)
+    def test_iform_upload(self, app, group):
+        from pkg_resources import resource_filename
 
-    #     assert response.status_code == 403
+        url = '/imports/codebooks/iform/status'
 
+        environ = make_environ(userid=USERID, groups=[group])
+        csrf_token = get_csrf_token(app, environ)
 
-    # def test_not_authenticated_imports_iform(app):
-    #     url = '/imports/codebooks/iform'
+        data = {
+            'mode': u'dry',
+            'site': u'DRSC'
+        }
 
-    #     response = app.get(url, expect_errors=True)
+        iform = open(resource_filename('tests', 'iform_input_fixture.json'))
+        json_data = iform.read()
 
-    #     assert response.status_code == 401
+        response = app.post(
+            url,
+            extra_environ=environ,
+            expect_errors=True,
+            upload_files=[('codebook', 'test.json', json_data)],
+            headers={
+                'X-CSRF-Token': csrf_token,
+            },
+            params=data)
 
+        iform.close()
 
-    # @pytest.mark.parametrize('group', ALLOWED)
-    # def test_iform_upload(group, config, app):
-    #     from pkg_resources import resource_filename
+        assert response.status_code == 200
 
-    #     url = '/imports/codebooks/iform/status'
+    @pytest.mark.parametrize('group', NOT_ALLOWED)
+    def test_iform_upload_not_allowed(self, app, group):
+        from pkg_resources import resource_filename
 
-    #     environ = make_environ(userid=USERID, groups=[group])
-    #     csrf_token = get_csrf_token(app, environ)
+        url = '/imports/codebooks/iform/status'
 
-    #     data = {
-    #         'mode': u'dry',
-    #         'site': u'DRSC'
-    #     }
+        environ = make_environ(userid=USERID, groups=[group])
+        csrf_token = get_csrf_token(app, environ)
 
-    #     iform = open(resource_filename('tests', 'iform_input_fixture.json'))
-    #     json_data = iform.read()
+        data = {
+            'mode': u'dry',
+            'site': u'DRSC'
+        }
 
-    #     response = app.post(
-    #         url,
-    #         extra_environ=environ,
-    #         expect_errors=True,
-    #         upload_files=[('codebook', 'test.json', json_data)],
-    #         headers={
-    #             'X-CSRF-Token': csrf_token,
-    #         },
-    #         params=data)
+        iform = open(resource_filename('tests', 'iform_input_fixture.json'), 'r')
+        json_data = iform.read()
 
-    #     iform.close()
+        response = app.post(
+            url,
+            extra_environ=environ,
+            expect_errors=True,
+            upload_files=[('codebook', 'test.json', json_data)],
+            headers={
+                'X-CSRF-Token': csrf_token,
+            },
+            params=data)
 
-    #     assert response.status_code == 200
+        iform.close()
 
+        assert response.status_code == 403
 
-    # @pytest.mark.parametrize('group', NOT_ALLOWED)
-    # def test_iform_upload_not_allowed(group, config, app):
-    #     from pkg_resources import resource_filename
+    def test_not_authenticated_imports_iform_upload(self, app):
+        url = '/imports/codebooks/iform/status'
 
-    #     url = '/imports/codebooks/iform/status'
+        response = app.post(
+            url,
+            status='*')
 
-    #     environ = make_environ(userid=USERID, groups=[group])
-    #     csrf_token = get_csrf_token(app, environ)
+        assert response.status_code == 401
 
-    #     data = {
-    #         'mode': u'dry',
-    #         'site': u'DRSC'
-    #     }
+    @pytest.mark.parametrize('group', ALLOWED)
+    def test_occams_upload(self, app, group):
+        from pkg_resources import resource_filename
 
-    #     iform = open(resource_filename('tests', 'iform_input_fixture.json'), 'r')
-    #     json_data = iform.read()
+        url = '/imports/codebooks/occams/status'
 
-    #     response = app.post(
-    #         url,
-    #         extra_environ=environ,
-    #         expect_errors=True,
-    #         upload_files=[('codebook', 'test.json', json_data)],
-    #         headers={
-    #             'X-CSRF-Token': csrf_token,
-    #         },
-    #         params=data)
+        environ = make_environ(userid=USERID, groups=[group])
+        csrf_token = get_csrf_token(app, environ)
 
-    #     iform.close()
+        data = {
+            'mode': u'dry',
+            'delimiter': u'comma',
+            'site': u'DRSC'
+        }
 
-    #     assert response.status_code == 403
+        codebook = open(resource_filename('tests', 'codebook.csv'), 'rb')
+        csv_data = codebook.read()
 
+        response = app.post(
+            url,
+            extra_environ=environ,
+            expect_errors=True,
+            upload_files=[('codebook', 'test.csv', csv_data)],
+            headers={
+                'X-CSRF-Token': csrf_token,
+            },
+            params=data)
 
-    # def test_not_authenticated_imports_iform_upload(app):
-    #     url = '/imports/codebooks/iform/status'
+        codebook.close()
 
-    #     response = app.post(
-    #         url,
-    #         status='*')
+        assert response.status_code == 200
 
-    #     assert response.status_code == 401
+    @pytest.mark.parametrize('group', NOT_ALLOWED)
+    def test_occams_upload_not_allowed(self, app, group):
+        from pkg_resources import resource_filename
 
+        url = '/imports/codebooks/occams/status'
 
-    # @pytest.mark.parametrize('group', ALLOWED)
-    # def test_occams_upload(group, config, app):
-    #     from pkg_resources import resource_filename
+        environ = make_environ(userid=USERID, groups=[group])
+        csrf_token = get_csrf_token(app, environ)
 
-    #     url = '/imports/codebooks/occams/status'
+        data = {
+            'mode': u'dry',
+            'delimiter': u'comma',
+            'site': u'DRSC'
+        }
 
-    #     environ = make_environ(userid=USERID, groups=[group])
-    #     csrf_token = get_csrf_token(app, environ)
+        codebook = open(resource_filename('tests', 'codebook.csv'), 'rb')
+        csv_data = codebook.read()
 
-    #     data = {
-    #         'mode': u'dry',
-    #         'delimiter': u'comma',
-    #         'site': u'DRSC'
-    #     }
+        response = app.post(
+            url,
+            extra_environ=environ,
+            expect_errors=True,
+            upload_files=[('codebook', 'test.csv', csv_data)],
+            headers={
+                'X-CSRF-Token': csrf_token,
+            },
+            params=data)
 
-    #     codebook = open(resource_filename('tests', 'codebook.csv'), 'rb')
-    #     csv_data = codebook.read()
+        codebook.close()
 
-    #     response = app.post(
-    #         url,
-    #         extra_environ=environ,
-    #         expect_errors=True,
-    #         upload_files=[('codebook', 'test.csv', csv_data)],
-    #         headers={
-    #             'X-CSRF-Token': csrf_token,
-    #         },
-    #         params=data)
+        assert response.status_code == 403
 
-    #     codebook.close()
+    def test_not_authenticated_imports_occams_upload(self, app):
+        url = '/imports/codebooks/occams/status'
 
-    #     assert response.status_code == 200
+        response = app.post(
+            url,
+            status='*')
 
+        assert response.status_code == 401
 
-    # @pytest.mark.parametrize('group', NOT_ALLOWED)
-    # def test_occams_upload_not_allowed(group, config, app):
-    #     from pkg_resources import resource_filename
+    @pytest.mark.parametrize('group', ALLOWED)
+    def test_qds_upload_codebook(self, app, group):
+        from pkg_resources import resource_filename
 
-    #     url = '/imports/codebooks/occams/status'
+        url = '/imports/codebooks/qds/status'
 
-    #     environ = make_environ(userid=USERID, groups=[group])
-    #     csrf_token = get_csrf_token(app, environ)
+        environ = make_environ(userid=USERID, groups=[group])
+        csrf_token = get_csrf_token(app, environ)
 
-    #     data = {
-    #         'mode': u'dry',
-    #         'delimiter': u'comma',
-    #         'site': u'DRSC'
-    #     }
+        data = {
+            'mode': u'dry',
+            'delimiter': u'comma',
+            'site': u'DRSC'
+        }
 
-    #     codebook = open(resource_filename('tests', 'codebook.csv'), 'rb')
-    #     csv_data = codebook.read()
+        qds = open(resource_filename('tests', 'qds_input_fixture.csv'), 'rb')
+        qds_data = qds.read()
 
-    #     response = app.post(
-    #         url,
-    #         extra_environ=environ,
-    #         expect_errors=True,
-    #         upload_files=[('codebook', 'test.csv', csv_data)],
-    #         headers={
-    #             'X-CSRF-Token': csrf_token,
-    #         },
-    #         params=data)
+        response = app.post(
+            url,
+            extra_environ=environ,
+            expect_errors=True,
+            upload_files=[('codebook', 'test.csv', qds_data)],
+            headers={
+                'X-CSRF-Token': csrf_token,
+            },
+            params=data)
 
-    #     codebook.close()
+        qds.close()
 
-    #     assert response.status_code == 403
+        assert response.status_code == 200
 
+    @pytest.mark.parametrize('group', NOT_ALLOWED)
+    def test_qds_upload_codebook_not_allowed(self, app, group):
+        from pkg_resources import resource_filename
 
-    # def test_not_authenticated_imports_occams_upload(app):
-    #     url = '/imports/codebooks/occams/status'
+        url = '/imports/codebooks/qds/status'
 
-    #     response = app.post(
-    #         url,
-    #         status='*')
+        environ = make_environ(userid=USERID, groups=[group])
+        csrf_token = get_csrf_token(app, environ)
 
-    #     assert response.status_code == 401
+        data = {
+            'mode': u'dry',
+            'delimiter': u'comma',
+            'site': u'DRSC'
+        }
 
+        qds = open(resource_filename('tests', 'qds_input_fixture.csv'), 'rb')
+        qds_data = qds.read()
 
-    # @pytest.mark.parametrize('group', ALLOWED)
-    # def test_qds_upload_codebook(group, config, app):
-    #     from pkg_resources import resource_filename
+        response = app.post(
+            url,
+            extra_environ=environ,
+            expect_errors=True,
+            upload_files=[('codebook', 'test.csv', qds_data)],
+            headers={
+                'X-CSRF-Token': csrf_token,
+            },
+            params=data)
 
-    #     url = '/imports/codebooks/qds/status'
+        qds.close()
 
-    #     environ = make_environ(userid=USERID, groups=[group])
-    #     csrf_token = get_csrf_token(app, environ)
+        assert response.status_code == 403
 
-    #     data = {
-    #         'mode': u'dry',
-    #         'delimiter': u'comma',
-    #         'site': u'DRSC'
-    #     }
+    def test_qds_not_authenticated_codebook_upload(self, app):
+        url = '/imports/codebooks/qds/status'
 
-    #     qds = open(resource_filename('tests', 'qds_input_fixture.csv'), 'rb')
-    #     qds_data = qds.read()
+        response = app.post(
+            url,
+            status='*')
 
-    #     response = app.post(
-    #         url,
-    #         extra_environ=environ,
-    #         expect_errors=True,
-    #         upload_files=[('codebook', 'test.csv', qds_data)],
-    #         headers={
-    #             'X-CSRF-Token': csrf_token,
-    #         },
-    #         params=data)
+        assert response.status_code == 401
 
-    #     qds.close()
+    @pytest.mark.parametrize('group', ALLOWED)
+    def test_mappings_delete_allowed(self, app, group):
+        url = '/imports/mappings/delete'
 
-    #     assert response.status_code == 200
+        environ = make_environ(userid=USERID, groups=[group])
+        csrf_token = get_csrf_token(app, environ)
 
+        data = {
+            'mapped_delete': []
+        }
 
-    # @pytest.mark.parametrize('group', NOT_ALLOWED)
-    # def test_qds_upload_codebook_not_allowed(group, config, app):
-    #     from pkg_resources import resource_filename
+        response = app.delete_json(
+            url,
+            extra_environ=environ,
+            status='*',
+            headers={
+                'X-CSRF-Token': csrf_token,
+                'X-REQUESTED-WITH': str('XMLHttpRequest')
+            },
+            params=data)
 
-    #     url = '/imports/codebooks/qds/status'
+        assert response.status_code == 200
 
-    #     environ = make_environ(userid=USERID, groups=[group])
-    #     csrf_token = get_csrf_token(app, environ)
+    def test_mappings_delete_not_authenticated(self, app):
+        url = '/imports/mappings/delete'
 
-    #     data = {
-    #         'mode': u'dry',
-    #         'delimiter': u'comma',
-    #         'site': u'DRSC'
-    #     }
+        response = app.delete(
+            url,
+            xhr=True,
+            status='*')
 
-    #     qds = open(resource_filename('tests', 'qds_input_fixture.csv'), 'rb')
-    #     qds_data = qds.read()
+        assert response.status_code == 401
 
-    #     response = app.post(
-    #         url,
-    #         extra_environ=environ,
-    #         expect_errors=True,
-    #         upload_files=[('codebook', 'test.csv', qds_data)],
-    #         headers={
-    #             'X-CSRF-Token': csrf_token,
-    #         },
-    #         params=data)
+    @pytest.mark.parametrize('group', ALLOWED)
+    def test_mappings_imputation_demo_allowed(self, app, group):
+        url = '/imports/mappings/imputation/demo'
 
-    #     qds.close()
+        environ = make_environ(userid=USERID, groups=[group])
+        response = app.get(url, extra_environ=environ)
 
-    #     assert response.status_code == 403
+        assert response.status_code == 200
 
+    def test_mappings_imputation_demo_not_authenticated(self, app):
+        url = '/imports/mappings/imputation/demo'
 
-    # def test_qds_not_authenticated_codebook_upload(app):
-    #     url = '/imports/codebooks/qds/status'
+        response = app.get(
+            url,
+            status='*')
 
-    #     response = app.post(
-    #         url,
-    #         status='*')
-
-    #     assert response.status_code == 401
+        assert response.status_code == 401
