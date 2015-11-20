@@ -47,8 +47,9 @@ def test_parse_choice_string():
 
 def test_parse():
     from datetime import date
+    from pkg_resources import resource_filename
 
-    codebook = open('codebook.csv', 'rb')
+    codebook = open(resource_filename('tests', 'codebook.csv'), 'rb')
     records = parse.parse(codebook)
 
     assert len(records) == 27
