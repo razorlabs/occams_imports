@@ -117,7 +117,9 @@ def test_populate_objects():
 
 
 def test_convert():
-    codebook = open('iform_input_fixture.json', 'r')
+    from pkg_resources import resource_filename
+
+    codebook = open(resource_filename('tests', 'iform_input_fixture.json'), 'r')
 
     converted = iform_json.convert(codebook)
 
