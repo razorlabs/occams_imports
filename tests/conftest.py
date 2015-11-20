@@ -69,6 +69,7 @@ def create_tables(request):
     import os
     from sqlalchemy import create_engine
     from occams_datastore import models as datastore
+    from occams_studies import models as studies
     from occams_imports import models
 
     db_url = request.config.getoption('--db')
@@ -80,17 +81,22 @@ def create_tables(request):
     if not reuse:
         # This is very similar to the init_db script: create tables
         # and pre-populate with expected data
-        datastore.DataStoreModel.metadata.create_all(engine)
-        models.Base.metadata.create_all(engine)
+        with engine.begin() as connection:
+            connection.info['blame'] = 'test_installer'
+            datastore.DataStoreModel.metadata.create_all(connection)
+            studies.StudiesModel.metadata.create_all(connection)
+            models.ImportsModel.metadata.create_all(connection)
+            # Clear out the state table since the data is populated on each test
+            connection.execute('DELETE FROM state')
 
     def drop_tables():
         if url.drivername == 'sqlite':
             if url.database not in ('', ':memory:'):
                 os.unlink(url.database)
         elif not reuse:
-            models.Base.metadata.drop_all(engine)
+            models.ImportsModel.metadata.drop_all(engine)
+            studies.StudiesModel.metadata.drop_all(engine)
             datastore.DataStoreModel.metadata.drop_all(engine)
-
 
     request.addfinalizer(drop_tables)
 
@@ -268,7 +274,7 @@ def app(request, wsgi, db_session):
     import transaction
     from webtest import TestApp
     from zope.sqlalchemy import mark_changed
-    from occams_forms import models
+    from occams_datastore import models
 
     # Save all changes up tho this point (db_session does some configuration)
     with transaction.manager:
@@ -294,8 +300,9 @@ def app(request, wsgi, db_session):
         # http://stackoverflow.com/a/11423886/148781
         # We also have to do this as a raw query becuase SA does
         # not have a way to invoke server-side cascade
-        db_session.execute('DELETE FROM "import" CASCADE')
+        db_session.execute('DELETE FROM "imports"."import" CASCADE')
         db_session.execute('DELETE FROM "schema" CASCADE')
         db_session.execute('DELETE FROM "state" CASCADE')
+        db_session.execute('DELETE FROM "site" CASCADE')
         db_session.execute('DELETE FROM "user" CASCADE')
         mark_changed(db_session)
