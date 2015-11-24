@@ -17,6 +17,101 @@ from occams_imports import models
 from occams_imports.parsers import parse
 
 
+def log_errors(errors, record):
+    """
+    Return error template dict
+    """
+    output = {}
+    output['errors'] = errors
+    output['schema_name'] = record['schema_name']
+    output['schema_title'] = record['schema_title']
+    output['name'] = record['name']
+    output['title'] = record['title']
+
+    return output
+
+
+def process_import(schema, attr_dict, site, db_session):
+    """
+    Insert import, schema, and attrs to datastore
+    """
+    schema.attributes = attr_dict
+
+    imported = models.Import(
+        site=site,
+        schema=schema
+    )
+
+    db_session.add(imported)
+    db_session.flush()
+
+
+def validate_populate_imports(request, records):
+    """
+    Return list of errors, imports and forms
+    """
+    errors, imports, forms = ([], [], [])
+    for record in records:
+        schema = datastore.Schema(
+            name=record['schema_name'],
+            title=record['schema_title'],
+            publish_date=record['publish_date']
+        )
+
+        if schema.to_json() not in forms:
+            forms.append(schema.to_json())
+
+        choices = parse.get_choices(record['choices'])
+        # below needed because we are calling from_json on record
+        record['choices'] = choices
+        FieldForm = FieldFormFactory(context=schema, request=request)
+        form = FieldForm.from_json(record)
+
+        if not form.validate():
+            output = log_errors(wtferrors(form), record)
+            errors.append(output)
+
+        else:
+            imports.append((datastore.Attribute(
+                name=record['name'],
+                title=record['title'],
+                description=record['description'],
+                is_required=record['is_required'],
+                is_collection=record['is_collection'],
+                is_private=record['is_private'],
+                type=record['type'],
+                order=record['order'],
+                choices=choices
+            ), schema))
+
+    return errors, imports, forms
+
+
+def group_imports_by_schema(imports, site, db_session):
+    """
+    Group attributes by schema and process
+
+    :return: count of fields inserted
+    """
+    current_schema = imports[0][1].name
+    fields_inserted = 0
+    attr_dict = {}
+    for attribute, schema in imports:
+        if schema.name == current_schema:
+            attr_dict[attribute.name] = attribute
+            fields_inserted += 1
+        else:
+            process_import(schema, attr_dict, site, db_session)
+            current_schema = schema.name
+            attr_dict = {}
+            attr_dict[attribute.name] = attribute
+
+    if attr_dict:
+        process_import(schema, attr_dict, site, db_session)
+
+    return fields_inserted
+
+
 @view_config(
     route_name='imports.codebooks_occams',
     permission='import',
@@ -64,9 +159,6 @@ def insert_codebooks(context, request):
     check_csrf_token(request)
     db_session = request.db_session
 
-    dry = None
-    forms = []
-
     site_name = request.POST['site']
 
     site = (
@@ -74,9 +166,7 @@ def insert_codebooks(context, request):
         .filter(studies.Site.name.ilike(site_name))
         .one())
 
-    if request.POST['mode'] == u'dry':
-        dry = True
-
+    dry = request.POST['mode'] == u'dry'
     codebook = request.POST['codebook'].file
     codebook_format = request.matchdict['format']
     delimiter = request.POST.get('delimiter', ',')
@@ -84,131 +174,17 @@ def insert_codebooks(context, request):
     records = parse.parse_dispatch(codebook, codebook_format, delimiter)
     records = parse.remove_system_entries(records)
 
-    errors = []
-    attributes = []
-
-    for record in records:
-        # convert boolean type to choice type
-        # occams doesn't support boolean form attribute types
-        # this feels like it should be in the parse module
-        if record['type'] == u'boolean':
-            record['type'] = u'choice'
-
-        choices = parse.get_choices(record['choices'])
-        record['choices'] = choices
-
-        schema = datastore.Schema(
-            name=record['schema_name'],
-            title=record['schema_title'],
-            publish_date=record['publish_date']
-        )
-
-        form_data = {'name': record['schema_name'],
-                     'title': record['schema_title'],
-                     'publish_date': record['publish_date']}
-
-        if form_data not in forms:
-            forms.append(form_data)
-
-        FieldForm = FieldFormFactory(context=schema, request=request)
-        form = FieldForm.from_json(record)
-
-        if not form.validate():
-            output = {}
-            output['errors'] = wtferrors(form)
-            output['schema_name'] = record['schema_name']
-            output['schema_title'] = record['schema_title']
-            output['name'] = record['name']
-            output['title'] = record['title']
-            errors.append(output)
-
-        else:
-            attributes.append(datastore.Attribute(
-                name=record['name'],
-                title=record['title'],
-                description=record['description'],
-                is_required=record['is_required'],
-                is_collection=record['is_collection'],
-                is_private=record['is_private'],
-                type=record['type'],
-                order=record['order'],
-                schema=schema,
-                choices=choices
-            ))
-
-    # get the first schema from the list
-    schema = attributes[0].schema
+    errors, imports, forms = validate_populate_imports(request, records)
 
     fields_inserted = 0
-    forms_inserted = 0
     if not dry and not errors:
-        attr_dict = {}
-        for attribute in attributes:
-            flushed = False
-            if attribute.schema.name == schema.name:
-                # remove unnecessary schema attr
-                del(attribute.schema)
-
-                attr_dict[attribute.name] = attribute
-
-                fields_inserted += 1
-            else:
-                schema = datastore.Schema(
-                    name=schema.name,
-                    title=schema.title,
-                    publish_date=schema.publish_date,
-                    attributes=attr_dict
-                )
-
-                imported = models.Import(
-                    site=site,
-                    schema=schema
-                )
-
-                db_session.add(imported)
-
-                db_session.flush()
-
-                forms_inserted += 1
-
-                flushed = True
-
-                schema = attribute.schema
-
-                attr_dict = {}
-
-                # remove unnecessary schema attr
-                del(attribute.schema)
-
-                attr_dict[attribute.name] = attribute
-
-        if not flushed:
-            schema = datastore.Schema(
-                name=schema.name,
-                title=schema.title,
-                publish_date=schema.publish_date,
-                attributes=attr_dict
-            )
-
-            imported = models.Import(
-                site=site,
-                schema=schema
-            )
-
-            db_session.add(imported)
-
-            db_session.flush()
-
-            forms_inserted += 1
-
-    fields_evaluated = len(records)
-    error_count = len(errors)
+        fields_inserted = group_imports_by_schema(imports, site, db_session)
 
     return {
-        'fields_evaluated': fields_evaluated,
+        'fields_evaluated': len(records),
         'errors': errors,
-        'error_count': error_count,
+        'error_count': len(errors),
         'fields_inserted': fields_inserted,
-        'forms_inserted': forms_inserted,
+        'forms_inserted': len(forms) if not dry and not errors else 0,
         'forms': forms
     }

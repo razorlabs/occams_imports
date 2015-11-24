@@ -1,4 +1,5 @@
 import pytest
+import mock
 
 from occams.testing import USERID, make_environ, get_csrf_token
 
@@ -307,3 +308,115 @@ class TestCodebooks:
 
         assert import_data.site.title == u'DRSC'
         assert import_data.schema.name == u'test_595_hiv_test_v04'
+
+    def test_process_import(self, db_session):
+        import datetime
+
+        from occams_datastore import models as datastore
+        from occams_studies import models as studies
+        from occams_imports import models
+        from occams_imports.views.codebooks import process_import
+
+        attr_dict = {}
+
+        schema = datastore.Schema(
+            name=u'test_name',
+            title=u'test_title',
+            publish_date=datetime.date.today()
+        )
+
+        site = studies.Site(
+            name=u'test_site', title=u'test_title'
+        )
+
+        process_import(schema, attr_dict, site, db_session)
+
+        imported = (
+            db_session.query(models.Import)
+            .filter(models.Import.site == site)
+            .one())
+
+        assert imported.site.name == site.name
+
+
+def test_validate_populate_imports(monkeypatch):
+    import datetime
+
+    from occams_imports.views.codebooks import validate_populate_imports
+
+    record = {
+        'schema_name': u'test_schema_name',
+        'schema_title': u'test_schema_title',
+        'publish_date': datetime.date.today(),
+        'name': u'test_name',
+        'title': u'test_title',
+        'description': u'',
+        'is_required': False,
+        'is_collection': False,
+        'is_private': False,
+        'type': u'number',
+        'order': 0,
+        'choices': []
+    }
+
+    mock_validate = mock.MagicMock()
+    mock_validate.return_value = True
+    mock_field_form = mock.MagicMock()
+    mock_field_form.from_json.return_value = mock_validate
+
+    monkeypatch.setattr(
+        'occams_imports.views.codebooks.FieldFormFactory', lambda **x: mock_field_form)
+
+    errors, imports, forms = validate_populate_imports(None, [record])
+
+    assert errors == []
+    assert len(imports) == 1
+    assert len(forms) == 1
+    assert forms[0]['name'] == u'test_schema_name'
+    assert forms[0]['title'] == u'test_schema_title'
+    assert imports[0][0].name == u'test_name'
+    assert imports[0][1].name == u'test_schema_name'
+
+
+def test_log_errors():
+    from occams_imports.views.codebooks import log_errors
+    errors = {
+        'error': 'something is broken'
+    }
+
+    record = {
+        'schema_name': u'test_schema_name',
+        'schema_title': u'test_schema_title',
+        'name': u'test_name',
+        'title': u'test_title'
+    }
+
+    output = log_errors(errors, record)
+
+    assert output['errors'] == errors
+    assert output['name'] == record['name']
+
+
+def test_group_imports_by_schema(monkeypatch):
+    import datetime
+
+    from occams_datastore import models as datastore
+    from occams_imports.views.codebooks import group_imports_by_schema
+
+    monkeypatch.setattr(
+        'occams_imports.views.codebooks.process_import', lambda w, x, y, z: None)
+
+    db_session = None
+    site = None
+    attribute = datastore.Attribute(
+        name=u'test_attr_name',
+        title=u'test_title'
+    )
+    imports = [(attribute, datastore.Schema(
+        name=u'test_attr_name',
+        title=u'test_title',
+        publish_date=datetime.date.today()))]
+
+    response = group_imports_by_schema(imports, site, db_session)
+
+    assert response == 1
