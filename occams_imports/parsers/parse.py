@@ -174,6 +174,10 @@ def parse(codebook, delimiter=','):
         if field_type == u'integer':
             field_type = u'number'
 
+        # occams doesn't support boolean form attribute types
+        if field_type == u'boolean':
+            field_type = u'choice'
+
         if row['choices'] is not None and \
            row['choices'].strip() != u'' and field_type == u'choice':
             choices = parse_choice_string(row)
