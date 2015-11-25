@@ -91,6 +91,10 @@ def group_imports_by_schema(imports, site, db_session):
     """
     Group attributes by schema and process
 
+    :imports: list of tuples, 1st element is an attribute, 2nd is a schema
+    :site: site of the import
+    :db_session: required for db inserts
+
     :return: count of fields inserted
     """
     current_schema = imports[0][1]
@@ -105,9 +109,10 @@ def group_imports_by_schema(imports, site, db_session):
             current_schema = schema
             attr_dict = {}
             attr_dict[attribute.name] = attribute
+            fields_inserted += 1
 
     if attr_dict:
-        process_import(schema, attr_dict, site, db_session)
+        process_import(current_schema, attr_dict, site, db_session)
 
     return fields_inserted
 
