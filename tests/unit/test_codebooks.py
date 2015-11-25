@@ -115,7 +115,8 @@ class TestCodebooks:
             'site': u'DRSC'
         }
 
-        iform = open(resource_filename('tests', 'iform_input_fixture.json'), 'r')
+        iform = open(
+            resource_filename('tests', 'iform_input_fixture.json'), 'r')
         json_data = iform.read()
 
         response = app.post(
@@ -289,7 +290,8 @@ class TestCodebooks:
             'site': u'DRSC'
         }
 
-        iform = open(resource_filename('tests', 'iform_input_fixture.json'), 'r')
+        iform = open(
+            resource_filename('tests', 'iform_input_fixture.json'), 'r')
         json_data = iform.read()
 
         app.post(
@@ -365,7 +367,8 @@ def test_validate_populate_imports(monkeypatch):
     mock_field_form.from_json.return_value = mock_validate
 
     monkeypatch.setattr(
-        'occams_imports.views.codebooks.FieldFormFactory', lambda **x: mock_field_form)
+        'occams_imports.views.codebooks.FieldFormFactory',
+        lambda **x: mock_field_form)
 
     errors, imports, forms = validate_populate_imports(None, [record])
 
@@ -397,26 +400,45 @@ def test_log_errors():
     assert output['name'] == record['name']
 
 
-def test_group_imports_by_schema(monkeypatch):
+def test_group_imports_by_schema():
     import datetime
 
     from occams_datastore import models as datastore
     from occams_imports.views.codebooks import group_imports_by_schema
 
-    monkeypatch.setattr(
-        'occams_imports.views.codebooks.process_import', lambda w, x, y, z: None)
+    with mock.patch('occams_imports.views.codebooks.process_import') \
+        as mock_process_import:
 
-    db_session = None
-    site = None
-    attribute = datastore.Attribute(
-        name=u'test_attr_name',
-        title=u'test_title'
-    )
-    imports = [(attribute, datastore.Schema(
-        name=u'test_attr_name',
-        title=u'test_title',
-        publish_date=datetime.date.today()))]
+        db_session = None
+        site = u'UCSD'
+        attribute = datastore.Attribute(
+            name=u'test_attr_name',
+            title=u'test_title'
+        )
+        attribute2 = datastore.Attribute(
+            name=u'test_attr_name2',
+            title=u'test_title2'
+        )
 
-    response = group_imports_by_schema(imports, site, db_session)
+        schema = datastore.Schema(
+            name=u'test_schema_name',
+            title=u'test_schema_title',
+            publish_date=datetime.date.today())
 
-    assert response == 1
+        schema2 = datastore.Schema(
+            name=u'test_schema_name2',
+            title=u'test_schema_title2',
+            publish_date=datetime.date.today())
+
+        imports = [(attribute, schema), (attribute2, schema2)]
+
+        response = group_imports_by_schema(imports, site, db_session)
+
+        mock_process_import.assert_any_call(
+            imports[0][1], {u'test_attr_name': imports[0][0]}, u'UCSD', None)
+
+        mock_process_import.assert_any_call(
+            imports[1][1], {u'test_attr_name2': imports[1][0]}, u'UCSD', None)
+
+        assert mock_process_import.call_count == 2
+        assert response == 2
