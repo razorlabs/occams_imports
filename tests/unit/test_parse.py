@@ -60,7 +60,7 @@ def test_get_choices():
     assert choices['1'].order == 1
 
 
-def test_parse_dispatch(monkeypatch):
+def test_parse_dispatch():
     import six
     from occams_imports.parsers import parse
 
@@ -76,7 +76,9 @@ def test_parse_dispatch(monkeypatch):
 
         assert mock_convert.convert.called == True
 
-    with mock.patch('occams_imports.parsers.parse.convert_qds_to_occams') as mock_convert:
+    with mock.patch('occams_imports.parsers.parse.convert_qds_to_occams') \
+        as mock_convert:
+
         codebook_format = u'qds'
         delimiter = u'comma'
 
