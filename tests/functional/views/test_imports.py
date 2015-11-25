@@ -120,7 +120,8 @@ class TestImports:
             'site': u'DRSC'
         }
 
-        iform = open(resource_filename('tests', 'iform_input_fixture.json'))
+        iform = open(
+            resource_filename('tests.fixtures', 'iform_input_fixture.json'))
         json_data = iform.read()
 
         response = app.post(
@@ -151,7 +152,8 @@ class TestImports:
             'site': u'DRSC'
         }
 
-        iform = open(resource_filename('tests', 'iform_input_fixture.json'), 'r')
+        iform = open(resource_filename(
+            'tests.fixtures', 'iform_input_fixture.json'), 'r')
         json_data = iform.read()
 
         response = app.post(
@@ -192,7 +194,8 @@ class TestImports:
             'site': u'DRSC'
         }
 
-        codebook = open(resource_filename('tests', 'codebook.csv'), 'rb')
+        codebook = open(
+            resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
         csv_data = codebook.read()
 
         response = app.post(
@@ -224,7 +227,8 @@ class TestImports:
             'site': u'DRSC'
         }
 
-        codebook = open(resource_filename('tests', 'codebook.csv'), 'rb')
+        codebook = open(
+            resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
         csv_data = codebook.read()
 
         response = app.post(
@@ -265,7 +269,8 @@ class TestImports:
             'site': u'DRSC'
         }
 
-        qds = open(resource_filename('tests', 'qds_input_fixture.csv'), 'rb')
+        qds = open(
+            resource_filename('tests.fixtures', 'qds_input_fixture.csv'), 'rb')
         qds_data = qds.read()
 
         response = app.post(
@@ -297,7 +302,8 @@ class TestImports:
             'site': u'DRSC'
         }
 
-        qds = open(resource_filename('tests', 'qds_input_fixture.csv'), 'rb')
+        qds = open(
+            resource_filename('tests.fixtures', 'qds_input_fixture.csv'), 'rb')
         qds_data = qds.read()
 
         response = app.post(
