@@ -124,6 +124,10 @@ def parse_dispatch(codebook, codebook_format, delimiter):
 def convert_date(date_to_parse):
     """
     Convert date string to date object or None
+
+    :date_to_parse: date string
+
+    :return: date object or None
     """
     try:
         converted = parse_date(date_to_parse)
@@ -136,7 +140,13 @@ def convert_date(date_to_parse):
 
 def choices_list(choices, field_type, row):
     """
-    Get list of choices from string
+    Get list of choices if choices
+
+    :choices: choice string
+    :field_type: data type of the field
+    :row: a dict representing a line in csv
+
+    :return: list of choices in the form[[code, label], [code, label]]
     """
     if choices is not None and \
        choices.strip() != u'' and field_type == u'choice':
