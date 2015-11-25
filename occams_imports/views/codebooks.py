@@ -93,16 +93,16 @@ def group_imports_by_schema(imports, site, db_session):
 
     :return: count of fields inserted
     """
-    current_schema = imports[0][1].name
+    current_schema = imports[0][1]
     fields_inserted = 0
     attr_dict = {}
     for attribute, schema in imports:
-        if schema.name == current_schema:
+        if schema.name == current_schema.name:
             attr_dict[attribute.name] = attribute
             fields_inserted += 1
         else:
-            process_import(schema, attr_dict, site, db_session)
-            current_schema = schema.name
+            process_import(current_schema, attr_dict, site, db_session)
+            current_schema = schema
             attr_dict = {}
             attr_dict[attribute.name] = attribute
 
