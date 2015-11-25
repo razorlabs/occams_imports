@@ -20,6 +20,11 @@ from occams_imports.parsers import parse
 def log_errors(errors, record):
     """
     Return error template dict
+
+    :errors: wtf form errors
+    :record: line in csv being processed
+
+    :return: error template data
     """
     output = {}
     output['errors'] = errors
@@ -34,6 +39,13 @@ def log_errors(errors, record):
 def process_import(schema, attr_dict, site, db_session):
     """
     Insert import, schema, and attrs to datastore
+
+    :schema: datastore schema object
+    :attr_dict: dict of attributes to be bound to schema
+    :site: studies site object
+    :db_session: required for db inserts
+
+    :return: None
     """
     schema.attributes = attr_dict
 
@@ -49,6 +61,11 @@ def process_import(schema, attr_dict, site, db_session):
 def validate_populate_imports(request, records):
     """
     Return list of errors, imports and forms
+
+    :request: request obj
+    :records: a list of csv row data
+
+    :return: errors, imports, and forms for template rendering
     """
     errors, imports, forms = ([], [], [])
     for record in records:
@@ -152,14 +169,6 @@ def qds(context, request):
 def insert_codebooks(context, request):
     """
     Insert appropriate records to the database
-
-    :param records: a list of lists of records from the csv
-    :param: force:  a mode where records are inserted into the db even if
-                    some records are bypassed because they are invalid
-    :param: dry:    no records are inserted into the db.  this is for testing
-
-    :return:  errors dictionary of invalid form datastore.
-              these are the records not inserted
     """
     check_csrf_token(request)
     db_session = request.db_session
