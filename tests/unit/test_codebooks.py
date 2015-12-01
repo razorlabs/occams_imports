@@ -345,6 +345,43 @@ class TestCodebooks:
 
         assert imported.site.name == site.name
 
+    def test_is_duplicate_schema(self, db_session):
+        import transaction
+
+        from occams_datastore import models as datastore
+        from occams_studies import models as studies
+        from occams_imports import models
+        from occams_imports.views.codebooks import is_duplicate_schema
+
+        forms = {}
+        errors = []
+        errors = is_duplicate_schema(forms, errors, db_session)
+
+        assert errors == []
+
+        forms = [{
+            'name': u'test_schema_name',
+            'title': u'test_schema_title',
+            'publish_date': u'2015-01-01',
+            'extra_key': u'test_title'
+        }]
+
+        schema = datastore.Schema(
+            name=u'test_schema_name',
+            title=u'test_schema_title',
+            publish_date=u'2015-01-01'
+        )
+
+        with transaction.manager:
+            db_session.add(schema)
+            db_session.flush()
+
+        errors = is_duplicate_schema(forms, errors, db_session)
+        expected = u'Duplicate schema -  already exists in the db'
+        exists = errors[0]['errors'] == expected
+
+        assert exists is True
+
 
 def test_validate_populate_imports(monkeypatch):
     import datetime
@@ -447,3 +484,27 @@ def test_group_imports_by_schema():
 
         assert mock_process_import.call_count == 2
         assert response == 2
+
+
+def test_get_unique_forms():
+    from occams_imports.views.codebooks import get_unique_forms
+
+    forms = [{
+        'name': u'test_schema_name',
+        'title': u'test_schema_title',
+        'publish_date': u'2015-01-01',
+        'extra_key': u'test_title'
+    },
+        {
+        'name': u'test_schema_name',
+        'title': u'test_schema_title',
+        'publish_date': u'2015-01-01',
+        'extra_key': u'test_title'
+    }]
+
+    output = get_unique_forms(forms)
+
+    assert len(output) == 1
+    assert output == [(u'test_schema_name',
+                       u'test_schema_title',
+                       u'2015-01-01')]

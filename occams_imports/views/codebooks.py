@@ -8,6 +8,8 @@ collected data
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
 
+from sqlalchemy.sql import exists
+
 from occams.utils.forms import wtferrors
 from occams_datastore import models as datastore
 from occams_studies import models as studies
@@ -134,6 +136,59 @@ def group_imports_by_schema(imports, site, db_session):
     return fields_inserted
 
 
+def is_duplicate_schema(forms, errors, db_session):
+    """
+    Test for duplicate schema in the db
+
+    :forms: A list of forms represented by dictionaries
+    :errors: A list of dictionaries of error datastore
+    :db_session: required for db operations
+
+    :return: updated error list
+    """
+    forms = get_unique_forms(forms)
+
+    for form in forms:
+        name = form[0]
+        title = form[1]
+        publish_date = form[2]
+        form_exists = (
+            db_session.query(
+                exists()
+                .where(datastore.Schema.name == name)
+                .where(datastore.Schema.title == title)
+                .where(datastore.Schema.publish_date == publish_date)).scalar()
+        )
+
+        if form_exists:
+            errors.append(
+                {
+                    'schema_name': name,
+                    'schema_title': title,
+                    'name': u'N/A',
+                    'title': u'N/A',
+                    'errors': 'Duplicate schema -  already exists in the db'
+                }
+            )
+
+    return errors
+
+
+def get_unique_forms(forms):
+    """
+    From the forms dict, return a list of dictionaries of unique forms
+
+    :forms: A list of forms represented by dictionaries
+
+    :return: a list of tuples of unique forms from forms list
+    """
+    unique_forms = []
+    for form in forms:
+        unique_forms.append((form['name'], form['title'], form['publish_date']))
+
+    return list(set(unique_forms))
+
+
 @view_config(
     route_name='imports.codebooks_occams',
     permission='import',
@@ -189,6 +244,7 @@ def insert_codebooks(context, request):
     records = parse.remove_system_entries(records)
 
     errors, imports, forms = validate_populate_imports(request, records)
+    errors = is_duplicate_schema(forms, errors, db_session)
 
     fields_inserted = 0
     if not dry and not errors:
