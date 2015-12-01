@@ -9,6 +9,7 @@ from pyramid.view import view_config
 from pyramid.session import check_csrf_token
 
 from sqlalchemy.sql import exists
+import unicodecsv as csv
 
 from occams.utils.forms import wtferrors
 from occams_datastore import models as datastore
@@ -189,6 +190,54 @@ def get_unique_forms(forms):
     return list(set(unique_forms))
 
 
+def convert_delimiter(delimiter):
+    """
+    Convert delimiter to match csv dialect
+
+    :delimiter: delimiter as selected from the UI
+
+    :return: delimiter is the csv dialect format
+    """
+    if delimiter == u'comma':
+        delimiter = ','
+    elif delimiter == u'tab':
+        delimiter = '\t'
+
+    return delimiter
+
+
+def validate_delimiter(delimiter, codebook):
+    """
+    Validate the selected delimiter matches the sniffed delimeter
+
+    :delimiter: delimiter as selected from the UI
+    :codebook: open file object for reading
+
+    :return: boolean of delimiter mismatch and errors list
+    """
+    errors = []
+    delimiter_mismatch = False
+    codebook.readline()
+    dialect = csv.Sniffer().sniff(codebook.readline())
+    sniffed_delimiter = dialect.delimiter
+
+    if delimiter != sniffed_delimiter:
+        error = {
+            'errors': u"Selected delimiter doesn't match file delimiter",
+            'schema_name': 'N/A',
+            'schema_title': 'N/A',
+            'name': 'N/A',
+            'title': 'N/A'
+        }
+
+        delimiter_mismatch = True
+        errors.append(error)
+
+    codebook.seek(0)
+
+    return delimiter_mismatch, errors
+
+
 @view_config(
     route_name='imports.codebooks_occams',
     permission='import',
@@ -239,16 +288,26 @@ def insert_codebooks(context, request):
     codebook = request.POST['codebook'].file
     codebook_format = request.matchdict['format']
     delimiter = request.POST.get('delimiter', ',')
+    delimiter = convert_delimiter(delimiter)
 
-    records = parse.parse_dispatch(codebook, codebook_format, delimiter)
-    records = parse.remove_system_entries(records)
+    delimiter_mismatch, errors = validate_delimiter(delimiter, codebook)
 
-    errors, imports, forms = validate_populate_imports(request, records)
-    errors = is_duplicate_schema(forms, errors, db_session)
+    # if delimiter isn't correct, don't process the file
+    if delimiter_mismatch:
+        records = []
+        fields_inserted = 0
+        forms = []
 
-    fields_inserted = 0
-    if not dry and not errors:
-        fields_inserted = group_imports_by_schema(imports, site, db_session)
+    else:
+        records = parse.parse_dispatch(codebook, codebook_format, delimiter)
+        records = parse.remove_system_entries(records)
+
+        errors, imports, forms = validate_populate_imports(request, records)
+        errors = is_duplicate_schema(forms, errors, db_session)
+
+        fields_inserted = 0
+        if not dry and not errors:
+            fields_inserted = group_imports_by_schema(imports, site, db_session)
 
     return {
         'fields_evaluated': len(records),

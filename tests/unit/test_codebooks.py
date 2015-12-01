@@ -349,8 +349,6 @@ class TestCodebooks:
         import transaction
 
         from occams_datastore import models as datastore
-        from occams_studies import models as studies
-        from occams_imports import models
         from occams_imports.views.codebooks import is_duplicate_schema
 
         forms = {}
@@ -508,3 +506,41 @@ def test_get_unique_forms():
     assert output == [(u'test_schema_name',
                        u'test_schema_title',
                        u'2015-01-01')]
+
+
+def test_convert_delimiter():
+    from occams_imports.views.codebooks import convert_delimiter
+
+    delimiter = u'comma'
+    actual = convert_delimiter(delimiter)
+    expected = u','
+
+    delimiter = u'tab'
+    actual = convert_delimiter(delimiter)
+    expected = u'\t'
+
+    assert actual == expected
+
+
+def test_validate_delimiter():
+    from pkg_resources import resource_filename
+    from occams_imports.views.codebooks import validate_delimiter
+
+    delimiter = ','
+    codebook = open(resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
+
+    delimiter_mismatch, errors = validate_delimiter(delimiter, codebook)
+
+    assert delimiter_mismatch is False
+    assert errors == []
+
+    codebook.seek(0)
+
+    delimiter = '\t'
+    delimiter_mismatch, errors = validate_delimiter(delimiter, codebook)
+    expected_error = u"Selected delimiter doesn't match file delimiter"
+
+    assert delimiter_mismatch is True
+    assert errors[0]['errors'] == expected_error
+
+    codebook.close()
