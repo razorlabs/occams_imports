@@ -15,6 +15,7 @@ from occams.utils.forms import wtferrors
 from occams_datastore import models as datastore
 from occams_studies import models as studies
 from occams_forms.views.field import FieldFormFactory
+from occams_forms.views.form import FormFormFactory
 
 from occams_imports import models
 from occams_imports.parsers import parse
@@ -72,37 +73,52 @@ def validate_populate_imports(request, records):
     """
     errors, imports, forms = ([], [], [])
     for record in records:
-        schema = datastore.Schema(
-            name=record['schema_name'],
-            title=record['schema_title'],
-            publish_date=record['publish_date']
-        )
+        schema_dict = {
+            'name': record['schema_name'],
+            'title': record['schema_title'],
+            'publish_date': record['publish_date'].strftime('%Y-%m-%d')
+        }
 
-        if schema.to_json() not in forms:
-            forms.append(schema.to_json())
+        FormForm = FormFormFactory(context=None, request=request)
+        form_form = FormForm.from_json(schema_dict)
 
-        choices = parse.get_choices(record['choices'])
-        # below needed because we are calling from_json on record
-        record['choices'] = choices
-        FieldForm = FieldFormFactory(context=schema, request=request)
-        form = FieldForm.from_json(record)
-
-        if not form.validate():
-            output = log_errors(wtferrors(form), record)
-            errors.append(output)
+        if not form_form.validate():
+            schema_error = {}
+            schema_error['errors'] = wtferrors(form_form)
+            schema_error['schema_name'] = schema_dict['name']
+            schema_error['schema_title'] = schema_dict['title']
+            schema_error['name'] = 'N/A'
+            schema_error['title'] = 'N/A'
+            errors.append(schema_error)
 
         else:
-            imports.append((datastore.Attribute(
-                name=record['name'],
-                title=record['title'],
-                description=record['description'],
-                is_required=record['is_required'],
-                is_collection=record['is_collection'],
-                is_private=record['is_private'],
-                type=record['type'],
-                order=record['order'],
-                choices=choices
-            ), schema))
+            schema = datastore.Schema.from_json(schema_dict)
+
+            if schema.to_json() not in forms:
+                forms.append(schema.to_json())
+
+            choices = parse.get_choices(record['choices'])
+            # below needed because we are calling from_json on record
+            record['choices'] = choices
+            FieldForm = FieldFormFactory(context=schema, request=request)
+            form = FieldForm.from_json(record)
+
+            if not form.validate():
+                output = log_errors(wtferrors(form), record)
+                errors.append(output)
+
+            else:
+                imports.append((datastore.Attribute(
+                    name=record['name'],
+                    title=record['title'],
+                    description=record['description'],
+                    is_required=record['is_required'],
+                    is_collection=record['is_collection'],
+                    is_private=record['is_private'],
+                    type=record['type'],
+                    order=record['order'],
+                    choices=choices
+                ), schema))
 
     return errors, imports, forms
 

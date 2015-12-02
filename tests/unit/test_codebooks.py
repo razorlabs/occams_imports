@@ -406,9 +406,18 @@ def test_validate_populate_imports(monkeypatch):
     mock_field_form = mock.MagicMock()
     mock_field_form.from_json.return_value = mock_validate
 
+    mock_form_validate = mock.MagicMock()
+    mock_form_validate.return_value = True
+    mock_form_form = mock.MagicMock()
+    mock_form_form.from_json.return_value = mock_form_validate
+
     monkeypatch.setattr(
         'occams_imports.views.codebooks.FieldFormFactory',
         lambda **x: mock_field_form)
+
+    monkeypatch.setattr(
+        'occams_imports.views.codebooks.FormFormFactory',
+        lambda **x: mock_form_form)
 
     errors, imports, forms = validate_populate_imports(None, [record])
 
