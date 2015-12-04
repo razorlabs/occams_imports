@@ -56,6 +56,7 @@
         <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="${request.route_path('imports.mappings.jointjs.demo')}">joint.js visualization</a></li>
+            <li><a href="${request.route_path('imports.mappings.cytoscapejs.demo')}">cytoscape.js visualization</a></li>
         </ul>
       </li>
 

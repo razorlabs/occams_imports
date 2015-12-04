@@ -110,7 +110,16 @@ def occams_imputation(context, request):
     permission='view',
     request_method='GET',
     renderer='../templates/mappings/jointjs_demo.pt')
-def occams_imputation_demo(context, request):
+def occams_jointjs_demo(context, request):
+    return {}
+
+
+@view_config(
+    route_name='imports.mappings.cytoscapejs.demo',
+    permission='view',
+    request_method='GET',
+    renderer='../templates/mappings/cytoscapejs_demo.pt')
+def occams_cytoscape_demo(context, request):
     return {}
 
 
