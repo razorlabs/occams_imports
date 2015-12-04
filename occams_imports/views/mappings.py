@@ -106,10 +106,10 @@ def occams_imputation(context, request):
 
 
 @view_config(
-    route_name='imports.mappings.imputation.demo',
+    route_name='imports.mappings.jointjs.demo',
     permission='view',
     request_method='GET',
-    renderer='../templates/mappings/imputation_demo.pt')
+    renderer='../templates/mappings/jointjs_demo.pt')
 def occams_imputation_demo(context, request):
     return {}
 

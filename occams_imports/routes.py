@@ -25,6 +25,6 @@ def includeme(config):
     config.add_route('imports.mappings.view',               '/mappings/view',             factory=models.RootFactory)
     config.add_route('imports.mappings.view_mapped',        '/mappings/view_mapped',      factory=models.RootFactory)
     config.add_route('imports.mappings.delete',             '/mappings/delete',           factory=models.RootFactory)
-    config.add_route('imports.mappings.imputation.demo',    '/mappings/imputation/demo',  factory=models.RootFactory)
+    config.add_route('imports.mappings.jointjs.demo',       '/mappings/jointjs/demo',     factory=models.RootFactory)
 
     log.debug('Routes configured')
