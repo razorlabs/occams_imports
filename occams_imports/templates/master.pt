@@ -55,7 +55,7 @@
         <a href="${url}" class="dropdown-toggle" data-toggle="dropdown">Demos
         <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="${request.route_path('imports.mappings.imputation.demo')}">Imputation Visualization</a></li>
+            <li><a href="${request.route_path('imports.mappings.imputation.demo')}">joint.js visualization</a></li>
         </ul>
       </li>
 
