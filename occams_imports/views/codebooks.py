@@ -306,7 +306,11 @@ def insert_codebooks(context, request):
     delimiter = request.POST.get('delimiter', ',')
     delimiter = convert_delimiter(delimiter)
 
-    delimiter_mismatch, errors = validate_delimiter(delimiter, codebook)
+    if codebook_format != u'iform':
+        delimiter_mismatch, errors = validate_delimiter(delimiter, codebook)
+    else:
+        delimiter_mismatch = None
+        errors = []
 
     # if delimiter isn't correct, don't process the file
     if delimiter_mismatch:
