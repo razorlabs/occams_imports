@@ -63,8 +63,7 @@ def get_all_schemas(context, request):
     db_session = request.db_session
 
     schemas = db_session.query(datastore.Schema).options(
-        joinedload('attributes').joinedload('choices')).filter(
-        datastore.Schema.id == models.Import.schema_id).order_by(
+        joinedload('attributes').joinedload('choices')).order_by(
         datastore.Schema.name).all()
 
     data = {}
