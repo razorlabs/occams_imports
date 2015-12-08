@@ -1,5 +1,5 @@
 """
-Perform direct and imputation mappings of DRSC variables
+Perform direct and imputation mappings of Target variables
 """
 
 import json
@@ -16,7 +16,7 @@ from occams_studies import models as studies
 from .. import models
 
 
-def update_schema_data(data, schemas, site=None):
+def update_schema_data(data, schemas):
     """Converts sql alchemy schema objects to dictionary for rendering"""
 
     for schema in schemas:
@@ -47,8 +47,7 @@ def update_schema_data(data, schemas, site=None):
         data['forms'].append({
             u'name': schema.name,
             u'publish_date': schema.publish_date.strftime('%Y-%m-%d'),
-            u'attributes': attributes,
-            u'site': site.title if site else ''
+            u'attributes': attributes
         })
 
     return data
@@ -63,26 +62,15 @@ def update_schema_data(data, schemas, site=None):
 def get_all_schemas(context, request):
     db_session = request.db_session
 
-    target_site = (
-        db_session.query(studies.Site)
-        .filter_by(name=u'drsc')
-        .one())
-
     schemas = db_session.query(datastore.Schema).options(
         joinedload('attributes').joinedload('choices')).filter(
-        datastore.Schema.id == models.Import.schema_id).filter(
-        models.Import.site != target_site).order_by(datastore.Schema.name).all()
-
-    drsc_schemas = db_session.query(datastore.Schema).options(
-        joinedload('attributes').joinedload('choices')).filter(
-        datastore.Schema.id == models.Import.schema_id).filter(
-        models.Import.site == target_site).all()
+        datastore.Schema.id == models.Import.schema_id).order_by(
+        datastore.Schema.name).all()
 
     data = {}
     data['forms'] = []
 
-    data = update_schema_data(data, schemas, None)
-    data = update_schema_data(data, drsc_schemas,  target_site)
+    data = update_schema_data(data, schemas)
 
     return json.dumps(data)
 
@@ -304,24 +292,24 @@ def mappings_direct_map(context, request):
     mapped_attribute = (
         db_session.query(datastore.Attribute)
         .filter(
-            (datastore.Attribute.name == request.json['selected_drsc']['variable'])
+            (datastore.Attribute.name == request.json['selected_target']['variable'])
             & (datastore.Attribute.schema.has(
-                name=request.json['drsc']['name'],
-                publish_date=request.json['drsc']['publish_date'])))
+                name=request.json['target']['name'],
+                publish_date=request.json['target']['publish_date'])))
         .one())
 
     logic = {
-        'source_schema':  {
+        'source_schema': {
             'name': request.json['site']['name'],
             'publish_date': request.json['site']['publish_date']
         },
         'source_attribute': request.json['selected']['variable']
     }
 
-    if u'choices' not in request.json['selected_drsc']:
+    if u'choices' not in request.json['selected_target']:
         logic['choices_map'] = None
     else:
-        logic['choices_map'] = request.json['selected_drsc']['choices']
+        logic['choices_map'] = request.json['selected_target']['choices']
 
     mapped_obj = models.Mapping(
         site=target_site,

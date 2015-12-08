@@ -7,7 +7,7 @@ function imputationFormsModel(form, variable){
   self.variable = ko.observable(variable);
 }
 
-function mappedModel(drscForm, drscVariable, site, siteForm,
+function mappedModel(targetForm, targetVariable, site, siteForm,
                      siteVariable, dateMapped, mappedId){
   'use strict'
 
@@ -17,8 +17,8 @@ function mappedModel(drscForm, drscVariable, site, siteForm,
   siteForm = typeof siteForm !== 'undefined' ? siteForm : '';
   siteVariable = typeof siteVariable !== 'undefined' ? siteVariable : '';
 
-  self.drscForm = ko.observable(drscForm);
-  self.drscVariable = ko.observable(drscVariable);
+  self.targetForm = ko.observable(targetForm);
+  self.targetVariable = ko.observable(targetVariable);
   self.site = ko.observable(site);
   self.imputationForms = ko.observableArray([]);
   self.siteForm = ko.observable(siteForm);
@@ -125,7 +125,7 @@ function formListViewModel(){
       }
 
       return formVarMatch
-        || mapping.drscVariable().toLowerCase().indexOf(filter) > -1
+        || mapping.targetVariable().toLowerCase().indexOf(filter) > -1
         || mapping.site().toLowerCase().indexOf(filter) > -1
         || mapping.siteForm().toLowerCase().indexOf(filter) > -1
         || mapping.siteVariable().toLowerCase().indexOf(filter) > -1
@@ -144,7 +144,7 @@ function formListViewModel(){
       var json = data;
 
       $.each(json.rows, function(){
-        var row = new mappedModel(this.drsc_form, this.drsc_variable, this.site,
+        var row = new mappedModel(this.target_form, this.target_variable, this.site,
           this.site_form, this.site_variable, this.date_mapped,
           this.mapped_id);
 

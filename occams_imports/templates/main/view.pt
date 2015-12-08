@@ -40,7 +40,7 @@
                           valueUpdate: ['input', 'afterkeydown']"
                class="form-control"
                name="filter"
-               placeholder="Filter DRSC form..." >
+               placeholder="Filter Target form..." >
       </div>
     </form>
   </div>
@@ -56,8 +56,8 @@
     <thead>
       <tr>
         <th></th>
-        <th>DRSC Form</th>
-        <th>DRSC Variable</th>
+        <th>Target Form</th>
+        <th>Target Variable</th>
         <th>Site</th>
         <th>Site Form(s)</th>
         <th>Site Variable(s)</th>
@@ -70,8 +70,8 @@
         <td><input type="checkbox"
                    data-bind="checked: deleteRow"
                    value=""></td>
-        <td data-bind="text: drscForm"></td>
-        <td><code data-bind="text: drscVariable"></code></td>
+        <td data-bind="text: targetForm"></td>
+        <td><code data-bind="text: targetVariable"></code></td>
         <td data-bind="text: site"></td>
 
         <td>
