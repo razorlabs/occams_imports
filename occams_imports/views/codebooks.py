@@ -40,21 +40,22 @@ def log_errors(errors, record):
     return output
 
 
-def process_import(schema, attr_dict, site, db_session):
+def process_import(schema, attr_dict, study, db_session):
     """
     Insert import, schema, and attrs to datastore
 
     :schema: datastore schema object
     :attr_dict: dict of attributes to be bound to schema
-    :site: studies site object
+    :study: study object
     :db_session: required for db inserts
 
     :return: None
     """
     schema.attributes = attr_dict
+    study.schemata.add(schema)
 
     imported = models.Import(
-        site=site,
+        study=study,
         schema=schema
     )
 
@@ -123,12 +124,12 @@ def validate_populate_imports(request, records):
     return errors, imports, forms
 
 
-def group_imports_by_schema(imports, site, db_session):
+def group_imports_by_schema(imports, study, db_session):
     """
     Group attributes by schema and process
 
     :imports: list of tuples, 1st element is an attribute, 2nd is a schema
-    :site: site of the import
+    :study: study of the import
     :db_session: required for db inserts
 
     :return: count of fields inserted
@@ -141,14 +142,14 @@ def group_imports_by_schema(imports, site, db_session):
             attr_dict[attribute.name] = attribute
             fields_inserted += 1
         else:
-            process_import(current_schema, attr_dict, site, db_session)
+            process_import(current_schema, attr_dict, study, db_session)
             current_schema = schema
             attr_dict = {}
             attr_dict[attribute.name] = attribute
             fields_inserted += 1
 
     if attr_dict:
-        process_import(current_schema, attr_dict, site, db_session)
+        process_import(current_schema, attr_dict, study, db_session)
 
     return fields_inserted
 
@@ -311,11 +312,11 @@ def insert_codebooks(context, request):
     check_csrf_token(request)
     db_session = request.db_session
 
-    site_name = request.POST['site']
+    study_name = request.POST['site']
 
-    site = (
-        db_session.query(studies.Site)
-        .filter(studies.Site.name.ilike(site_name))
+    study = (
+        db_session.query(studies.Study)
+        .filter(studies.Study.title == study_name)
         .one())
 
     dry = request.POST['mode'] == u'dry'
@@ -345,7 +346,7 @@ def insert_codebooks(context, request):
 
         fields_inserted = 0
         if not dry and not errors:
-            fields_inserted = group_imports_by_schema(imports, site, db_session)
+            fields_inserted = group_imports_by_schema(imports, study, db_session)
 
     return {
         'fields_evaluated': len(records),
