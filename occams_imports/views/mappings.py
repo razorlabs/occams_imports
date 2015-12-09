@@ -103,8 +103,6 @@ def get_schemas(context, request):
     db_session = request.db_session
 
     class SearchForm(wtforms.Form):
-        is_target = wtforms.BooleanField(
-            validators=[wtforms.validators.Optional()])
         term = wtforms.StringField(
             validators=[wtforms.validators.Optional()])
 
@@ -113,23 +111,12 @@ def get_schemas(context, request):
 
     data = search_form.data
 
-    schemata_query = (
-        db_session.query(datastore.Schema)
-        .filter(datastore.Schema.id == models.Import.schema_id)
-    )
-
-    target_site = db_session.query(studies.Site).filter_by(name='drsc').one()
-
-    # TODO: Need to implement sites at the form level
-    if data['is_target']:
-        schemata_query = schemata_query.filter(models.Import.site == target_site)
-    else:
-        schemata_query = schemata_query.filter(models.Import.site != target_site)
+    schemata_query = (db_session.query(datastore.Schema))
 
     if data['term']:
         schemata_query = (
             schemata_query
-            .filter(models.Schema.name.ilike('%{}%'.format(data['term']))))
+            .filter(datastore.Schema.name.ilike('%{}%'.format(data['term']))))
 
     schemata_query = (
         schemata_query
@@ -279,14 +266,28 @@ def mappings_direct_map(context, request):
     check_csrf_token(request)
     db_session = request.db_session
 
-    target_site = (
-        db_session.query(studies.Site)
-        .select_from(models.Import)
-        .join(models.Import.site)
-        .filter(models.Import.schema.has(
-            name=request.json['site']['name'],
-            publish_date=request.json['site']['publish_date']))
-        .one())
+    target_study = (
+        db_session.query(studies.Study)
+        .join(studies.Study.schemata)
+        .filter(datastore.Schema.name == request.json['site']['name'])
+        .filter(datastore.Schema.publish_date == request.json['site']['publish_date'])).one()
+
+
+    from pdb import set_trace; set_trace()
+
+    # target_site = (
+    #     db_session.query(studies.Site)
+    #     .select_from(datastore.Scema)
+    #     .filter(datastore.Schema.name == request.json['site']['name'])
+    #     .filter(datastore.Schema.publish_date == request.json['site']['publish_date'])
+    #     .one())
+        # db_session.query(studies.Site)
+        # .select_from(models.Import)
+        # .join(models.Import.site)
+        # .filter(models.Import.schema.has(
+        #     name=request.json['site']['name'],
+        #     publish_date=request.json['site']['publish_date']))
+        #.one())
 
     mapped_attribute = (
         db_session.query(datastore.Attribute)
@@ -311,7 +312,7 @@ def mappings_direct_map(context, request):
         logic['choices_map'] = request.json['selected_target']['choices']
 
     mapped_obj = models.Mapping(
-        site=target_site,
+        study=target_study,
         mapped_attribute=mapped_attribute,
         type=u'direct',
         confidence=request.json['confidence'],

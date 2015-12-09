@@ -46,15 +46,15 @@ def get_schemas(context, request):
 
         row['target_form'] = mapping.mapped_attribute.schema.name
         row['target_variable'] = mapping.mapped_attribute.name
-        row['site'] = mapping.site.title
+        row['study'] = mapping.study.title
 
         # imputation mappings may have multiple forms and variables
         if mapping.type == 'imputation':
             row['forms'] = mapping.logic['forms']
 
         else:
-            row['site_form'] = mapping.logic['source_schema']['name']
-            row['site_variable'] = mapping.logic['source_attribute']
+            row['study_form'] = mapping.logic['source_schema']['name']
+            row['study_variable'] = mapping.logic['source_attribute']
 
         row['date_mapped'] = mapping.create_date.date()
         row['mapped_id'] = mapping.id
@@ -121,7 +121,9 @@ def get_schemas_mapped(context, request):
         return render_to_response('../templates/mappings/imputed_mapped.pt',
                                   {}, request=request)
 
-    site = mapping.site
+    # site = mapping.site
+
+    study = mapping.study
 
     mappings_form_rows = []
     target_form_rows = []
@@ -166,7 +168,7 @@ def get_schemas_mapped(context, request):
                     'variable': attribute.name,
                     'description': attribute.title,
                     'type': mapping.mapped_attribute.type,
-                    'site': site.title,
+                    'study': study.title,
                     'form': schema.name,
                     'label': choice.title,
                     'value': choice.name,

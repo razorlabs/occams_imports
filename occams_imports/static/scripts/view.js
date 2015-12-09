@@ -7,22 +7,22 @@ function imputationFormsModel(form, variable){
   self.variable = ko.observable(variable);
 }
 
-function mappedModel(targetForm, targetVariable, site, siteForm,
-                     siteVariable, dateMapped, mappedId){
+function mappedModel(targetForm, targetVariable, study, studyForm,
+                     studyVariable, dateMapped, mappedId){
   'use strict'
 
   var self = this;
 
   //set default values as imputations will have undefined values here
-  siteForm = typeof siteForm !== 'undefined' ? siteForm : '';
-  siteVariable = typeof siteVariable !== 'undefined' ? siteVariable : '';
+  studyForm = typeof studyForm !== 'undefined' ? studyForm : '';
+  studyVariable = typeof studyVariable !== 'undefined' ? studyVariable : '';
 
   self.targetForm = ko.observable(targetForm);
   self.targetVariable = ko.observable(targetVariable);
-  self.site = ko.observable(site);
+  self.study = ko.observable(study);
   self.imputationForms = ko.observableArray([]);
-  self.siteForm = ko.observable(siteForm);
-  self.siteVariable = ko.observable(siteVariable);
+  self.studyForm = ko.observable(studyForm);
+  self.studyVariable = ko.observable(studyVariable);
   self.dateMapped = ko.observable(dateMapped);
   self.mappedId = ko.observable(mappedId);
   self.url = '/imports/mappings/view_mapped?id=' + mappedId;
@@ -144,8 +144,8 @@ function formListViewModel(){
       var json = data;
 
       $.each(json.rows, function(){
-        var row = new mappedModel(this.target_form, this.target_variable, this.site,
-          this.site_form, this.site_variable, this.date_mapped,
+        var row = new mappedModel(this.target_form, this.target_variable, this.study,
+          this.study_form, this.study_variable, this.date_mapped,
           this.mapped_id);
 
         //if there are forms, this is an imputation and imputation

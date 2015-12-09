@@ -58,9 +58,9 @@
         <th></th>
         <th>Target Form</th>
         <th>Target Variable</th>
-        <th>Site</th>
-        <th>Site Form(s)</th>
-        <th>Site Variable(s)</th>
+        <th>Study</th>
+        <th>Study Form(s)</th>
+        <th>Study Variable(s)</th>
         <th>Date Mapped</th>
         <th></th>
       </tr>
@@ -72,7 +72,7 @@
                    value=""></td>
         <td data-bind="text: targetForm"></td>
         <td><code data-bind="text: targetVariable"></code></td>
-        <td data-bind="text: site"></td>
+        <td data-bind="text: study"></td>
 
         <td>
           <div data-bind="if: imputationForms().length >= 1">
@@ -83,7 +83,7 @@
           </div>
 
           <div data-bind="if: imputationForms().length == 0">
-              <div data-bind="text: siteForm">
+              <div data-bind="text: studyForm">
             </div>
           </div>
         </td>
@@ -96,7 +96,7 @@
           </div>
 
           <div data-bind="if: imputationForms().length == 0">
-            <code data-bind="text: siteVariable"></code>
+            <code data-bind="text: studyVariable"></code>
           </div>
         </td>
 

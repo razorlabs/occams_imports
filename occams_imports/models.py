@@ -72,11 +72,11 @@ class ImportFactory(Resource):
 class Import(ImportsModel, datastore.Referenceable, datastore.Modifiable):
     __tablename__ = 'import'
 
-    site_id = sa.Column(
-        sa.ForeignKey(studies.Site.id, ondelete='CASCADE'),
+    study_id = sa.Column(
+        sa.ForeignKey(studies.Study.id, ondelete='CASCADE'),
         nullable=False)
 
-    site = orm.relationship(studies.Site)
+    study = orm.relationship(studies.Study)
 
     schema_id = sa.Column(
         sa.ForeignKey(datastore.Schema.id, ondelete='CASCADE'),
@@ -85,18 +85,18 @@ class Import(ImportsModel, datastore.Referenceable, datastore.Modifiable):
     schema = orm.relationship(datastore.Schema)
 
     __table_args__ = (
-        sa.UniqueConstraint(site_id, schema_id),
+        sa.UniqueConstraint(study_id, schema_id),
     )
 
 
 class Mapping(ImportsModel, datastore.Referenceable, datastore.Modifiable):
     __tablename__ = 'mapping'
 
-    site_id = sa.Column(
-        sa.ForeignKey(studies.Site.id, ondelete='CASCADE'),
+    study_id = sa.Column(
+        sa.ForeignKey(studies.Study.id, ondelete='CASCADE'),
         nullable=False)
 
-    site = orm.relationship(studies.Site)
+    study = orm.relationship(studies.Study)
 
     mapped_attribute_id = sa.Column(
         sa.ForeignKey(datastore.Attribute.id, ondelete='CASCADE'),
@@ -120,5 +120,5 @@ class Mapping(ImportsModel, datastore.Referenceable, datastore.Modifiable):
     logic = sa.Column(JSON)
 
     __table_args__ = (
-        sa.UniqueConstraint(site_id, mapped_attribute_id, mapped_choice_id),
+        sa.UniqueConstraint(study_id, mapped_attribute_id, mapped_choice_id),
     )
