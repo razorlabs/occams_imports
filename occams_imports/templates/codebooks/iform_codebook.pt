@@ -22,13 +22,9 @@
       <h3>Step 1</h3>
       <div class="row">
         <div class="form-group col-lg-3">
-            <p i18n:translate="">Select site:</p>
+            <p i18n:translate="">Select study:</p>
             <select class="form-control" id="site" name="site">
-              <option>DRSC</option>
-              <option>EBAC</option>
-              <option>LAC</option>
-              <option>UCLA</option>
-              <option>UCSD</option>
+              <option tal:repeat="study study_options">${study}</option>
             </select>
         </div>
       </div>

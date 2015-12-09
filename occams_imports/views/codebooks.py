@@ -260,7 +260,13 @@ def validate_delimiter(delimiter, codebook):
     request_method='GET',
     renderer='../templates/codebooks/occams_codebook.pt')
 def occams(context, request):
-    return {}
+    db_session = request.db_session
+
+    all_studies = (
+        db_session.query(studies.Study).all()
+    )
+
+    return {'study_options': [study.title for study in all_studies]}
 
 
 @view_config(
@@ -269,7 +275,13 @@ def occams(context, request):
     request_method='GET',
     renderer='../templates/codebooks/iform_codebook.pt')
 def iform(context, request):
-    return {}
+    db_session = request.db_session
+
+    all_studies = (
+        db_session.query(studies.Study).all()
+    )
+
+    return {'study_options': [study.title for study in all_studies]}
 
 
 @view_config(
@@ -278,7 +290,13 @@ def iform(context, request):
     request_method='GET',
     renderer='../templates/codebooks/qds_codebook.pt')
 def qds(context, request):
-    return {}
+    db_session = request.db_session
+
+    all_studies = (
+        db_session.query(studies.Study).all()
+    )
+
+    return {'study_options': [study.title for study in all_studies]}
 
 
 @view_config(
