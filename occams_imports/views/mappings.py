@@ -272,23 +272,6 @@ def mappings_direct_map(context, request):
         .filter(datastore.Schema.name == request.json['site']['name'])
         .filter(datastore.Schema.publish_date == request.json['site']['publish_date'])).one()
 
-
-    from pdb import set_trace; set_trace()
-
-    # target_site = (
-    #     db_session.query(studies.Site)
-    #     .select_from(datastore.Scema)
-    #     .filter(datastore.Schema.name == request.json['site']['name'])
-    #     .filter(datastore.Schema.publish_date == request.json['site']['publish_date'])
-    #     .one())
-        # db_session.query(studies.Site)
-        # .select_from(models.Import)
-        # .join(models.Import.site)
-        # .filter(models.Import.schema.has(
-        #     name=request.json['site']['name'],
-        #     publish_date=request.json['site']['publish_date']))
-        #.one())
-
     mapped_attribute = (
         db_session.query(datastore.Attribute)
         .filter(
@@ -337,13 +320,13 @@ def mappings_imputations_map(context, request):
 
     # TODO - find a better way to obtain the site
     schema_obj = request.json[u'groups'][0][u'conversions'][0][u'value'][u'schema']
-    site_name = schema_obj[u'name']
-    site_publish_date = schema_obj['publish_date']
-    site_import = db_session.query(models.Import).filter(
-        datastore.Schema.name == site_name).filter(
-        datastore.Schema.publish_date == site_publish_date).filter(
-        datastore.Schema.id == models.Import.schema_id).one()
-    site = site_import.site
+    study_form_name = schema_obj[u'name']
+    study_form_publish_date = schema_obj['publish_date']
+    study = (
+        db_session.query(studies.Study)
+        .join(studies.Study.schemata)
+        .filter(datastore.Schema.name == study_form_name)
+        .filter(datastore.Schema.publish_date == study_form_publish_date)).one()
 
     mapped_attribute = (
         db_session.query(datastore.Attribute)
@@ -372,7 +355,7 @@ def mappings_imputations_map(context, request):
                 logic['forms'].append([form_name, variable])
 
     mapped_obj = models.Mapping(
-        site=site,
+        study=study,
         mapped_attribute=mapped_attribute,
         mapped_choice=mapped_choice,
         confidence=request.json[u'confidence'],
