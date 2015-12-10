@@ -8,6 +8,8 @@ class TestCodebooks:
 
     @pytest.fixture(autouse=True)
     def populate(self, app, db_session):
+        from datetime import date
+
         import transaction
         from occams_datastore import models as datastore
         from occams_studies import models as studies
@@ -15,17 +17,26 @@ class TestCodebooks:
         # Any view-dependent data goes here
         with transaction.manager:
             user = datastore.User(key=USERID)
-            drsc = studies.Site(name=u'drsc', title=u'DRSC')
-            ucsd = studies.Site(name=u'ucsd', title=u'UCSD')
-            ucla = studies.Site(name=u'ucla', title=u'UCLA')
-            ebac = studies.Site(name=u'ebac', title=u'EBAC')
-            lac = studies.Site(name=u'lac', title=u'LAC')
+            drsc = studies.Study(
+                name=u'drsc',
+                title=u'DRSC',
+                short_title=u'dr',
+                code=u'drs',
+                consent_date=date.today(),
+                start_date=date.today(),
+                is_randomized=False)
+            ucsd = studies.Study(
+                name=u'ucsd',
+                title=u'UCSD',
+                short_title=u'ucsd',
+                code=u'ucsd',
+                consent_date=date.today(),
+                start_date=date.today(),
+                is_randomized=False
+            )
             db_session.add(user)
             db_session.add(drsc)
             db_session.add(ucsd)
-            db_session.add(ucla)
-            db_session.add(ebac)
-            db_session.add(lac)
             db_session.flush()
 
     @pytest.mark.parametrize('group', ['administrator'])
@@ -40,7 +51,7 @@ class TestCodebooks:
         data = {
             'mode': u'dry',
             'delimiter': u'comma',
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
         qds = open(
@@ -78,7 +89,7 @@ class TestCodebooks:
         data = {
             'mode': u'dry',
             'delimiter': u'comma',
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
         codebook = open(
@@ -114,7 +125,7 @@ class TestCodebooks:
 
         data = {
             'mode': u'dry',
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
         iform = open(
@@ -152,7 +163,7 @@ class TestCodebooks:
 
         data = {
             'mode': None,
-            'site': u'DRSC',
+            'study': u'DRSC',
             'delimiter': u'comma'
         }
 
@@ -200,7 +211,7 @@ class TestCodebooks:
 
         data = {
             'mode': None,
-            'site': u'DRSC',
+            'study': u'DRSC',
             'delimiter': u'comma'
         }
 
@@ -248,7 +259,7 @@ class TestCodebooks:
 
         data = {
             'mode': None,
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
         iform = open(
@@ -283,6 +294,7 @@ class TestCodebooks:
     def test_iform_insert_import_table(self, app, db_session, group):
         from pkg_resources import resource_filename
         from occams_imports import models
+        from occams_studies import models as studies
 
         url = '/imports/codebooks/iform/status'
 
@@ -291,7 +303,7 @@ class TestCodebooks:
 
         data = {
             'mode': None,
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
         iform = open(
@@ -312,16 +324,18 @@ class TestCodebooks:
         iform.close()
 
         import_data = db_session.query(models.Import).one()
+        study = (
+            db_session.query(studies.Study)
+            .filter(studies.Study.title == data['study'])).one()
 
-        assert import_data.site.title == u'DRSC'
+        assert study.title == data['study']
         assert import_data.schema.name == u'test_595_hiv_test_v04'
 
     def test_process_import(self, db_session):
-        import datetime
+        from datetime import date
 
         from occams_datastore import models as datastore
         from occams_studies import models as studies
-        from occams_imports import models
         from occams_imports.views.codebooks import process_import
 
         attr_dict = {}
@@ -329,21 +343,26 @@ class TestCodebooks:
         schema = datastore.Schema(
             name=u'test_name',
             title=u'test_title',
-            publish_date=datetime.date.today()
+            publish_date=date.today()
         )
 
-        site = studies.Site(
-            name=u'test_site', title=u'test_title'
+        study = studies.Study(
+            name=u'test_site',
+            title=u'test_title',
+            short_title=u'tt',
+            code=u'tt1',
+            consent_date=date.today(),
+            start_date=date.today(),
+            is_randomized=False
         )
 
-        process_import(schema, attr_dict, site, db_session)
+        process_import(schema, attr_dict, study, db_session)
 
-        imported = (
-            db_session.query(models.Import)
-            .filter(models.Import.site == site)
-            .one())
+        imported_study = (
+            db_session.query(studies.Study)
+            .filter(studies.Study.title == study.title)).one()
 
-        assert imported.site.name == site.name
+        assert imported_study.title == study.title
 
     def test_is_duplicate_schema(self, db_session):
         import transaction
