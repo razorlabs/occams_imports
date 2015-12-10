@@ -312,7 +312,7 @@ def insert_codebooks(context, request):
     check_csrf_token(request)
     db_session = request.db_session
 
-    study_name = request.POST['site']
+    study_name = request.POST['study']
 
     study = (
         db_session.query(studies.Study)
