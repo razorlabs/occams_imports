@@ -101,9 +101,7 @@ function formViewModel(){
       self.isReady(true);
     },
     success: function(data, textStatus, jqXHR){
-      var json = $.parseJSON(data);
-
-      $.each(json.forms, function(){
+      $.each(data.forms, function(){
         var form = new formModel(this.name, this.publish_date, this.attributes);
           self.forms.push(form);
           self.target_forms.push(form);
