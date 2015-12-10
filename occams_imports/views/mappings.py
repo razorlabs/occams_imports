@@ -62,9 +62,12 @@ def update_schema_data(data, schemas):
 def get_all_schemas(context, request):
     db_session = request.db_session
 
-    schemas = db_session.query(datastore.Schema).options(
-        joinedload('attributes').joinedload('choices')).order_by(
-        datastore.Schema.name).all()
+    # mappings may only occur with schemas associated with a study
+    schemas = (
+        db_session.query(datastore.Schema)
+        .select_from(studies.Study)
+        .join(studies.Study.schemata)
+        .distinct().all())
 
     data = {}
     data['forms'] = []
@@ -111,7 +114,12 @@ def get_schemas(context, request):
 
     data = search_form.data
 
-    schemata_query = (db_session.query(datastore.Schema))
+    # mappings may only occur with schemas associated with a study
+    schemata_query = (
+        db_session.query(datastore.Schema)
+        .select_from(studies.Study)
+        .join(studies.Study.schemata)
+        .distinct())
 
     if data['term']:
         schemata_query = (
