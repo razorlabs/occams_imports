@@ -74,7 +74,7 @@ def get_all_schemas(context, request):
 
     data = update_schema_data(data, schemas)
 
-    return json.dumps(data)
+    return data
 
 
 @view_config(
