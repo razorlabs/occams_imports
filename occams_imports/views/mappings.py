@@ -313,7 +313,7 @@ def mappings_direct_map(context, request):
     db_session.add(mapped_obj)
     db_session.flush()
 
-    return json.dumps({'id': mapped_obj.id})
+    return {'id': mapped_obj.id}
 
 
 @view_config(
