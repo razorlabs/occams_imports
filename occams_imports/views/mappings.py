@@ -2,7 +2,6 @@
 Perform direct and imputation mappings of Target variables
 """
 
-import json
 from operator import itemgetter
 
 from pyramid.view import view_config
