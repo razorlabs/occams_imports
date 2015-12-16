@@ -22,6 +22,7 @@ from occams_imports import models as models
 def index(context, request):
     """
     """
+
     return {}
 
 
@@ -103,7 +104,7 @@ def delete_mappings(context, request):
     for record in records:
         db_session.delete(record)
 
-    return json.dumps({})
+    return {}
 
 
 @view_config(
@@ -191,11 +192,11 @@ def get_schemas_mapped(context, request):
                 'variable': attribute.name,
                 'description': attribute.title,
                 'type': mapping.mapped_attribute.type,
-                'site': site.title,
+                'study': study.title,
                 'form': schema.name,
                 'label': attribute.title,
                 'value': u'',
-                'mapped_variable': target_variable,
+                'mapped_variable': target_variable.name,
                 'mapped_label': u'',
                 'mapped_value': u''
             })

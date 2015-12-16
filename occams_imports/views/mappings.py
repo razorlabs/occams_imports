@@ -66,7 +66,7 @@ def get_all_schemas(context, request):
         db_session.query(datastore.Schema)
         .select_from(studies.Study)
         .join(studies.Study.schemata)
-        .distinct().all())
+        .distinct().order_by(datastore.Schema.name).all())
 
     data = {}
     data['forms'] = []
