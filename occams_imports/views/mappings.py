@@ -64,6 +64,7 @@ def get_all_schemas(context, request):
     # mappings may only occur with schemas associated with a study
     schemas = (
         db_session.query(datastore.Schema)
+        .options(joinedload('attributes').joinedload('choices'))
         .select_from(studies.Study)
         .join(studies.Study.schemata)
         .distinct().order_by(datastore.Schema.name).all())
