@@ -1,3 +1,5 @@
+# flake8: noqa
+
 import pytest
 import mock
 
@@ -246,6 +248,7 @@ class TestCodebooks:
 
         assert attributes[2].choices['0'].title == u'No'
 
+
     @pytest.mark.parametrize('group', ['administrator'])
     def test_iform_insert(self, app, db_session, group):
         import datetime
@@ -447,6 +450,51 @@ def test_validate_populate_imports(monkeypatch):
     assert forms[0]['title'] == u'test_schema_title'
     assert imports[0][0].name == u'test_name'
     assert imports[0][1].name == u'test_schema_name'
+
+
+def test_validate_populate_imports_schema_with_errors(monkeypatch):
+    import datetime
+
+    from occams_imports.views.codebooks import validate_populate_imports
+
+    record = {
+        'schema_name': u'test_schema_name',
+        'schema_title': u'test_schema_title',
+        'publish_date': datetime.date.today(),
+        'name': u'test_name',
+        'title': u'test_title',
+        'description': u'',
+        'is_required': False,
+        'is_collection': False,
+        'is_private': False,
+        'type': u'number',
+        'order': 0,
+        'choices': []
+    }
+
+    mock_validate = mock.MagicMock()
+    mock_validate.return_value = True
+    mock_field_form = mock.MagicMock()
+    mock_field_form.from_json.return_value = mock_validate
+
+    mock_form_validate = mock.MagicMock()
+    mock_form_validate.validate.return_value = False
+    mock_form_form = mock.MagicMock()
+    mock_form_form.from_json.return_value = mock_form_validate
+
+    monkeypatch.setattr(
+        'occams_imports.views.codebooks.FieldFormFactory',
+        lambda **x: mock_field_form)
+
+    monkeypatch.setattr(
+        'occams_imports.views.codebooks.FormFormFactory',
+        lambda **x: mock_form_form)
+
+    errors, imports, forms = validate_populate_imports(None, [record])
+
+    assert errors != []
+    assert len(errors) == 1
+    assert errors[0]['schema_title'] == u'test_schema_title'
 
 
 def test_log_errors():

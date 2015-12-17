@@ -17,7 +17,7 @@ __title__ = _(u'Imports')
 __version__ = pkg_resources.require(__name__)[0].version
 
 
-def initdb(connectable):
+def initdb(connectable): # pragma: no cover
     models.ImportsModel.metadata.create_all(connectable)
 
 

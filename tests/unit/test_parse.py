@@ -91,6 +91,37 @@ def test_parse_dispatch():
         assert mock_convert.convert.called == True
 
 
+def test_parse_dispatch_tab_delimiter():
+    import six
+    from occams_imports.parsers import parse
+
+    with mock.patch('occams_imports.parsers.parse.iform_json') as mock_convert:
+        codebook_format = u'iform'
+        delimiter = u'tab'
+
+        codebook = six.StringIO()
+        mock_convert.convert.return_value = six.StringIO()
+
+        response = parse.parse_dispatch(codebook, codebook_format, delimiter)
+        codebook.close()
+
+        assert mock_convert.convert.called == True
+
+    with mock.patch('occams_imports.parsers.parse.convert_qds_to_occams') \
+        as mock_convert:
+
+        codebook_format = u'qds'
+        delimiter = u'comma'
+
+        codebook = six.StringIO()
+        mock_convert.convert.return_value = six.StringIO()
+
+        response = parse.parse_dispatch(codebook, codebook_format, delimiter)
+        codebook.close()
+
+        assert mock_convert.convert.called == True
+
+
 def test_convert_date():
     import datetime
     from occams_imports.parsers.parse import convert_date
