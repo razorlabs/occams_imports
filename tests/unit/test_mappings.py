@@ -26,25 +26,45 @@ class TestGetAllSchemas:
             start_date=date.today(),
             is_randomized=False
         )
-        ucsd = studies.Study(
-            name=u'ucsd',
-            title=u'UCSD',
-            short_title=u'ucsd',
-            code=u'ucsd',
-            consent_date=date.today(),
-            start_date=date.today(),
-            is_randomized=False
-        )
 
         schema1 = datastore.Schema(
-            name=u'test_schema1',
-            title=u'test_schema1',
-            publish_date=u'2015-01-01'
+            name=u'demographics',
+            title=u'demographics',
+            publish_date=date.today(),
+            attributes={
+                'question': datastore.Attribute(
+                    name=u'question',
+                    title=u'question',
+                    type=u'choice',
+                    order=0,
+                    choices={
+                        u'0': datastore.Choice(
+                            name=u'0',
+                            title=u'always',
+                            order=0
+                        ),
+                        u'1': datastore.Choice(
+                            name=u'1',
+                            title=u'never',
+                            order=1
+                        )
+                    })}
+        )
+        schema2 = datastore.Schema(
+            name=u'demographics2',
+            title=u'demographics2',
+            publish_date=date.today(),
+            attributes={
+                'question': datastore.Attribute(
+                    name=u'question',
+                    title=u'question',
+                    type=u'string',
+                    order=0)
+            }
         )
         drsc.schemata.add(schema1)
-        ucsd.schemata.add(schema1)
+        drsc.schemata.add(schema2)
         db_session.add(drsc)
-        db_session.add(ucsd)
         db_session.flush()
 
     def _call_fut(self, *args, **kw):
@@ -59,8 +79,32 @@ class TestGetAllSchemas:
         """
         response = self._call_fut(None, req)
 
-        assert len(response['forms']) == 1
-        assert response['forms'][0]['name'] == u'test_schema1'
+        assert len(response['forms']) == 2
+        assert response['forms'][0]['name'] == u'demographics'
+
+
+class TestOccamsDirect:
+    def _call_fut(self, *args, **kw):
+        from occams_imports.views.mappings import occams_direct as view
+
+        return view(*args, **kw)
+
+    def test_occams_direct(self, req):
+        response = self._call_fut(None, req)
+
+        assert response == {}
+
+
+class TestOccamsImputation:
+    def _call_fut(self, *args, **kw):
+        from occams_imports.views.mappings import occams_imputation as view
+
+        return view(*args, **kw)
+
+    def test_occams_imputation(self, req):
+        response = self._call_fut(None, req)
+
+        assert response == {}
 
 
 class TestSchemasSearchTerm:
@@ -347,3 +391,131 @@ class TestDirectMapping:
         assert mapping.study.name == u'drsc'
         assert mapping.mapped_attribute.name == u'ucsd_question'
         assert mapping.logic['source_attribute'] == u'question'
+
+
+class TestImputationMapping:
+    @pytest.fixture(autouse=True)
+    def populate(self, db_session):
+        from datetime import date
+
+        from occams_datastore import models as datastore
+        from occams_studies import models as studies
+
+        drsc = studies.Study(
+            name=u'drsc',
+            title=u'DRSC',
+            short_title=u'dr',
+            code=u'drs',
+            consent_date=date.today(),
+            start_date=date.today(),
+            is_randomized=False
+        )
+
+        schema1 = datastore.Schema(
+            name=u'demographics',
+            title=u'demographics',
+            publish_date=u'2015-01-01',
+            attributes={
+                'question': datastore.Attribute(
+                    name=u'question',
+                    title=u'question',
+                    type=u'choice',
+                    order=0,
+                    choices={
+                        u'0': datastore.Choice(
+                            name=u'0',
+                            title=u'always',
+                            order=0
+                        ),
+                        u'1': datastore.Choice(
+                            name=u'1',
+                            title=u'never',
+                            order=1
+                        )
+                    })}
+        )
+
+        schema2 = datastore.Schema(
+            name=u'ucsd_demographics',
+            title=u'ucsd_demographics',
+            publish_date=u'2015-01-01',
+            attributes={
+                'ucsd_question': datastore.Attribute(
+                    name=u'ucsd_question',
+                    title=u'ucsd_question',
+                    type=u'string',
+                    order=0,
+                    choices={
+                        u'0': datastore.Choice(
+                            name=u'0',
+                            title=u'always',
+                            order=0
+                        ),
+                        u'1': datastore.Choice(
+                            name=u'1',
+                            title=u'never',
+                            order=1
+                        )
+                    })}
+        )
+        drsc.schemata.add(schema1)
+        drsc.schemata.add(schema2)
+        db_session.add(drsc)
+        db_session.flush()
+
+    def _call_fut(self, *args, **kw):
+        from occams_imports.views.mappings import mappings_imputations_map as view
+
+        return view(*args, **kw)
+
+    def test_mappings_imputation_map(self, req, db_session):
+        """
+        Test Imputations Mapping
+        """
+        from occams_imports import models
+        import mock
+
+        req.json = {u'condition': u'ALL',
+                    u'confidence': u'1',
+                    u'description': u'Test Description',
+                    u'groups': [{u'conversions': [{u'byValue': False,
+                                                   u'byVariable': True,
+                                                   u'value': {u'attribute': {u'hasChoices': True,
+                                                                             u'name': u'question',
+                                                                             u'title': u'question',
+                                                                             u'type': u'choice'},
+                                                              u'schema': {u'name': u'demographics',
+                                                                          u'publish_date': u'2015-01-01'}}},
+                                {u'byValue': True,
+                                 u'byVariable': False,
+                                 u'operator': u'MUL',
+                                 u'value': u'100'}],
+                                 u'conversionsLength': 2,
+                                 u'hasMultipleConversions': True,
+                                 u'logic': {u'hasImputations': True,
+                                            u'hasMultipleImputations': False,
+                                            u'imputations': [{u'operator': u'',
+                                                              u'value': u'100'}],
+                                            u'imputationsLength': 1}}],
+                    u'groupsLength': 1,
+                    u'hasMultipleGroups': False,
+                    u'target': {u'attribute': {u'hasChoices': True,
+                                               u'name': u'ucsd_question',
+                                               u'title': u'ucsd_question',
+                                               u'type': u'choice'},
+                                u'schema': {u'name': u'ucsd_demographics',
+                                            u'publish_date': u'2015-01-01'}},
+                    u'targetChoice': {u'name': u'1', u'title': u'never', u'toString': u'1 - never'}}
+
+        req.route_path = mock.MagicMock(return_value=u'test_path')
+
+        self._call_fut(None, req)
+
+        imputation = db_session.query(models.Mapping).one()
+
+        assert imputation.study.title == u'DRSC'
+        assert imputation.type == u'imputation'
+        assert imputation.confidence == 1
+        assert imputation.description == u'Test Description'
+        assert imputation.mapped_attribute.name == u'ucsd_question'
+        assert imputation.logic['forms'] == [[u'demographics', u'question']]

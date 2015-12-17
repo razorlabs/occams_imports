@@ -302,7 +302,7 @@ class TestGetSchemasMapped:
                 'ucsd_question': datastore.Attribute(
                     name=u'ucsd_question',
                     title=u'ucsd_question',
-                    type=u'string',
+                    type=u'choice',
                     order=0,
                     choices={
                         u'0': datastore.Choice(
@@ -364,4 +364,4 @@ class TestGetSchemasMapped:
 
         assert row['description'] == u'question'
         assert row['study'] == u'DRSC'
-        assert row['type'] == u'string'
+        assert row['type'] == u'choice'
