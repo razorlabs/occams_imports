@@ -54,6 +54,7 @@ DATA_TYPE_MAP = {
     7: u'choice',
     8: u'choice',
     9: u'choice',
+    10: u'number',
     19: u'text'
 }
 

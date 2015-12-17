@@ -1,5 +1,7 @@
 # flake8: noqa
 
+import mock
+
 from occams_imports.parsers import parse
 
 
@@ -44,12 +46,115 @@ def test_parse_choice_string():
     assert choices == expected
 
 
+def test_get_choices():
+    raw_choices = [[u'0', u'label'], [u'1', u'label2']]
+
+    choices = parse.get_choices(raw_choices)
+
+    assert choices['0'].name == u'0'
+    assert choices['0'].title == u'label'
+    assert choices['0'].order == 0
+
+    assert choices['1'].name == u'1'
+    assert choices['1'].title == u'label2'
+    assert choices['1'].order == 1
+
+
+def test_parse_dispatch():
+    import six
+    from occams_imports.parsers import parse
+
+    with mock.patch('occams_imports.parsers.parse.iform_json') as mock_convert:
+        codebook_format = u'iform'
+        delimiter = u'comma'
+
+        codebook = six.StringIO()
+        mock_convert.convert.return_value = six.StringIO()
+
+        response = parse.parse_dispatch(codebook, codebook_format, delimiter)
+        codebook.close()
+
+        assert mock_convert.convert.called == True
+
+    with mock.patch('occams_imports.parsers.parse.convert_qds_to_occams') \
+        as mock_convert:
+
+        codebook_format = u'qds'
+        delimiter = u'comma'
+
+        codebook = six.StringIO()
+        mock_convert.convert.return_value = six.StringIO()
+
+        response = parse.parse_dispatch(codebook, codebook_format, delimiter)
+        codebook.close()
+
+        assert mock_convert.convert.called == True
+
+
+def test_parse_dispatch_tab_delimiter():
+    import six
+    from occams_imports.parsers import parse
+
+    with mock.patch('occams_imports.parsers.parse.iform_json') as mock_convert:
+        codebook_format = u'iform'
+        delimiter = u'tab'
+
+        codebook = six.StringIO()
+        mock_convert.convert.return_value = six.StringIO()
+
+        response = parse.parse_dispatch(codebook, codebook_format, delimiter)
+        codebook.close()
+
+        assert mock_convert.convert.called == True
+
+    with mock.patch('occams_imports.parsers.parse.convert_qds_to_occams') \
+        as mock_convert:
+
+        codebook_format = u'qds'
+        delimiter = u'comma'
+
+        codebook = six.StringIO()
+        mock_convert.convert.return_value = six.StringIO()
+
+        response = parse.parse_dispatch(codebook, codebook_format, delimiter)
+        codebook.close()
+
+        assert mock_convert.convert.called == True
+
+
+def test_convert_date():
+    import datetime
+    from occams_imports.parsers.parse import convert_date
+
+    actual = convert_date('ajdkfj')
+    assert actual == None
+
+    actual = convert_date('2015-01-01')
+    assert actual == datetime.date(2015, 1, 1)
+
+    actual = convert_date('01/01/2015')
+    assert actual == datetime.date(2015, 1, 1)
+
+    actual = convert_date('01/01/15')
+    assert actual == datetime.date(2015, 1, 1)
+
+
+def test_choices_list():
+    from occams_imports.parsers.parse import choices_list
+
+    actual = choices_list(u'', u'number', {'choices': None})
+    assert actual == []
+
+    actual = choices_list(u'0=MyLabel', u'choice', {'choices': '0=MyLabel'})
+    assert actual == [['0', 'MyLabel']]
+
 
 def test_parse():
     from datetime import date
     from pkg_resources import resource_filename
 
-    codebook = open(resource_filename('tests', 'codebook.csv'), 'rb')
+    codebook = open(
+        resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
     records = parse.parse(codebook)
 
     assert len(records) == 27
@@ -69,15 +174,4 @@ def test_parse():
     assert records[13]['publish_date'] == date(2014, 10, 23)
 
 
-def test_get_choices():
-    raw_choices = [[u'0', u'label'], [u'1', u'label2']]
 
-    choices = parse.get_choices(raw_choices)
-
-    assert choices['0'].name == u'0'
-    assert choices['0'].title == u'label'
-    assert choices['0'].order == 0
-
-    assert choices['1'].name == u'1'
-    assert choices['1'].title == u'label2'
-    assert choices['1'].order == 1

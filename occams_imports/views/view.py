@@ -22,6 +22,7 @@ from occams_imports import models as models
 def index(context, request):
     """
     """
+
     return {}
 
 
@@ -44,17 +45,17 @@ def get_schemas(context, request):
     for mapping in mappings:
         row = {}
 
-        row['drsc_form'] = mapping.mapped_attribute.schema.name
-        row['drsc_variable'] = mapping.mapped_attribute.name
-        row['site'] = mapping.site.title
+        row['target_form'] = mapping.mapped_attribute.schema.name
+        row['target_variable'] = mapping.mapped_attribute.name
+        row['study'] = mapping.study.title
 
         # imputation mappings may have multiple forms and variables
         if mapping.type == 'imputation':
             row['forms'] = mapping.logic['forms']
 
         else:
-            row['site_form'] = mapping.logic['source_schema']['name']
-            row['site_variable'] = mapping.logic['source_attribute']
+            row['study_form'] = mapping.logic['source_schema']['name']
+            row['study_variable'] = mapping.logic['source_attribute']
 
         row['date_mapped'] = mapping.create_date.date()
         row['mapped_id'] = mapping.id
@@ -103,7 +104,7 @@ def delete_mappings(context, request):
     for record in records:
         db_session.delete(record)
 
-    return json.dumps({})
+    return {}
 
 
 @view_config(
@@ -121,10 +122,12 @@ def get_schemas_mapped(context, request):
         return render_to_response('../templates/mappings/imputed_mapped.pt',
                                   {}, request=request)
 
-    site = mapping.site
+    # site = mapping.site
+
+    study = mapping.study
 
     mappings_form_rows = []
-    drsc_form_rows = []
+    target_form_rows = []
 
     if mapping.type == u'direct':
         # get site form and choices
@@ -139,15 +142,15 @@ def get_schemas_mapped(context, request):
 
         attribute = schema.attributes[mapping.logic['source_attribute']]
 
-        drsc_variable = mapping.mapped_attribute
+        target_variable = mapping.mapped_attribute
 
-        if drsc_variable.type == u'choice':
-            # data to populate drsc table
-            for choice in drsc_variable.iterchoices():
-                drsc_form_rows.append({
-                    'variable': drsc_variable.name,
+        if target_variable.type == u'choice':
+            # data to populate target table
+            for choice in target_variable.iterchoices():
+                target_form_rows.append({
+                    'variable': target_variable.name,
                     'description': schema.title,
-                    'type': drsc_variable.type,
+                    'type': target_variable.type,
                     'confidence': mapping.confidence,
                     'label': choice.title,
                     'key': choice.name,
@@ -166,18 +169,18 @@ def get_schemas_mapped(context, request):
                     'variable': attribute.name,
                     'description': attribute.title,
                     'type': mapping.mapped_attribute.type,
-                    'site': site.title,
+                    'study': study.title,
                     'form': schema.name,
                     'label': choice.title,
                     'value': choice.name,
-                    'mapped_variable': drsc_variable.name,
+                    'mapped_variable': target_variable.name,
                     'mapped_label': mapped_label,
                     'mapped_value': mapped_value
                 })
         else:
             # no choices processing
-            drsc_form_rows.append({
-                'variable': drsc_variable.name,
+            target_form_rows.append({
+                'variable': target_variable.name,
                 'description': mapping.mapped_attribute.schema.title,
                 'type': mapping.mapped_attribute.type,
                 'confidence': mapping.confidence,
@@ -189,18 +192,18 @@ def get_schemas_mapped(context, request):
                 'variable': attribute.name,
                 'description': attribute.title,
                 'type': mapping.mapped_attribute.type,
-                'site': site.title,
+                'study': study.title,
                 'form': schema.name,
                 'label': attribute.title,
                 'value': u'',
-                'mapped_variable': drsc_variable,
+                'mapped_variable': target_variable.name,
                 'mapped_label': u'',
                 'mapped_value': u''
             })
 
     return {
-        'drsc_form': mapping.mapped_attribute.schema.name,
-        'drsc_publish_date': mapping.mapped_attribute.schema.publish_date,
-        'drsc_form_rows': drsc_form_rows,
+        'target_form': mapping.mapped_attribute.schema.name,
+        'target_publish_date': mapping.mapped_attribute.schema.publish_date,
+        'target_form_rows': target_form_rows,
         'mappings_form_rows': mappings_form_rows
     }

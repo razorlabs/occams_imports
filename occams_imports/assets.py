@@ -35,6 +35,9 @@ def includeme(config):
         rel('bower_components/lodash/lodash.js'),
         rel('bower_components/backbone/backbone.js'),
         rel('bower_components/jointjs/dist/joint.js'),
+        rel('bower_components/cytoscape/dist/cytoscape.js'),
+        rel('bower_components/FileSaver.js/FileSaver.min.js'),
+        rel('bower_components/canvas-toBlob.js/canvas-toBlob.js'),
         # App-specific scripts can be loaded in any order
         Bundle(
             *[os.path.join(root, filename)
@@ -52,7 +55,8 @@ def includeme(config):
         Bundle(rel('bower_components/select2/select2.css'), filters='cssrewrite'),
         rel('bower_components/select2-bootstrap-css/select2-bootstrap.css'),
         rel('bower_components/jointjs/joint.css'),
-        rel('styles/demo.css'),
+        rel('styles/jointjs_demo.css'),
+        rel('styles/cytoscapejs_demo.css'),
         rel('bower_components/css-spinners/css/spinners.css'),
        # rel('styles/demo.css')
         output=rel('gen/imports.%(version)s.css')))

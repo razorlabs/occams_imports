@@ -303,6 +303,6 @@ def app(request, wsgi, db_session):
         db_session.execute('DELETE FROM "imports"."import" CASCADE')
         db_session.execute('DELETE FROM "schema" CASCADE')
         db_session.execute('DELETE FROM "state" CASCADE')
-        db_session.execute('DELETE FROM "site" CASCADE')
+        db_session.execute('DELETE FROM "study" CASCADE')
         db_session.execute('DELETE FROM "user" CASCADE')
         mark_changed(db_session)

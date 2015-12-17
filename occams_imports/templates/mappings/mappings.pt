@@ -14,7 +14,7 @@
     <div class="row">
       <div class="col-md-6">
         <div class="panel panel-primary">
-          <div class="panel-heading">Site variable selection</div>
+          <div class="panel-heading">Source variable selection</div>
           <div class="panel-body">
             <form class="form-horizontal" role="form">
               <div class="form-group">
@@ -130,16 +130,16 @@
 
       <div class="col-md-6">
         <div class="panel panel-primary">
-        <div class="panel-heading">DRSC variable selection</div>
+        <div class="panel-heading">Target variable selection</div>
           <div class="panel-body">
             <form class="form-horizontal" role="form">
               <div class="form-group">
                 <label class="control-label col-sm-3"
                        for="direct_forms">Form:</label>
                 <div class="col-sm-6">
-                  <select data-bind="options: drsc_forms,
+                  <select data-bind="options: target_forms,
                                      optionsText: 'name',
-                                     value: selectedDRSCForm,
+                                     value: selectedTargetForm,
                                      optionsCaption: 'Select a form...'"
                           class="form-control"
                           id="direct_forms"
@@ -159,13 +159,13 @@
                 <label class="control-label col-sm-3"
                        for="direct_version">Version:</label>
                 <div class="col-sm-6">
-                  <div data-bind="ifnot: selectedDRSCForm">
+                  <div data-bind="ifnot: selectedTargetForm">
                     <input type="text"
                            readonly="readonly"
                            class="form-control"
                            placeholder="Publish date of the form"></input>
                   </div>
-                  <div data-bind="with: selectedDRSCForm">
+                  <div data-bind="with: selectedTargetForm">
                     <input data-bind="value: publish_date"
                            readonly="readonly"
                            type="text"
@@ -179,7 +179,7 @@
               <div class="form-group">
                 <label class="control-label col-sm-3"
                        for="direct_variables">Variable:</label>
-                  <div data-bind="ifnot: selectedDRSCForm">
+                  <div data-bind="ifnot: selectedTargetForm">
                     <div class="col-sm-6">
                      <input type="text"
                            readonly="readonly"
@@ -187,11 +187,11 @@
                            placeholder="Variable to be mapped"></input>
                     </div>
                   </div>
-                  <div data-bind="with: selectedDRSCForm">
+                  <div data-bind="with: selectedTargetForm">
                     <div class="col-sm-6">
                         <select data-bind="options: attributes,
                                            optionsText: 'variable',
-                                           value: $root.selectedDRSCAttribute"
+                                           value: $root.selectedTargetAttribute"
                                 class="form-control"
                                 id="direct_variables"
                                 name="direct_variables"></select>
@@ -200,7 +200,7 @@
               </div>
               <br />
 
-              <div data-bind="with: selectedDRSCAttribute">
+              <div data-bind="with: selectedTargetAttribute">
                 <div class="form-group">
                   <div class="col-sm-8 col-sm-offset-3">
                     <table class="table table-hover">

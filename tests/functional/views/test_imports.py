@@ -11,6 +11,8 @@ class TestImports:
 
     @pytest.fixture(autouse=True)
     def populate(self, app, db_session):
+        from datetime import date
+
         import transaction
         from occams_datastore import models as datastore
         from occams_studies import models as studies
@@ -18,17 +20,27 @@ class TestImports:
         # Any view-dependent data goes here
         with transaction.manager:
             user = datastore.User(key=USERID)
-            drsc = studies.Site(name=u'drsc', title=u'DRSC')
-            ucsd = studies.Site(name=u'ucsd', title=u'UCSD')
-            ucla = studies.Site(name=u'ucla', title=u'UCLA')
-            ebac = studies.Site(name=u'ebac', title=u'EBAC')
-            lac = studies.Site(name=u'lac', title=u'LAC')
+            drsc = studies.Study(
+                name=u'drsc',
+                title=u'DRSC',
+                short_title=u'dr',
+                code=u'drs',
+                consent_date=date.today(),
+                start_date=date.today(),
+                is_randomized=False
+            )
+            ucsd = studies.Study(
+                name=u'ucsd',
+                title=u'UCSD',
+                short_title=u'ucsd',
+                code=u'ucsd',
+                consent_date=date.today(),
+                start_date=date.today(),
+                is_randomized=False
+            )
             db_session.add(user)
             db_session.add(drsc)
             db_session.add(ucsd)
-            db_session.add(ucla)
-            db_session.add(ebac)
-            db_session.add(lac)
             db_session.flush()
 
     @pytest.mark.parametrize('group', ALLOWED)
@@ -117,10 +129,11 @@ class TestImports:
 
         data = {
             'mode': u'dry',
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
-        iform = open(resource_filename('tests', 'iform_input_fixture.json'))
+        iform = open(
+            resource_filename('tests.fixtures', 'iform_input_fixture.json'))
         json_data = iform.read()
 
         response = app.post(
@@ -148,10 +161,11 @@ class TestImports:
 
         data = {
             'mode': u'dry',
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
-        iform = open(resource_filename('tests', 'iform_input_fixture.json'), 'r')
+        iform = open(resource_filename(
+            'tests.fixtures', 'iform_input_fixture.json'), 'r')
         json_data = iform.read()
 
         response = app.post(
@@ -189,10 +203,11 @@ class TestImports:
         data = {
             'mode': u'dry',
             'delimiter': u'comma',
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
-        codebook = open(resource_filename('tests', 'codebook.csv'), 'rb')
+        codebook = open(
+            resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
         csv_data = codebook.read()
 
         response = app.post(
@@ -221,10 +236,11 @@ class TestImports:
         data = {
             'mode': u'dry',
             'delimiter': u'comma',
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
-        codebook = open(resource_filename('tests', 'codebook.csv'), 'rb')
+        codebook = open(
+            resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
         csv_data = codebook.read()
 
         response = app.post(
@@ -262,10 +278,11 @@ class TestImports:
         data = {
             'mode': u'dry',
             'delimiter': u'comma',
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
-        qds = open(resource_filename('tests', 'qds_input_fixture.csv'), 'rb')
+        qds = open(
+            resource_filename('tests.fixtures', 'qds_input_fixture.csv'), 'rb')
         qds_data = qds.read()
 
         response = app.post(
@@ -294,10 +311,11 @@ class TestImports:
         data = {
             'mode': u'dry',
             'delimiter': u'comma',
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
-        qds = open(resource_filename('tests', 'qds_input_fixture.csv'), 'rb')
+        qds = open(
+            resource_filename('tests.fixtures', 'qds_input_fixture.csv'), 'rb')
         qds_data = qds.read()
 
         response = app.post(
@@ -357,16 +375,34 @@ class TestImports:
         assert response.status_code == 401
 
     @pytest.mark.parametrize('group', ALLOWED)
-    def test_mappings_imputation_demo_allowed(self, app, group):
-        url = '/imports/mappings/imputation/demo'
+    def test_jointjs_demo_allowed(self, app, group):
+        url = '/imports/demos/jointjs'
 
         environ = make_environ(userid=USERID, groups=[group])
         response = app.get(url, extra_environ=environ)
 
         assert response.status_code == 200
 
-    def test_mappings_imputation_demo_not_authenticated(self, app):
-        url = '/imports/mappings/imputation/demo'
+    def test_jointjs_demo_not_authenticated(self, app):
+        url = '/imports/demos/jointjs'
+
+        response = app.get(
+            url,
+            status='*')
+
+        assert response.status_code == 401
+
+    @pytest.mark.parametrize('group', ALLOWED)
+    def test_cytoscape_demo_allowed(self, app, group):
+        url = '/imports/demos/cytoscapejs'
+
+        environ = make_environ(userid=USERID, groups=[group])
+        response = app.get(url, extra_environ=environ)
+
+        assert response.status_code == 200
+
+    def test_cytoscape_demo_not_authenticated(self, app):
+        url = '/imports/demos/cytoscapejs'
 
         response = app.get(
             url,

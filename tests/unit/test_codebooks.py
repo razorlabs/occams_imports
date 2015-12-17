@@ -1,4 +1,7 @@
+# flake8: noqa
+
 import pytest
+import mock
 
 from occams.testing import USERID, make_environ, get_csrf_token
 
@@ -7,6 +10,8 @@ class TestCodebooks:
 
     @pytest.fixture(autouse=True)
     def populate(self, app, db_session):
+        from datetime import date
+
         import transaction
         from occams_datastore import models as datastore
         from occams_studies import models as studies
@@ -14,17 +19,26 @@ class TestCodebooks:
         # Any view-dependent data goes here
         with transaction.manager:
             user = datastore.User(key=USERID)
-            drsc = studies.Site(name=u'drsc', title=u'DRSC')
-            ucsd = studies.Site(name=u'ucsd', title=u'UCSD')
-            ucla = studies.Site(name=u'ucla', title=u'UCLA')
-            ebac = studies.Site(name=u'ebac', title=u'EBAC')
-            lac = studies.Site(name=u'lac', title=u'LAC')
+            drsc = studies.Study(
+                name=u'drsc',
+                title=u'DRSC',
+                short_title=u'dr',
+                code=u'drs',
+                consent_date=date.today(),
+                start_date=date.today(),
+                is_randomized=False)
+            ucsd = studies.Study(
+                name=u'ucsd',
+                title=u'UCSD',
+                short_title=u'ucsd',
+                code=u'ucsd',
+                consent_date=date.today(),
+                start_date=date.today(),
+                is_randomized=False
+            )
             db_session.add(user)
             db_session.add(drsc)
             db_session.add(ucsd)
-            db_session.add(ucla)
-            db_session.add(ebac)
-            db_session.add(lac)
             db_session.flush()
 
     @pytest.mark.parametrize('group', ['administrator'])
@@ -39,10 +53,11 @@ class TestCodebooks:
         data = {
             'mode': u'dry',
             'delimiter': u'comma',
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
-        qds = open(resource_filename('tests', 'qds_input_fixture.csv'), 'rb')
+        qds = open(
+            resource_filename('tests.fixtures', 'qds_input_fixture.csv'), 'rb')
         qds_data = qds.read()
 
         response = app.post(
@@ -76,10 +91,11 @@ class TestCodebooks:
         data = {
             'mode': u'dry',
             'delimiter': u'comma',
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
-        codebook = open(resource_filename('tests', 'codebook.csv'), 'rb')
+        codebook = open(
+            resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
         csv_data = codebook.read()
 
         response = app.post(
@@ -111,10 +127,12 @@ class TestCodebooks:
 
         data = {
             'mode': u'dry',
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
-        iform = open(resource_filename('tests', 'iform_input_fixture.json'), 'r')
+        iform = open(
+            resource_filename(
+                'tests.fixtures', 'iform_input_fixture.json'), 'r')
         json_data = iform.read()
 
         response = app.post(
@@ -147,11 +165,12 @@ class TestCodebooks:
 
         data = {
             'mode': None,
-            'site': u'DRSC',
+            'study': u'DRSC',
             'delimiter': u'comma'
         }
 
-        qds = open(resource_filename('tests', 'qds_input_fixture.csv'), 'rb')
+        qds = open(
+            resource_filename('tests.fixtures', 'qds_input_fixture.csv'), 'rb')
         qds_data = qds.read()
 
         app.post(
@@ -194,11 +213,11 @@ class TestCodebooks:
 
         data = {
             'mode': None,
-            'site': u'DRSC',
+            'study': u'DRSC',
             'delimiter': u'comma'
         }
 
-        codebook = open(resource_filename('tests', 'codebook.csv'), 'rb')
+        codebook = open(resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
         csv_data = codebook.read()
 
         app.post(
@@ -229,6 +248,7 @@ class TestCodebooks:
 
         assert attributes[2].choices['0'].title == u'No'
 
+
     @pytest.mark.parametrize('group', ['administrator'])
     def test_iform_insert(self, app, db_session, group):
         import datetime
@@ -242,11 +262,11 @@ class TestCodebooks:
 
         data = {
             'mode': None,
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
         iform = open(
-            resource_filename('tests', 'iform_input_fixture.json'), 'r')
+            resource_filename('tests.fixtures', 'iform_input_fixture.json'), 'r')
         json_data = iform.read()
 
         app.post(
@@ -277,6 +297,7 @@ class TestCodebooks:
     def test_iform_insert_import_table(self, app, db_session, group):
         from pkg_resources import resource_filename
         from occams_imports import models
+        from occams_studies import models as studies
 
         url = '/imports/codebooks/iform/status'
 
@@ -285,10 +306,12 @@ class TestCodebooks:
 
         data = {
             'mode': None,
-            'site': u'DRSC'
+            'study': u'DRSC'
         }
 
-        iform = open(resource_filename('tests', 'iform_input_fixture.json'), 'r')
+        iform = open(
+            resource_filename(
+                'tests.fixtures', 'iform_input_fixture.json'), 'r')
         json_data = iform.read()
 
         app.post(
@@ -304,6 +327,296 @@ class TestCodebooks:
         iform.close()
 
         import_data = db_session.query(models.Import).one()
+        study = (
+            db_session.query(studies.Study)
+            .filter(studies.Study.title == data['study'])).one()
 
-        assert import_data.site.title == u'DRSC'
+        assert study.title == data['study']
         assert import_data.schema.name == u'test_595_hiv_test_v04'
+
+    def test_process_import(self, db_session):
+        from datetime import date
+
+        from occams_datastore import models as datastore
+        from occams_studies import models as studies
+        from occams_imports.views.codebooks import process_import
+
+        attr_dict = {}
+
+        schema = datastore.Schema(
+            name=u'test_name',
+            title=u'test_title',
+            publish_date=date.today()
+        )
+
+        study = studies.Study(
+            name=u'test_site',
+            title=u'test_title',
+            short_title=u'tt',
+            code=u'tt1',
+            consent_date=date.today(),
+            start_date=date.today(),
+            is_randomized=False
+        )
+
+        process_import(schema, attr_dict, study, db_session)
+
+        imported_study = (
+            db_session.query(studies.Study)
+            .filter(studies.Study.title == study.title)).one()
+
+        assert imported_study.title == study.title
+
+    def test_is_duplicate_schema(self, db_session):
+        import transaction
+
+        from occams_datastore import models as datastore
+        from occams_imports.views.codebooks import is_duplicate_schema
+
+        forms = {}
+        errors = []
+        errors = is_duplicate_schema(forms, errors, db_session)
+
+        assert errors == []
+
+        forms = [{
+            'name': u'test_schema_name',
+            'title': u'test_schema_title',
+            'publish_date': u'2015-01-01',
+            'extra_key': u'test_title'
+        }]
+
+        schema = datastore.Schema(
+            name=u'test_schema_name',
+            title=u'test_schema_title',
+            publish_date=u'2015-01-01'
+        )
+
+        with transaction.manager:
+            db_session.add(schema)
+            db_session.flush()
+
+        errors = is_duplicate_schema(forms, errors, db_session)
+        expected = u'Duplicate schema -  already exists in the db'
+        exists = errors[0]['errors'] == expected
+
+        assert exists is True
+
+
+def test_validate_populate_imports(monkeypatch):
+    import datetime
+
+    from occams_imports.views.codebooks import validate_populate_imports
+
+    record = {
+        'schema_name': u'test_schema_name',
+        'schema_title': u'test_schema_title',
+        'publish_date': datetime.date.today(),
+        'name': u'test_name',
+        'title': u'test_title',
+        'description': u'',
+        'is_required': False,
+        'is_collection': False,
+        'is_private': False,
+        'type': u'number',
+        'order': 0,
+        'choices': []
+    }
+
+    mock_validate = mock.MagicMock()
+    mock_validate.return_value = True
+    mock_field_form = mock.MagicMock()
+    mock_field_form.from_json.return_value = mock_validate
+
+    mock_form_validate = mock.MagicMock()
+    mock_form_validate.return_value = True
+    mock_form_form = mock.MagicMock()
+    mock_form_form.from_json.return_value = mock_form_validate
+
+    monkeypatch.setattr(
+        'occams_imports.views.codebooks.FieldFormFactory',
+        lambda **x: mock_field_form)
+
+    monkeypatch.setattr(
+        'occams_imports.views.codebooks.FormFormFactory',
+        lambda **x: mock_form_form)
+
+    errors, imports, forms = validate_populate_imports(None, [record])
+
+    assert errors == []
+    assert len(imports) == 1
+    assert len(forms) == 1
+    assert forms[0]['name'] == u'test_schema_name'
+    assert forms[0]['title'] == u'test_schema_title'
+    assert imports[0][0].name == u'test_name'
+    assert imports[0][1].name == u'test_schema_name'
+
+
+def test_validate_populate_imports_schema_with_errors(monkeypatch):
+    import datetime
+
+    from occams_imports.views.codebooks import validate_populate_imports
+
+    record = {
+        'schema_name': u'test_schema_name',
+        'schema_title': u'test_schema_title',
+        'publish_date': datetime.date.today(),
+        'name': u'test_name',
+        'title': u'test_title',
+        'description': u'',
+        'is_required': False,
+        'is_collection': False,
+        'is_private': False,
+        'type': u'number',
+        'order': 0,
+        'choices': []
+    }
+
+    mock_validate = mock.MagicMock()
+    mock_validate.return_value = True
+    mock_field_form = mock.MagicMock()
+    mock_field_form.from_json.return_value = mock_validate
+
+    mock_form_validate = mock.MagicMock()
+    mock_form_validate.validate.return_value = False
+    mock_form_form = mock.MagicMock()
+    mock_form_form.from_json.return_value = mock_form_validate
+
+    monkeypatch.setattr(
+        'occams_imports.views.codebooks.FieldFormFactory',
+        lambda **x: mock_field_form)
+
+    monkeypatch.setattr(
+        'occams_imports.views.codebooks.FormFormFactory',
+        lambda **x: mock_form_form)
+
+    errors, imports, forms = validate_populate_imports(None, [record])
+
+    assert errors != []
+    assert len(errors) == 1
+    assert errors[0]['schema_title'] == u'test_schema_title'
+
+
+def test_log_errors():
+    from occams_imports.views.codebooks import log_errors
+    errors = {
+        'error': 'something is broken'
+    }
+
+    record = {
+        'schema_name': u'test_schema_name',
+        'schema_title': u'test_schema_title',
+        'name': u'test_name',
+        'title': u'test_title'
+    }
+
+    output = log_errors(errors, record)
+
+    assert output['errors'] == errors
+    assert output['name'] == record['name']
+
+
+def test_group_imports_by_schema():
+    import datetime
+
+    from occams_datastore import models as datastore
+    from occams_imports.views.codebooks import group_imports_by_schema
+
+    with mock.patch('occams_imports.views.codebooks.process_import') \
+        as mock_process_import:
+
+        db_session = None
+        site = u'UCSD'
+        attribute = datastore.Attribute(
+            name=u'test_attr_name',
+            title=u'test_title'
+        )
+        attribute2 = datastore.Attribute(
+            name=u'test_attr_name2',
+            title=u'test_title2'
+        )
+
+        schema = datastore.Schema(
+            name=u'test_schema_name',
+            title=u'test_schema_title',
+            publish_date=datetime.date.today())
+
+        schema2 = datastore.Schema(
+            name=u'test_schema_name2',
+            title=u'test_schema_title2',
+            publish_date=datetime.date.today())
+
+        imports = [(attribute, schema), (attribute2, schema2)]
+
+        response = group_imports_by_schema(imports, site, db_session)
+
+        mock_process_import.assert_any_call(
+            imports[0][1], {u'test_attr_name': imports[0][0]}, u'UCSD', None)
+
+        mock_process_import.assert_any_call(
+            imports[1][1], {u'test_attr_name2': imports[1][0]}, u'UCSD', None)
+
+        assert mock_process_import.call_count == 2
+        assert response == 2
+
+
+def test_get_unique_forms():
+    from occams_imports.views.codebooks import get_unique_forms
+
+    forms = [{
+        'name': u'test_schema_name',
+        'title': u'test_schema_title',
+        'publish_date': u'2015-01-01',
+        'extra_key': u'test_title'
+    },
+        {
+        'name': u'test_schema_name',
+        'title': u'test_schema_title',
+        'publish_date': u'2015-01-01',
+        'extra_key': u'test_title'
+    }]
+
+    output = get_unique_forms(forms)
+
+    assert len(output) == 1
+    assert output == [(u'test_schema_name',
+                       u'test_schema_title',
+                       u'2015-01-01')]
+
+
+def test_convert_delimiter():
+    from occams_imports.views.codebooks import convert_delimiter
+
+    delimiter = u'comma'
+    actual = convert_delimiter(delimiter)
+    expected = u','
+
+    delimiter = u'tab'
+    actual = convert_delimiter(delimiter)
+    expected = u'\t'
+
+    assert actual == expected
+
+
+def test_validate_delimiter():
+    from pkg_resources import resource_filename
+    from occams_imports.views.codebooks import validate_delimiter
+
+    delimiter = ','
+    codebook = open(resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
+
+    delimiter_mismatch, errors = validate_delimiter(delimiter, codebook)
+
+    assert delimiter_mismatch is False
+    assert errors == []
+
+    codebook.seek(0)
+
+    delimiter = '\t'
+    delimiter_mismatch, errors = validate_delimiter(delimiter, codebook)
+    expected_error = u"Selected delimiter doesn't match file delimiter"
+
+    assert delimiter_mismatch is True
+    assert errors[0]['errors'] == expected_error
+
+    codebook.close()

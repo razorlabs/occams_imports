@@ -1,8 +1,7 @@
 """
-Perform direct and imputation mappings of DRSC variables
+Perform direct and imputation mappings of Target variables
 """
 
-import json
 from operator import itemgetter
 
 from pyramid.view import view_config
@@ -16,7 +15,7 @@ from occams_studies import models as studies
 from .. import models
 
 
-def update_schema_data(data, schemas, site=None):
+def update_schema_data(data, schemas):
     """Converts sql alchemy schema objects to dictionary for rendering"""
 
     for schema in schemas:
@@ -47,8 +46,7 @@ def update_schema_data(data, schemas, site=None):
         data['forms'].append({
             u'name': schema.name,
             u'publish_date': schema.publish_date.strftime('%Y-%m-%d'),
-            u'attributes': attributes,
-            u'site': site.title if site else ''
+            u'attributes': attributes
         })
 
     return data
@@ -63,28 +61,20 @@ def update_schema_data(data, schemas, site=None):
 def get_all_schemas(context, request):
     db_session = request.db_session
 
-    target_site = (
-        db_session.query(studies.Site)
-        .filter_by(name=u'drsc')
-        .one())
-
-    schemas = db_session.query(datastore.Schema).options(
-        joinedload('attributes').joinedload('choices')).filter(
-        datastore.Schema.id == models.Import.schema_id).filter(
-        models.Import.site != target_site).order_by(datastore.Schema.name).all()
-
-    drsc_schemas = db_session.query(datastore.Schema).options(
-        joinedload('attributes').joinedload('choices')).filter(
-        datastore.Schema.id == models.Import.schema_id).filter(
-        models.Import.site == target_site).all()
+    # mappings may only occur with schemas associated with a study
+    schemas = (
+        db_session.query(datastore.Schema)
+        .options(joinedload('attributes').joinedload('choices'))
+        .select_from(studies.Study)
+        .join(studies.Study.schemata)
+        .distinct().order_by(datastore.Schema.name).all())
 
     data = {}
     data['forms'] = []
 
-    data = update_schema_data(data, schemas, None)
-    data = update_schema_data(data, drsc_schemas,  target_site)
+    data = update_schema_data(data, schemas)
 
-    return json.dumps(data)
+    return data
 
 
 @view_config(
@@ -106,15 +96,6 @@ def occams_imputation(context, request):
 
 
 @view_config(
-    route_name='imports.mappings.imputation.demo',
-    permission='view',
-    request_method='GET',
-    renderer='../templates/mappings/imputation_demo.pt')
-def occams_imputation_demo(context, request):
-    return {}
-
-
-@view_config(
     route_name='imports.schemas',
     permission='view',
     request_method='GET',
@@ -125,8 +106,6 @@ def get_schemas(context, request):
     db_session = request.db_session
 
     class SearchForm(wtforms.Form):
-        is_target = wtforms.BooleanField(
-            validators=[wtforms.validators.Optional()])
         term = wtforms.StringField(
             validators=[wtforms.validators.Optional()])
 
@@ -135,23 +114,17 @@ def get_schemas(context, request):
 
     data = search_form.data
 
+    # mappings may only occur with schemas associated with a study
     schemata_query = (
         db_session.query(datastore.Schema)
-        .filter(datastore.Schema.id == models.Import.schema_id)
-    )
-
-    target_site = db_session.query(studies.Site).filter_by(name='drsc').one()
-
-    # TODO: Need to implement sites at the form level
-    if data['is_target']:
-        schemata_query = schemata_query.filter(models.Import.site == target_site)
-    else:
-        schemata_query = schemata_query.filter(models.Import.site != target_site)
+        .select_from(studies.Study)
+        .join(studies.Study.schemata)
+        .distinct())
 
     if data['term']:
         schemata_query = (
             schemata_query
-            .filter(models.Schema.name.ilike('%{}%'.format(data['term']))))
+            .filter(datastore.Schema.name.ilike('%{}%'.format(data['term']))))
 
     schemata_query = (
         schemata_query
@@ -301,39 +274,36 @@ def mappings_direct_map(context, request):
     check_csrf_token(request)
     db_session = request.db_session
 
-    target_site = (
-        db_session.query(studies.Site)
-        .select_from(models.Import)
-        .join(models.Import.site)
-        .filter(models.Import.schema.has(
-            name=request.json['site']['name'],
-            publish_date=request.json['site']['publish_date']))
-        .one())
+    target_study = (
+        db_session.query(studies.Study)
+        .join(studies.Study.schemata)
+        .filter(datastore.Schema.name == request.json['site']['name'])
+        .filter(datastore.Schema.publish_date == request.json['site']['publish_date'])).one()
 
     mapped_attribute = (
         db_session.query(datastore.Attribute)
         .filter(
-            (datastore.Attribute.name == request.json['selected_drsc']['variable'])
+            (datastore.Attribute.name == request.json['selected_target']['variable'])
             & (datastore.Attribute.schema.has(
-                name=request.json['drsc']['name'],
-                publish_date=request.json['drsc']['publish_date'])))
+                name=request.json['target']['name'],
+                publish_date=request.json['target']['publish_date'])))
         .one())
 
     logic = {
-        'source_schema':  {
+        'source_schema': {
             'name': request.json['site']['name'],
             'publish_date': request.json['site']['publish_date']
         },
         'source_attribute': request.json['selected']['variable']
     }
 
-    if u'choices' not in request.json['selected_drsc']:
+    if u'choices' not in request.json['selected_target']:
         logic['choices_map'] = None
     else:
-        logic['choices_map'] = request.json['selected_drsc']['choices']
+        logic['choices_map'] = request.json['selected_target']['choices']
 
     mapped_obj = models.Mapping(
-        site=target_site,
+        study=target_study,
         mapped_attribute=mapped_attribute,
         type=u'direct',
         confidence=request.json['confidence'],
@@ -343,7 +313,7 @@ def mappings_direct_map(context, request):
     db_session.add(mapped_obj)
     db_session.flush()
 
-    return json.dumps({'id': mapped_obj.id})
+    return {'id': mapped_obj.id}
 
 
 @view_config(
@@ -358,13 +328,13 @@ def mappings_imputations_map(context, request):
 
     # TODO - find a better way to obtain the site
     schema_obj = request.json[u'groups'][0][u'conversions'][0][u'value'][u'schema']
-    site_name = schema_obj[u'name']
-    site_publish_date = schema_obj['publish_date']
-    site_import = db_session.query(models.Import).filter(
-        datastore.Schema.name == site_name).filter(
-        datastore.Schema.publish_date == site_publish_date).filter(
-        datastore.Schema.id == models.Import.schema_id).one()
-    site = site_import.site
+    study_form_name = schema_obj[u'name']
+    study_form_publish_date = schema_obj['publish_date']
+    study = (
+        db_session.query(studies.Study)
+        .join(studies.Study.schemata)
+        .filter(datastore.Schema.name == study_form_name)
+        .filter(datastore.Schema.publish_date == study_form_publish_date)).one()
 
     mapped_attribute = (
         db_session.query(datastore.Attribute)
@@ -393,7 +363,7 @@ def mappings_imputations_map(context, request):
                 logic['forms'].append([form_name, variable])
 
     mapped_obj = models.Mapping(
-        site=site,
+        study=study,
         mapped_attribute=mapped_attribute,
         mapped_choice=mapped_choice,
         confidence=request.json[u'confidence'],
