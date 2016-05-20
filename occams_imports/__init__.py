@@ -5,14 +5,20 @@ import pkg_resources
 from pyramid.i18n import TranslationStringFactory
 import wtforms_json; wtforms_json.init()  # flake8: noqa
 
-from occams import Session
+from . import models
 
 
 log = logging.getLogger('occams').getChild(__name__)
 
 _ = TranslationStringFactory(__name__)
 
+__prefix__ = '/imports'
+__title__ = _(u'Imports')
 __version__ = pkg_resources.require(__name__)[0].version
+
+
+def initdb(connectable): # pragma: no cover
+    models.ImportsModel.metadata.create_all(connectable)
 
 
 def includeme(config):
@@ -21,7 +27,7 @@ def includeme(config):
         'name': 'imports',
         'title': _(u'Imports'),
         'package': 'occams_imports',
-        'route': 'imports.main',
+        'route': 'imports.index',
         'version': __version__
     }
 

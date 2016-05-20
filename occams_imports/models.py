@@ -1,17 +1,23 @@
-from pyramid.security import Allow, Authenticated, ALL_PERMISSIONS
-from sqlalchemy import orm
-from sqlalchemy.ext.declarative import declared_attr
+from pyramid.security import Allow, Authenticated
 import sqlalchemy as sa
 from sqlalchemy import orm
-from sqlalchemy.orm.collections import attribute_mapped_collection
-
-from occams_datastore.models import *  # flake8: noqa
-from occams_studies.models import *   # flake8: noqa
-
-from . import Session
+from sqlalchemy.dialects.postgresql import JSON
 
 
-Base = ModelClass('Base')
+from occams_datastore import models as datastore
+from occams_studies import models as studies
+
+
+class ImportsModel(datastore.Base):
+    __abstract__ = True
+    metadata = sa.MetaData(schema='imports')
+
+
+sa.event.listen(
+    ImportsModel.metadata,
+    'before_create',
+    sa.DDL('CREATE SCHEMA IF NOT EXISTS imports')
+)
 
 
 class groups:
@@ -49,9 +55,70 @@ class Resource(object):
         self.request = request
 
 
-
 class RootFactory(Resource):
 
     __acl__ = [
         (Allow, Authenticated, 'view')
-        ]
+    ]
+
+
+class ImportFactory(Resource):
+    __acl__ = [
+        (Allow, 'administrator', 'import'),
+        (Allow, 'manager', 'import')
+    ]
+
+
+class Import(ImportsModel, datastore.Referenceable, datastore.Modifiable):
+    __tablename__ = 'import'
+
+    study_id = sa.Column(
+        sa.ForeignKey(studies.Study.id, ondelete='CASCADE'),
+        nullable=False)
+
+    study = orm.relationship(studies.Study)
+
+    schema_id = sa.Column(
+        sa.ForeignKey(datastore.Schema.id, ondelete='CASCADE'),
+        nullable=False)
+
+    schema = orm.relationship(datastore.Schema)
+
+    __table_args__ = (
+        sa.UniqueConstraint(study_id, schema_id),
+    )
+
+
+class Mapping(ImportsModel, datastore.Referenceable, datastore.Modifiable):
+    __tablename__ = 'mapping'
+
+    study_id = sa.Column(
+        sa.ForeignKey(studies.Study.id, ondelete='CASCADE'),
+        nullable=False)
+
+    study = orm.relationship(studies.Study)
+
+    mapped_attribute_id = sa.Column(
+        sa.ForeignKey(datastore.Attribute.id, ondelete='CASCADE'),
+        nullable=False)
+
+    mapped_attribute = orm.relationship(datastore.Attribute)
+
+    mapped_choice_id = sa.Column(
+        sa.ForeignKey(datastore.Choice.id, ondelete='CASCADE'))
+
+    mapped_choice = orm.relationship(datastore.Choice)
+
+    description = sa.Column(sa.UnicodeText())
+
+    confidence = sa.Column(sa.Integer(), nullable=False)
+
+    type = sa.Column(
+        sa.Enum(u'direct', u'imputation', name='mapping_type'),
+        nullable=False)
+
+    logic = sa.Column(JSON)
+
+    __table_args__ = (
+        sa.UniqueConstraint(study_id, mapped_attribute_id, mapped_choice_id),
+    )

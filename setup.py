@@ -7,22 +7,12 @@ import sys
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 REQUIRES = [
-    'alembic',                          # Database table upgrades
-    'humanize',                         # human readable measurements
-    'six',                              # Py 2 & 3 compatibilty
-
     'occams',
     'occams_datastore'
 ]
 
 EXTRAS = {
-    'test': [
-        'pytest',
-        'pytest-cov',
-        'WebTest',
-        'beautifulsoup4',
-        'mock'
-    ]
+    'test': []
 }
 
 
@@ -78,10 +68,10 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
     ],
     keywords='',
-    author='The Young Labs Development Team',
-    author_email='bitcore@ucsd.edu',
+    author='The YoungLabs',
+    author_email='younglabs@ucsd.edu',
     url='https://github.com/younglabs/occams_imports',
-    license='GPL',
+    license='BSD',
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
@@ -89,4 +79,7 @@ setup(
     extras_require=EXTRAS,
     tests_require=EXTRAS['test'],
     cmdclass={'develop': _custom_develop},
+    entry_points="""\
+    [console_scripts]
+    """
 )

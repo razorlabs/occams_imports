@@ -1,0 +1,134 @@
+<html metal:use-macro="load: ../master.pt">
+  <metal:content-slot fill-slot="content-slot">
+  <div id="view-mappings" style="display: none;" data-bind="visible: isReady">
+  <br />
+  <header class="page-header">
+    <div class="pull-right">
+      <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          <span class="fa fa-plus"></span>
+          Mapping
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="${request.route_path('imports.mappings.direct')}">Direct</a></li>
+          <li><a href="${request.route_path('imports.mappings.imputation')}">Imputation</a></li>
+        </ul>
+      </div> <!-- btn-group-->
+    </div> <!-- pull-right-->
+    <h1 i18n:translate="">Mapped Variables</h1>
+  </header>
+  <div class="pull-left">
+    <p>
+      <span>Showing</span>
+      <strong>
+        <!-- ko if: filter -->
+        <span data-bind="text: totalShowing"></span>
+        <span i18n:translate="">of</span>
+        <!-- /ko -->
+        <span data-bind="text: numOfMappings"></span>
+      </strong>
+      <span>mappings</span>
+    </p>
+  </div>
+
+  <div class="pull-right">
+    <form>
+      <div class="form-group">
+        <input type="search"
+               data-bind="value: filter,
+                          valueUpdate: ['input', 'afterkeydown']"
+               class="form-control"
+               name="filter"
+               placeholder="Filter Target form..." >
+      </div>
+    </form>
+  </div>
+  <br />
+  <br />
+  <br />
+  <div data-bind="css: { 'alert': true, 'alert-success': isSuccess, 'alert-info': isInfo, 'alert-danger': isDanger }">
+    <strong data-bind="text: msgType"></strong>
+    <span data-bind="text: msg"></span>
+  </div>
+
+  <table class="table table-hover table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Target Form</th>
+        <th>Target Variable</th>
+        <th>Study</th>
+        <th>Study Form(s)</th>
+        <th>Study Variable(s)</th>
+        <th>Date Mapped</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody data-bind="foreach: filteredMapped">
+      <tr>
+        <td><input type="checkbox"
+                   data-bind="checked: deleteRow"
+                   value=""></td>
+        <td data-bind="text: targetForm"></td>
+        <td><code data-bind="text: targetVariable"></code></td>
+        <td data-bind="text: study"></td>
+
+        <td>
+          <div data-bind="if: imputationForms().length >= 1">
+            <div data-bind="foreach: imputationForms">
+              <div data-bind="text: form"><br />
+              </div>
+            </div>
+          </div>
+
+          <div data-bind="if: imputationForms().length == 0">
+              <div data-bind="text: studyForm">
+            </div>
+          </div>
+        </td>
+
+        <td>
+          <div data-bind="if: imputationForms().length >= 1">
+            <div data-bind="foreach: imputationForms">
+              <code data-bind="text: variable"></code><br />
+            </div>
+          </div>
+
+          <div data-bind="if: imputationForms().length == 0">
+            <code data-bind="text: studyVariable"></code>
+          </div>
+        </td>
+
+        <td data-bind="text: dateMapped"></td>
+        <td><a data-bind="attr: { href: url }">
+              <span class="fa fa-chevron-right"></span>
+            </a></td>
+      </tr>
+    </tbody>
+  </table>
+  <br />
+  <div id="delete_button"
+       style="display: none;"
+       data-bind="visible: isChecked">
+    <button class="btn btn-danger btn-lg"
+            type="button"
+            data-bind="click: deleteRows">
+      <span class="fa fa-trash"></span>
+      <span>Delete Selected</span>
+    </button>
+  </div>
+</div>
+
+  </metal:content-slot>
+
+  <metal:javascript-slot fill-slot="javascript-slot">
+    <script type="text/javascript">
+      $(function(){
+        'use strict';
+        ko.applyBindings(new formListViewModel());
+      });
+    </script>
+  </metal:javascript-slot>
+
+</html>

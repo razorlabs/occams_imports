@@ -1,0 +1,35 @@
+<html metal:use-macro="load: ../master.pt">
+  <metal:content-slot fill-slot="content-slot">
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+          <h1 id="demo_title"></h1>
+        </div>
+        <div id="cy"></div>
+        <div style="display: none;" data-bind="visible: isReady">
+          <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle"
+                    type="button"
+                    data-toggle="dropdown">Export
+              <span class="caret"></span>
+            </button>
+              <ul class="dropdown-menu">
+                <li><a href="#" id="export-png">PNG</a></li>
+                <li><a href="#" id="export-json">JSON</a></li>
+              </ul>
+          </div> <!-- end dropdown -->
+        </div> <!-- end display: none -->
+      </div> <!-- end col-md-12-->
+    </div>  <!-- end row -->
+  </metal:content-slot>
+
+  <metal:javascript-slot fill-slot="javascript-slot">
+    <script>
+    $( document ).ready(function() {
+      ko.applyBindings(new cytoscapeDemoViewModel());
+      $('#demo_title').text('EBAC - condom_use_always');
+    });
+    </script>
+  </metal:javascript-slot>
+</html>

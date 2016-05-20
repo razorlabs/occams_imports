@@ -1,15 +1,16 @@
 <html
-    i18n:domain="occams_forms"
+    i18n:domain="occams_studies"
     tal:define="
       bundle_css  'imports-css';
       bundle_js   'imports-js';
       app_title   'Imports';
+      admin_url   nothing;
     "
     metal:use-macro="load: occams:templates/layout.pt">
 
   <metal:navbar-header-slot fill-slot="navbar-header-slot">
     <a class="navbar-brand"
-        href="${request.route_path('imports.main')}">OCCAMS Imports</a>
+        href="${request.route_path('imports.index')}">OCCAMS Imports</a>
   </metal:navbar-header-slot>
 
   <metal:navbar-nav-slot fill-slot="navbar-nav-slot">
@@ -19,7 +20,7 @@
       <li tal:define="
             factory   import:occams_imports.models.RootFactory;
             resource  factory(request);
-            url       request.route_path('imports.main');
+            url       request.route_path('imports.index');
             active    False;"
           tal:attributes="class python:'active' if active else ''"
           tal:condition="request.has_permission('view', resource)">
@@ -29,27 +30,40 @@
       <li tal:define="
             factory   import:occams_imports.models.RootFactory;
             resource  factory(request);
-            url       request.route_path('imports.main');
+            url       request.route_path('imports.index');
             active    False;"
+
           tal:attributes="class python:'active' if active else ''"
           tal:condition="request.has_permission('view', resource)">
-        <a  href="${url}">Mappings</a>
+        <a href="${url}" class="dropdown-toggle" data-toggle="dropdown">Codebooks
+        <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="${request.route_path('imports.codebooks_iform')}">iForm</a></li>
+            <li><a href="${request.route_path('imports.codebooks_occams')}">OCCAMS</a></li>
+            <li><a href="${request.route_path('imports.codebooks_qds')}">QDS</a></li>
+        </ul>
       </li>
 
       <li tal:define="
             factory   import:occams_imports.models.RootFactory;
             resource  factory(request);
-            url       request.route_path('imports.main');
+            url       request.route_path('imports.index');
             active    False;"
+
           tal:attributes="class python:'active' if active else ''"
           tal:condition="request.has_permission('view', resource)">
-        <a  href="${url}">Codebooks</a>
+        <a href="${url}" class="dropdown-toggle" data-toggle="dropdown">Demos
+        <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="${request.route_path('imports.demos.jointjs')}">joint.js visualization</a></li>
+            <li><a href="${request.route_path('imports.demos.cytoscapejs')}">cytoscape.js visualization</a></li>
+        </ul>
       </li>
 
       <li tal:define="
             factory   import:occams_imports.models.RootFactory;
             resource  factory(request);
-            url       request.route_path('imports.main');
+            url       request.route_path('imports.index');
             active    False;"
           tal:attributes="class python:'active' if active else ''"
           tal:condition="request.has_permission('view', resource)">
