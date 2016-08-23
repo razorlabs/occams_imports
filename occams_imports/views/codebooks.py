@@ -234,6 +234,7 @@ def validate_delimiter(delimiter, codebook):
     """
     errors = []
     delimiter_mismatch = False
+    from pdb import set_trace; set_trace()
     codebook.readline()
     dialect = csv.Sniffer().sniff(codebook.readline())
     sniffed_delimiter = dialect.delimiter
