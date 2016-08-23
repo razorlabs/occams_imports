@@ -22,7 +22,7 @@ def includeme(config):
 
     config.add_webasset('imports-js', Bundle(
         # Dependency javascript libraries must be loaded in a specific order
-        rel('bower_components/jquery/jquery.min.js'),
+        rel('bower_components/jquery/dist/jquery.min.js'),
         rel('bower_components/jquery-ui/jquery-ui.min.js'),
         Bundle(rel('bower_components/jquery-cookie/jquery.cookie.js'), filters='jsmin'),
         rel('bower_components/jquery-validate/dist/jquery.validate.min.js'),
@@ -32,9 +32,6 @@ def includeme(config):
         rel('bower_components/select2/select2.min.js'),
         rel('bower_components/moment/min/moment.min.js'),
         rel('bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js'),
-        rel('bower_components/lodash/lodash.js'),
-        rel('bower_components/backbone/backbone.js'),
-        rel('bower_components/jointjs/dist/joint.js'),
         rel('bower_components/cytoscape/dist/cytoscape.js'),
         rel('bower_components/FileSaver.js/FileSaver.min.js'),
         rel('bower_components/canvas-toBlob.js/canvas-toBlob.js'),
@@ -54,7 +51,6 @@ def includeme(config):
             output=rel('gen/limis-main.%(version)s.css')),
         Bundle(rel('bower_components/select2/select2.css'), filters='cssrewrite'),
         rel('bower_components/select2-bootstrap-css/select2-bootstrap.css'),
-        rel('bower_components/jointjs/joint.css'),
         rel('styles/jointjs_demo.css'),
         rel('styles/cytoscapejs_demo.css'),
         rel('bower_components/css-spinners/css/spinners.css'),
