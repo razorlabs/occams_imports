@@ -37,16 +37,16 @@ class groups:
         return groups.principal(group='administrator')
 
     @staticmethod
-    def manager(location=None):
-        return groups.principal(location=location, group='manager')
+    def manager():
+        return groups.principal(group='manager')
 
     @staticmethod
-    def worker(location=None):
-        return groups.principal(location=location, group='worker')
+    def reviewer(location=None):
+        return groups.principal(group='reviewer')
 
     @staticmethod
     def member(location=None):
-        return groups.principal(location=location, group='member')
+        return groups.principal(group='member')
 
 
 class Resource(object):
@@ -58,14 +58,20 @@ class Resource(object):
 class RootFactory(Resource):
 
     __acl__ = [
-        (Allow, Authenticated, 'view')
+        (Allow, Authenticated, 'view'),
     ]
 
 
 class ImportFactory(Resource):
     __acl__ = [
-        (Allow, 'administrator', 'import'),
-        (Allow, 'manager', 'import')
+        (
+            Allow,
+            groups.administrator(),
+            ('view', 'add', 'edit', 'delete', 'approve', 'import')
+        ),
+        (Allow, groups.manager(), ('view', 'add', 'edit', 'delete', 'approve')),
+        (Allow, groups.reviewer(), ('view', 'approve')),
+        (Allow, groups.member(), ('view',)),
     ]
 
 

@@ -18,23 +18,23 @@
         tal:define="section request.current_route_path(_query={})">
 
       <li tal:define="
-            factory   import:occams_imports.models.RootFactory;
+            factory   import:occams_imports.models.ImportFactory;
             resource  factory(request);
             url       request.route_path('imports.index');
             active    False;"
           tal:attributes="class python:'active' if active else ''"
-          tal:condition="request.has_permission('view', resource)">
+          tal:condition="request.has_permission('import', resource)">
         <a  href="${url}">Roster</a>
       </li>
 
       <li tal:define="
-            factory   import:occams_imports.models.RootFactory;
+            factory   import:occams_imports.models.ImportFactory;
             resource  factory(request);
             url       request.route_path('imports.index');
             active    False;"
 
           tal:attributes="class python:'active' if active else ''"
-          tal:condition="request.has_permission('view', resource)">
+          tal:condition="request.has_permission('import', resource)">
         <a href="${url}" class="dropdown-toggle" data-toggle="dropdown">Codebooks
         <span class="caret"></span></a>
           <ul class="dropdown-menu">
@@ -60,12 +60,12 @@
       </li>
 
       <li tal:define="
-            factory   import:occams_imports.models.RootFactory;
+            factory   import:occams_imports.models.ImportFactory;
             resource  factory(request);
             url       request.route_path('imports.index');
             active    False;"
           tal:attributes="class python:'active' if active else ''"
-          tal:condition="request.has_permission('view', resource)">
+          tal:condition="request.has_permission('import', resource)">
         <a  href="${url}">Upload</a>
       </li>
 

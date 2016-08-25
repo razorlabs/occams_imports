@@ -5,7 +5,16 @@
   <header class="page-header">
     <div class="pull-right">
       <div class="btn-group">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        <button type="button"
+                class="btn btn-default dropdown-toggle"
+                data-toggle="dropdown"
+                tal:define="
+                    factory   import:occams_imports.models.ImportFactory;
+                    resource  factory(request);
+                    url       request.route_path('imports.index');
+                    active    False;"
+
+                tal:condition="request.has_permission('add', resource)">
           <span class="fa fa-plus"></span>
           Mapping
           <span class="caret"></span>

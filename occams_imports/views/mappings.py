@@ -54,7 +54,7 @@ def update_schema_data(data, schemas):
 
 @view_config(
     route_name='imports.schemas',
-    permission='view',
+    permission='add',
     request_method='GET',
     xhr=True,
     renderer='json')
@@ -79,7 +79,7 @@ def get_all_schemas(context, request):
 
 @view_config(
     route_name='imports.mappings.direct',
-    permission='view',
+    permission='add',
     request_method='GET',
     renderer='../templates/mappings/mappings.pt')
 def occams_direct(context, request):
@@ -88,7 +88,7 @@ def occams_direct(context, request):
 
 @view_config(
     route_name='imports.mappings.imputation',
-    permission='view',
+    permission='add',
     request_method='GET',
     renderer='../templates/mappings/imputations.pt')
 def occams_imputation(context, request):
@@ -97,7 +97,7 @@ def occams_imputation(context, request):
 
 @view_config(
     route_name='imports.schemas',
-    permission='view',
+    permission='add',
     request_method='GET',
     xhr=True,
     request_param='vocabulary=available_schemata',
@@ -146,7 +146,7 @@ def get_schemas(context, request):
 
 @view_config(
     route_name='imports.schemas',
-    permission='view',
+    permission='add',
     request_method='GET',
     xhr=True,
     request_param='vocabulary=available_attributes',
@@ -207,7 +207,7 @@ def get_attributes(context, request):
 
 @view_config(
     route_name='imports.schemas',
-    permission='view',
+    permission='add',
     request_method='GET',
     xhr=True,
     request_param='vocabulary=available_choices',
@@ -266,7 +266,7 @@ def get_choices(context, request):
 
 @view_config(
     route_name='imports.mappings.direct.map',
-    permission='view',
+    permission='add',
     request_method='POST',
     xhr=True,
     renderer='json')
@@ -318,7 +318,7 @@ def mappings_direct_map(context, request):
 
 @view_config(
     route_name='imports.mappings.imputation',
-    permission='view',
+    permission='add',
     request_method='POST',
     xhr=True,
     renderer='json')

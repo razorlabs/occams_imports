@@ -67,7 +67,7 @@ def get_schemas(context, request):
 
 @view_config(
     route_name='imports.mappings.delete',
-    permission='view',
+    permission='delete',
     request_method='DELETE',
     xhr=True,
     renderer='json')
