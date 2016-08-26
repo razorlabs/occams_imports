@@ -25,7 +25,6 @@ class TestGetAllSchemas:
             short_title=u'dr',
             code=u'drs',
             consent_date=date.today(),
-            start_date=date.today(),
             is_randomized=False
         )
 
@@ -123,7 +122,6 @@ class TestSchemasSearchTerm:
             short_title=u'dr',
             code=u'drs',
             consent_date=date.today(),
-            start_date=date.today(),
             is_randomized=False
         )
 
@@ -175,7 +173,6 @@ class TestAttributesSearchTerm:
             short_title=u'dr',
             code=u'drs',
             consent_date=date.today(),
-            start_date=date.today(),
             is_randomized=False
         )
 
@@ -231,7 +228,6 @@ class TestChoicesSearchTerm:
             short_title=u'dr',
             code=u'drs',
             consent_date=date.today(),
-            start_date=date.today(),
             is_randomized=False
         )
 
@@ -298,7 +294,6 @@ class TestDirectMapping:
             short_title=u'dr',
             code=u'drs',
             consent_date=date.today(),
-            start_date=date.today(),
             is_randomized=False
         )
 
@@ -409,7 +404,6 @@ class TestImputationMapping:
             short_title=u'dr',
             code=u'drs',
             consent_date=date.today(),
-            start_date=date.today(),
             is_randomized=False
         )
 

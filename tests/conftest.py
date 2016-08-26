@@ -131,15 +131,20 @@ def config(request):
 @pytest.fixture
 def db_session(config):
     """
-    (Integartion Testing) Instantiates a database session.
+    (Integration Testing) Instantiates a database session.
 
     :param config: The pyramid testing configuartion
 
     :returns: An instantiated sqalchemy database session
     """
-    from occams_forms import models
+    from occams_datastore import models
+    import occams_datastore.models.events
+    import zope.sqlalchemy
 
-    db_session = config.registry['db_sessionmaker']()
+    db_session = config.registry['dbsession_factory']()
+
+    occams_datastore.models.events.register(db_session)
+    zope.sqlalchemy.register(db_session)
 
     # Pre-configure with a blame user
     blame = models.User(key=USERID)

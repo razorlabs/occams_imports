@@ -25,7 +25,6 @@ class TestCodebooks:
                 short_title=u'dr',
                 code=u'drs',
                 consent_date=date.today(),
-                start_date=date.today(),
                 is_randomized=False)
             ucsd = studies.Study(
                 name=u'ucsd',
@@ -33,7 +32,6 @@ class TestCodebooks:
                 short_title=u'ucsd',
                 code=u'ucsd',
                 consent_date=date.today(),
-                start_date=date.today(),
                 is_randomized=False
             )
             db_session.add(user)
@@ -355,7 +353,6 @@ class TestCodebooks:
             short_title=u'tt',
             code=u'tt1',
             consent_date=date.today(),
-            start_date=date.today(),
             is_randomized=False
         )
 

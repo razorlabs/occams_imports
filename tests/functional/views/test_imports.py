@@ -3,8 +3,10 @@ import pytest
 from occams.testing import USERID, make_environ, get_csrf_token
 
 
-ALLOWED = ['administrator', 'manager']
-NOT_ALLOWED = ['editor', 'reviewer']
+ADMINISTRATOR = 'administrator'
+MANAGER = 'manager'
+REVIEWER = 'reviewer'
+MEMBER = 'member'
 
 
 class TestImports:
@@ -26,7 +28,6 @@ class TestImports:
                 short_title=u'dr',
                 code=u'drs',
                 consent_date=date.today(),
-                start_date=date.today(),
                 is_randomized=False
             )
             ucsd = studies.Study(
@@ -35,7 +36,6 @@ class TestImports:
                 short_title=u'ucsd',
                 code=u'ucsd',
                 consent_date=date.today(),
-                start_date=date.today(),
                 is_randomized=False
             )
             db_session.add(user)
@@ -43,7 +43,7 @@ class TestImports:
             db_session.add(ucsd)
             db_session.flush()
 
-    @pytest.mark.parametrize('group', ALLOWED)
+    @pytest.mark.parametrize('group', [ADMINISTRATOR])
     def test_imports_occams(self, app, group):
         url = '/imports/codebooks/occams'
 
@@ -52,7 +52,7 @@ class TestImports:
 
         assert response.status_code == 200
 
-    @pytest.mark.parametrize('group', NOT_ALLOWED)
+    @pytest.mark.parametrize('group', [MANAGER, REVIEWER, MEMBER])
     def test_imports_occams_not_allowed(self, app, group):
         url = '/imports/codebooks/occams'
 
@@ -68,7 +68,7 @@ class TestImports:
 
         assert response.status_code == 401
 
-    @pytest.mark.parametrize('group', ALLOWED)
+    @pytest.mark.parametrize('group', [ADMINISTRATOR])
     def test_imports_qds(self, app, group):
         url = '/imports/codebooks/qds'
 
@@ -77,7 +77,7 @@ class TestImports:
 
         assert response.status_code == 200
 
-    @pytest.mark.parametrize('group', NOT_ALLOWED)
+    @pytest.mark.parametrize('group', [MANAGER, REVIEWER, MEMBER])
     def test_imports_qds_not_allowed(self, app, group):
         url = '/imports/codebooks/qds'
 
@@ -93,7 +93,7 @@ class TestImports:
 
         assert response.status_code == 401
 
-    @pytest.mark.parametrize('group', ALLOWED)
+    @pytest.mark.parametrize('group', [ADMINISTRATOR])
     def test_imports_iform(self, app, group):
         url = '/imports/codebooks/iform'
 
@@ -102,7 +102,7 @@ class TestImports:
 
         assert response.status_code == 200
 
-    @pytest.mark.parametrize('group', NOT_ALLOWED)
+    @pytest.mark.parametrize('group', [MANAGER, REVIEWER, MEMBER])
     def test_imports_iform_not_allowed(self, app, group):
         url = '/imports/codebooks/iform'
 
@@ -118,7 +118,7 @@ class TestImports:
 
         assert response.status_code == 401
 
-    @pytest.mark.parametrize('group', ALLOWED)
+    @pytest.mark.parametrize('group', [ADMINISTRATOR])
     def test_iform_upload(self, app, group):
         from pkg_resources import resource_filename
 
@@ -150,7 +150,7 @@ class TestImports:
 
         assert response.status_code == 200
 
-    @pytest.mark.parametrize('group', NOT_ALLOWED)
+    @pytest.mark.parametrize('group', [MANAGER, REVIEWER, MEMBER])
     def test_iform_upload_not_allowed(self, app, group):
         from pkg_resources import resource_filename
 
@@ -191,7 +191,7 @@ class TestImports:
 
         assert response.status_code == 401
 
-    @pytest.mark.parametrize('group', ALLOWED)
+    @pytest.mark.parametrize('group', [ADMINISTRATOR])
     def test_occams_upload(self, app, group):
         from pkg_resources import resource_filename
 
@@ -224,7 +224,7 @@ class TestImports:
 
         assert response.status_code == 200
 
-    @pytest.mark.parametrize('group', NOT_ALLOWED)
+    @pytest.mark.parametrize('group', [MANAGER, REVIEWER, MEMBER])
     def test_occams_upload_not_allowed(self, app, group):
         from pkg_resources import resource_filename
 
@@ -266,7 +266,7 @@ class TestImports:
 
         assert response.status_code == 401
 
-    @pytest.mark.parametrize('group', ALLOWED)
+    @pytest.mark.parametrize('group', [ADMINISTRATOR])
     def test_qds_upload_codebook(self, app, group):
         from pkg_resources import resource_filename
 
@@ -299,7 +299,7 @@ class TestImports:
 
         assert response.status_code == 200
 
-    @pytest.mark.parametrize('group', NOT_ALLOWED)
+    @pytest.mark.parametrize('group', [MANAGER, REVIEWER, MEMBER])
     def test_qds_upload_codebook_not_allowed(self, app, group):
         from pkg_resources import resource_filename
 
@@ -341,7 +341,7 @@ class TestImports:
 
         assert response.status_code == 401
 
-    @pytest.mark.parametrize('group', ALLOWED)
+    @pytest.mark.parametrize('group', [ADMINISTRATOR, MANAGER])
     def test_mappings_delete_allowed(self, app, group):
         url = '/imports/mappings/delete'
 
@@ -364,6 +364,29 @@ class TestImports:
 
         assert response.status_code == 200
 
+    @pytest.mark.parametrize('group', [REVIEWER, MEMBER])
+    def test_mappings_delete_not_allowed(self, app, group):
+        url = '/imports/mappings/delete'
+
+        environ = make_environ(userid=USERID, groups=[group])
+        csrf_token = get_csrf_token(app, environ)
+
+        data = {
+            'mapped_delete': []
+        }
+
+        response = app.delete_json(
+            url,
+            extra_environ=environ,
+            status='*',
+            headers={
+                'X-CSRF-Token': csrf_token,
+                'X-REQUESTED-WITH': str('XMLHttpRequest')
+            },
+            params=data)
+
+        assert response.status_code == 403
+
     def test_mappings_delete_not_authenticated(self, app):
         url = '/imports/mappings/delete'
 
@@ -374,25 +397,7 @@ class TestImports:
 
         assert response.status_code == 401
 
-    @pytest.mark.parametrize('group', ALLOWED)
-    def test_jointjs_demo_allowed(self, app, group):
-        url = '/imports/demos/jointjs'
-
-        environ = make_environ(userid=USERID, groups=[group])
-        response = app.get(url, extra_environ=environ)
-
-        assert response.status_code == 200
-
-    def test_jointjs_demo_not_authenticated(self, app):
-        url = '/imports/demos/jointjs'
-
-        response = app.get(
-            url,
-            status='*')
-
-        assert response.status_code == 401
-
-    @pytest.mark.parametrize('group', ALLOWED)
+    @pytest.mark.parametrize('group', [ADMINISTRATOR, MANAGER, REVIEWER, MEMBER])
     def test_cytoscape_demo_allowed(self, app, group):
         url = '/imports/demos/cytoscapejs'
 

@@ -37,7 +37,6 @@ class TestGetSchemas:
             short_title=u'dr',
             code=u'drs',
             consent_date=date.today(),
-            start_date=date.today(),
             is_randomized=False
         )
 
@@ -147,7 +146,6 @@ class TestDeleteMappings:
             short_title=u'dr',
             code=u'drs',
             consent_date=date.today(),
-            start_date=date.today(),
             is_randomized=False
         )
 
@@ -268,7 +266,6 @@ class TestGetSchemasMapped:
             short_title=u'dr',
             code=u'drs',
             consent_date=date.today(),
-            start_date=date.today(),
             is_randomized=False
         )
 
