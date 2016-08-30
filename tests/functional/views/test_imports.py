@@ -414,3 +414,131 @@ class TestImports:
             status='*')
 
         assert response.status_code == 401
+
+    @pytest.mark.parametrize('group', [ADMINISTRATOR, MANAGER])
+    def test_imports_mappings_direct(self, app, group):
+        url = '/imports/mappings/direct'
+
+        environ = make_environ(userid=USERID, groups=[group])
+        response = app.get(url, extra_environ=environ)
+
+        assert response.status_code == 200
+
+    @pytest.mark.parametrize('group', [REVIEWER, MEMBER])
+    def test_imports_mappings_direct_not_allowed(self, app, group):
+        url = '/imports/mappings/direct'
+
+        environ = make_environ(userid=USERID, groups=[group])
+        response = app.get(url, extra_environ=environ, expect_errors=True)
+
+        assert response.status_code == 403
+
+    def test_imports_mapping_direct_not_authenticated(self, app):
+        url = '/imports/mappings/direct'
+
+        response = app.get(url, expect_errors=True)
+
+        assert response.status_code == 401
+
+    @pytest.mark.parametrize('group', [ADMINISTRATOR, MANAGER])
+    def test_imports_mappings_imputation(self, app, group):
+        url = '/imports/mappings/direct'
+
+        environ = make_environ(userid=USERID, groups=[group])
+        response = app.get(url, extra_environ=environ)
+
+        assert response.status_code == 200
+
+    @pytest.mark.parametrize('group', [REVIEWER, MEMBER])
+    def test_imports_mappings_imputation_not_allowed(self, app, group):
+        url = '/imports/mappings/direct'
+
+        environ = make_environ(userid=USERID, groups=[group])
+        response = app.get(url, extra_environ=environ, expect_errors=True)
+
+        assert response.status_code == 403
+
+    def test_imports_mapping_imputation_not_authenticated(self, app):
+        url = '/imports/mappings/direct'
+
+        response = app.get(url, expect_errors=True)
+
+        assert response.status_code == 401
+
+    @pytest.mark.parametrize('group', [ADMINISTRATOR, MANAGER, REVIEWER])
+    def test_get_schemas(self, app, group):
+        url = '/imports/mappings/view'
+
+        environ = make_environ(userid=USERID, groups=[group])
+        csrf_token = get_csrf_token(app, environ)
+
+        response = app.get(
+            url,
+            extra_environ=environ,
+            status='*',
+            headers={
+                'X-CSRF-Token': csrf_token,
+                'X-REQUESTED-WITH': str('XMLHttpRequest')
+            },
+            params={})
+
+        assert response.status_code == 200
+
+
+    def test_get_schemas_not_authenticated(self, app):
+        url = '/imports/mappings/view'
+
+        response = app.get(
+            url,
+            xhr=True,
+            status='*')
+
+        assert response.status_code == 401
+
+    @pytest.mark.parametrize('group', [ADMINISTRATOR, MANAGER])
+    def test_get_all_schemas(self, app, group):
+        url = '/imports/schemas'
+
+        environ = make_environ(userid=USERID, groups=[group])
+        csrf_token = get_csrf_token(app, environ)
+
+        response = app.get(
+            url,
+            extra_environ=environ,
+            status='*',
+            headers={
+                'X-CSRF-Token': csrf_token,
+                'X-REQUESTED-WITH': str('XMLHttpRequest')
+            },
+            params={})
+
+        assert response.status_code == 200
+
+    @pytest.mark.parametrize('group', [REVIEWER, MEMBER])
+    def test_get_all_schemas_not_allowed(self, app, group):
+        url = '/imports/schemas'
+
+        environ = make_environ(userid=USERID, groups=[group])
+        csrf_token = get_csrf_token(app, environ)
+
+        response = app.get(
+            url,
+            extra_environ=environ,
+            status='*',
+            headers={
+                'X-CSRF-Token': csrf_token,
+                'X-REQUESTED-WITH': str('XMLHttpRequest')
+            },
+            params={})
+
+        assert response.status_code == 403
+
+    def test_get_all_schemas_not_authenticated(self, app):
+        url = '/imports/schemas'
+
+        response = app.get(
+            url,
+            xhr=True,
+            status='*')
+
+        assert response.status_code == 401
