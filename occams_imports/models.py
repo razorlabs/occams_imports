@@ -1,6 +1,6 @@
 from pyramid.security import Allow, Authenticated
 import sqlalchemy as sa
-from sqlalchemy import orm
+from sqlalchemy import orm, event
 from sqlalchemy.dialects.postgresql import JSON
 
 
@@ -94,6 +94,54 @@ class Import(ImportsModel, datastore.Referenceable, datastore.Modifiable):
         sa.UniqueConstraint(study_id, schema_id),
     )
 
+class Status(ImportsModel,
+             datastore.Describeable,
+             datastore.Referenceable,
+             datastore.Modifiable):
+
+    __tablename__ = 'status'
+
+
+@event.listens_for(Status.__table__, 'after_create')
+def populate_default_statuses(target, connection, **kw):
+    """These are hard-coded statuses, not editable by the user via the UI."""
+
+    blame = connection.info['blame']
+    user_table = datastore.User.__table__
+
+    result = connection.execute(
+        user_table
+        .select()
+        .where(user_table.c.key == blame))
+
+    user = result.fetchone()
+    blame_id = user['id']
+
+    def status_type(**kw):
+        values = kw.copy()
+        values.update({
+            'create_user_id': blame_id,
+            'modify_user_id': blame_id,
+        })
+        return values
+
+    connection.execute(target.insert().values([
+        status_type(
+            name=u'review',
+            title=u'Review',
+            description=u'Denotes mapping in need of review.'
+        ),
+        status_type(
+            name=u'in-progress',
+            title=u'In Progress',
+            description=u'Denotes mapping in is not ready to review.'
+        ),
+        status_type(
+            name=u'approved',
+            title=u'Approved',
+            description=u'Denotes mapping has been approved by reviewer.'
+        ),
+    ]))
 
 class Mapping(ImportsModel, datastore.Referenceable, datastore.Modifiable):
     __tablename__ = 'mapping'
@@ -103,6 +151,12 @@ class Mapping(ImportsModel, datastore.Referenceable, datastore.Modifiable):
         nullable=False)
 
     study = orm.relationship(studies.Study)
+
+    status_id = sa.Column(
+        sa.ForeignKey(Status.id, ondelete='CASCADE'),
+        nullable=False)
+
+    status = orm.relationship(Status)
 
     mapped_attribute_id = sa.Column(
         sa.ForeignKey(datastore.Attribute.id, ondelete='CASCADE'),
