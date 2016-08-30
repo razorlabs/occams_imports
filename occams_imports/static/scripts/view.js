@@ -8,7 +8,7 @@ function imputationFormsModel(form, variable){
 }
 
 function mappedModel(targetForm, targetVariable, study, studyForm,
-                     studyVariable, dateMapped, mappedId){
+                     studyVariable, dateMapped, mappedId, status){
   'use strict'
 
   var self = this;
@@ -25,6 +25,7 @@ function mappedModel(targetForm, targetVariable, study, studyForm,
   self.studyVariable = ko.observable(studyVariable);
   self.dateMapped = ko.observable(dateMapped);
   self.mappedId = ko.observable(mappedId);
+  self.status = ko.observable(status);
   self.url = '/imports/mappings/view_mapped?id=' + mappedId;
   self.deleteRow = ko.observable(false);
 }
@@ -130,6 +131,7 @@ function formListViewModel(){
         || mapping.siteForm().toLowerCase().indexOf(filter) > -1
         || mapping.siteVariable().toLowerCase().indexOf(filter) > -1
         || mapping.dateMapped().toLowerCase().indexOf(filter) > -1
+        || mapping.status()
       });
   })
 
@@ -146,7 +148,7 @@ function formListViewModel(){
       $.each(json.rows, function(){
         var row = new mappedModel(this.target_form, this.target_variable, this.study,
           this.study_form, this.study_variable, this.date_mapped,
-          this.mapped_id);
+          this.mapped_id, this.status);
 
         //if there are forms, this is an imputation and imputation
         //objects need to be instantiated

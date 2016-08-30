@@ -71,6 +71,7 @@
         <th>Study Form(s)</th>
         <th>Study Variable(s)</th>
         <th>Date Mapped</th>
+        <th>Status</th>
         <th></th>
       </tr>
     </thead>
@@ -108,11 +109,23 @@
             <code data-bind="text: studyVariable"></code>
           </div>
         </td>
-
         <td data-bind="text: dateMapped"></td>
+
+        <td>
+          <span class="label label-warning" data-bind="
+              css:{
+                'label-warning': status() == 'review',
+                'label-info': status() == 'in-progress',
+                'label-success': status() == 'approved'
+              },
+
+            text: status">
+          </span>
+        </td>
         <td><a data-bind="attr: { href: url }">
               <span class="fa fa-chevron-right"></span>
             </a></td>
+
       </tr>
     </tbody>
   </table>

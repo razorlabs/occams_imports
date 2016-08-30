@@ -60,6 +60,8 @@ def get_schemas(context, request):
         row['date_mapped'] = mapping.create_date.date()
         row['mapped_id'] = mapping.id
 
+        row['status'] = mapping.status.name
+
         data['rows'].append(row)
 
     return data

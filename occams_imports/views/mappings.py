@@ -302,8 +302,12 @@ def mappings_direct_map(context, request):
     else:
         logic['choices_map'] = request.json['selected_target']['choices']
 
+    # add default review status to mapping
+    status = db_session.query(models.Status).filter_by(name=u'review').one()
+
     mapped_obj = models.Mapping(
         study=target_study,
+        status=status,
         mapped_attribute=mapped_attribute,
         type=u'direct',
         confidence=request.json['confidence'],
