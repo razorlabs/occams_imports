@@ -127,11 +127,12 @@ function formListViewModel(){
 
       return formVarMatch
         || mapping.targetVariable().toLowerCase().indexOf(filter) > -1
-        || mapping.site().toLowerCase().indexOf(filter) > -1
-        || mapping.siteForm().toLowerCase().indexOf(filter) > -1
-        || mapping.siteVariable().toLowerCase().indexOf(filter) > -1
+        || mapping.targetForm().toLowerCase().indexOf(filter) > -1
+        || mapping.study().toLowerCase().indexOf(filter) > -1
+        || mapping.studyForm().toLowerCase().indexOf(filter) > -1
+        || mapping.studyVariable().toLowerCase().indexOf(filter) > -1
         || mapping.dateMapped().toLowerCase().indexOf(filter) > -1
-        || mapping.status()
+        || mapping.status().toLowerCase().indexOf(filter) > -1
       });
   })
 
