@@ -207,5 +207,6 @@ def get_schemas_mapped(context, request):
         'target_form': mapping.mapped_attribute.schema.name,
         'target_publish_date': mapping.mapped_attribute.schema.publish_date,
         'target_form_rows': target_form_rows,
-        'mappings_form_rows': mappings_form_rows
+        'mappings_form_rows': mappings_form_rows,
+        'status': mapping.status.name
     }

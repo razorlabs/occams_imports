@@ -1,5 +1,6 @@
 <html metal:use-macro="load: ../master.pt">
   <metal:content-slot fill-slot="content-slot">
+  <div style="display: none;" data-bind="visible: isReady">
   <header class="page-header">
     <div class="pull-right">
       <a href="${request.route_path('imports.index')}">
@@ -8,22 +9,27 @@
     </div> <!-- pull-right-->
     <h1 i18n:translate="">Mapped Variables</h1>
   </header>
+  <div data-bind="css: { 'alert': true, 'alert-success': isSuccess, 'alert-danger': isDanger }">
+    <span data-bind="text: msg"></span>
+  </div>
   <div class="panel panel-primary">
     <div class="panel-heading">Target form/variable info</div>
       <div class="panel-body">
         <div class="row">
-          <div class="col-md-3">
+          <div class="col-md-5">
             <table class="table table-hover table-striped">
               <thead>
                 <tr>
                   <th>Target Form</th>
                   <th>Publish Date</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td tal:content="target_form"></td>
                   <td tal:content="target_publish_date"></td>
+                  <td><span data-bind="text: selectedStatus, css: statusLevel" class="label"></span></td>
                 </tr>
               </tbody>
             </table>
@@ -116,8 +122,30 @@
         </table>
       </div>
   </div>
+  </div>
 
-
+  <div class="form-group"
+       tal:condition="request.has_permission('approve')">
+    <label class="control-label col-sm-2"
+           for="confidence">Change Status: </label>
+    <div class="col-sm-2">
+      <select class="form-control"
+              data-bind="value: selectedStatus, select2: {}, event: {change: updateStatus}"
+              data-placeholder="Update status...">
+        <option value="review">review</option>
+        <option value="in-progress">in-progress</option>
+        <option value="approved">approved</option>
+      </select>
+    </div>
+  </div>
   </metal:content-slot>
+
+  <metal:javascript-slot fill-slot="javascript-slot">
+    <script type="text/javascript">
+      $(function(){
+        ko.applyBindings(new statusViewModel());
+      });
+    </script>
+  </metal:javascript-slot>
 
 </html>

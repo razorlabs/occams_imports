@@ -380,3 +380,43 @@ def mappings_imputations_map(context, request):
     db_session.flush()
 
     return {'__next__': request.route_path('imports.index')}
+
+
+@view_config(
+    route_name='imports.mapping.status',
+    permission='view',
+    request_method='GET',
+    xhr=True,
+    renderer='json')
+def get_status(context, request):
+    check_csrf_token(request)
+    db_session = request.db_session
+    mapping_id = int(request.params['id'])
+
+    mapping = db_session.query(models.Mapping).filter_by(id=mapping_id).one()
+    status = mapping.status.name
+
+    return {'status': status}
+
+
+@view_config(
+    route_name='imports.mapping.status',
+    permission='approve',
+    request_method='PUT',
+    xhr=True,
+    renderer='json')
+def update_status(context, request):
+    check_csrf_token(request)
+    db_session = request.db_session
+    mapping_id = int(request.params['id'])
+
+    mapping = db_session.query(models.Mapping).filter_by(id=mapping_id).one()
+    new_status_name = request.json['status']
+    status = db_session.query(models.Status).filter_by(name=new_status_name).one()
+
+    mapping.status = status
+
+    db_session.add(mapping)
+    db_session.flush()
+
+    return {}
