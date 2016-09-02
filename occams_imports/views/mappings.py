@@ -277,30 +277,27 @@ def mappings_direct_map(context, request):
     target_study = (
         db_session.query(studies.Study)
         .join(studies.Study.schemata)
-        .filter(datastore.Schema.name == request.json['site']['name'])
-        .filter(datastore.Schema.publish_date == request.json['site']['publish_date'])).one()
+        .filter(datastore.Schema.name == request.json['source_schema'])
+        .filter(datastore.Schema.publish_date == request.json['source_schema_publish_date']).one())
 
     mapped_attribute = (
         db_session.query(datastore.Attribute)
         .filter(
-            (datastore.Attribute.name == request.json['selected_target']['variable'])
+            (datastore.Attribute.name == request.json['target_variable'])
             & (datastore.Attribute.schema.has(
-                name=request.json['target']['name'],
-                publish_date=request.json['target']['publish_date'])))
+                name=request.json['target_schema'],
+                publish_date=request.json['target_schema_publish_date'])))
         .one())
 
-    logic = {
-        'source_schema': {
-            'name': request.json['site']['name'],
-            'publish_date': request.json['site']['publish_date']
-        },
-        'source_attribute': request.json['selected']['variable']
-    }
+    data = request.json
 
-    if u'choices' not in request.json['selected_target']:
-        logic['choices_map'] = None
-    else:
-        logic['choices_map'] = request.json['selected_target']['choices']
+    if request.json['choices_mapping']:
+        adj_choices_mapping = []
+        for mapping in request.json['choices_mapping']:
+            for name in mapping['mapped'].split(','):
+                adj_choices_mapping.append({'source': name, 'target': mapping['name']})
+
+        data['choices_mapping'] = adj_choices_mapping
 
     # add default review status to mapping
     status = db_session.query(models.Status).filter_by(name=u'review').one()
@@ -311,7 +308,7 @@ def mappings_direct_map(context, request):
         mapped_attribute=mapped_attribute,
         type=u'direct',
         confidence=request.json['confidence'],
-        logic=logic
+        logic=data
     )
 
     db_session.add(mapped_obj)

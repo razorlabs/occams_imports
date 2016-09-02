@@ -54,8 +54,8 @@ def get_schemas(context, request):
             row['forms'] = mapping.logic['forms']
 
         else:
-            row['study_form'] = mapping.logic['source_schema']['name']
-            row['study_variable'] = mapping.logic['source_attribute']
+            row['study_form'] = mapping.logic['source_schema']
+            row['study_variable'] = mapping.logic['source_variable']
 
         row['date_mapped'] = mapping.create_date.date()
         row['mapped_id'] = mapping.id
@@ -124,8 +124,6 @@ def get_schemas_mapped(context, request):
         return render_to_response('../templates/mappings/imputed_mapped.pt',
                                   {}, request=request)
 
-    # site = mapping.site
-
     study = mapping.study
 
     mappings_form_rows = []
@@ -138,11 +136,11 @@ def get_schemas_mapped(context, request):
         schema = (
             db_session.query(datastore.Schema)
             .filter_by(
-                name=mapping.logic['source_schema']['name'],
-                publish_date=mapping.logic['source_schema']['publish_date'])
+                name=mapping.logic['source_schema'],
+                publish_date=mapping.logic['source_schema_publish_date'])
             .one())
 
-        attribute = schema.attributes[mapping.logic['source_attribute']]
+        attribute = schema.attributes[mapping.logic['source_variable']]
 
         target_variable = mapping.mapped_attribute
 
@@ -162,10 +160,12 @@ def get_schemas_mapped(context, request):
             for choice in attribute.iterchoices():
                 mapped_value = u''
                 mapped_label = u''
-                for row in mapping.logic['choices_map']:
-                    if choice.name in row['mapped'].split(','):
-                        mapped_value = row['name']
-                        mapped_label = row['label']
+                for row in mapping.logic['choices_mapping']:
+                    if choice.name in row['source']:
+                        mapped_value = row['target']
+                        for target in target_variable.iterchoices():
+                            if target.name == mapped_value:
+                                mapped_label = target.title
 
                 mappings_form_rows.append({
                     'variable': attribute.name,
@@ -186,8 +186,8 @@ def get_schemas_mapped(context, request):
                 'description': mapping.mapped_attribute.schema.title,
                 'type': mapping.mapped_attribute.type,
                 'confidence': mapping.confidence,
-                'label': u'',
-                'key': u'',
+                'label': u'N/A',
+                'key': u'N/A',
             })
 
             mappings_form_rows.append({
@@ -197,10 +197,10 @@ def get_schemas_mapped(context, request):
                 'study': study.title,
                 'form': schema.name,
                 'label': attribute.title,
-                'value': u'',
+                'value': u'N/A',
                 'mapped_variable': target_variable.name,
-                'mapped_label': u'',
-                'mapped_value': u''
+                'mapped_label': u'N/A',
+                'mapped_value': u'N/A'
             })
 
     return {

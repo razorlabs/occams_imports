@@ -50,11 +50,15 @@ function mapVariable(){
   $.ajax({
     url: '/imports/mappings/direct/map',
     method: 'POST',
-    data: ko.toJSON({target: self.selectedTargetForm(),
-                     site: self.selectedForm(),
-                     confidence: self.confidence(),
-                     selected_target: self.selectedTargetAttribute,
-                     selected: self.selectedAttribute}),
+    data: ko.toJSON({target_schema: self.selectedTargetForm().name(),
+                     target_schema_publish_date: self.selectedTargetForm().publish_date(),
+                     target_variable: self.selectedTargetAttribute().variable(),
+                     choices_mapping: self.selectedTargetAttribute().choices(),
+                     source_schema: self.selectedForm().name(),
+                     source_schema_publish_date: self.selectedForm().publish_date(),
+                     source_variable: self.selectedAttribute().variable(),
+                     confidence: self.confidence()
+                   }),
     headers: {'X-CSRF-Token': $.cookie('csrf_token')},
     beforeSend: function(){
     },
