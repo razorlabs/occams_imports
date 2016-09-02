@@ -317,8 +317,8 @@ def mappings_imputations_map(context, request):
     db_session = request.db_session
 
     # TODO - find a better way to obtain the site
-    schema_obj = request.json[u'groups'][0][u'conversions'][0][u'value'][u'schema']
-    study_form_name = schema_obj[u'name']
+    schema_obj = request.json['groups'][0]['conversions'][0]['value']['schema']
+    study_form_name = schema_obj['name']
     study_form_publish_date = schema_obj['publish_date']
     study = (
         db_session.query(studies.Study)
@@ -328,10 +328,10 @@ def mappings_imputations_map(context, request):
 
     mapped_attribute = (
         db_session.query(datastore.Attribute)
-        .filter(datastore.Attribute.name == request.json[u'target'][u'attribute']['name'])
+        .filter(datastore.Attribute.name == request.json['target']['attribute']['name'])
         .filter(datastore.Attribute.schema.has(
-            name=request.json[u'target'][u'schema']['name'],
-            publish_date=request.json[u'target'][u'schema']['publish_date']))
+            name=request.json['target']['schema']['name'],
+            publish_date=request.json['target']['schema']['publish_date']))
         .one())
 
     mapped_choice_data = request.json.get('targetChoice')
@@ -342,21 +342,25 @@ def mappings_imputations_map(context, request):
         mapped_choice = None
 
     logic = {}
-    logic['groups'] = request.json[u'groups']
-    logic['condition'] = request.json[u'condition']
+    logic['groups'] = request.json['groups']
+    logic['condition'] = request.json['condition']
+    logic['target_schema'] = request.json['target']['schema']['name']
+    logic['target_variable'] = request.json['target']['attribute']['name']
     logic['forms'] = []
-    for group in request.json[u'groups']:
-        for conversion in group[u'conversions']:
-            if isinstance(conversion[u'value'], dict):
-                form_name = conversion[u'value'][u'schema'][u'name']
-                variable = conversion[u'value'][u'attribute'][u'name']
+    for group in request.json['groups']:
+        for conversion in group['conversions']:
+            if isinstance(conversion['value'], dict):
+                form_name = conversion['value']['schema']['name']
+                variable = conversion['value']['attribute']['name']
                 logic['forms'].append([form_name, variable])
+
+    # add default review status to mapping
+    status = db_session.query(models.Status).filter_by(name='review').one()
 
     mapped_obj = models.Mapping(
         study=study,
-        mapped_attribute=mapped_attribute,
-        mapped_choice=mapped_choice,
-        type=u'imputation',
+        type='imputation',
+        status=status,
         description=request.json['description'],
         logic=logic
     )

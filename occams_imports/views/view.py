@@ -47,7 +47,6 @@ def get_schemas(context, request):
 
         row['target_form'] = mapping.logic['target_schema']
         row['target_variable'] = mapping.logic['target_variable']
-        row['study'] = mapping.study.title
 
         # imputation mappings may have multiple forms and variables
         if mapping.type == 'imputation':
@@ -57,6 +56,7 @@ def get_schemas(context, request):
             row['study_form'] = mapping.logic['source_schema']
             row['study_variable'] = mapping.logic['source_variable']
 
+        row['study'] = mapping.study.title
         row['date_mapped'] = mapping.create_date.date()
         row['mapped_id'] = mapping.id
 
