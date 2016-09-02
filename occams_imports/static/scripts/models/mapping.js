@@ -6,7 +6,6 @@ function Mapping(data){
 
   self.target = ko.observable();
   self.targetChoice = ko.observable();
-  self.confidence = ko.observable();
   self.condition = ko.observable('ALL');
   self.groups = ko.observableArray();
 
@@ -51,7 +50,6 @@ function Mapping(data){
   self.update = function(data){
     data = data || {};
     self.target(new Variable(data.target));
-    self.confidence(data.confidence);
     self.condition(data.condition);
     self.groups((data.groups || []).map(function(value){
       return new Group(value);

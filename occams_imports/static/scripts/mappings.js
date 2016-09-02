@@ -56,8 +56,7 @@ function mapVariable(){
                      choices_mapping: self.selectedTargetAttribute().choices(),
                      source_schema: self.selectedForm().name(),
                      source_schema_publish_date: self.selectedForm().publish_date(),
-                     source_variable: self.selectedAttribute().variable(),
-                     confidence: self.confidence()
+                     source_variable: self.selectedAttribute().variable()
                    }),
     headers: {'X-CSRF-Token': $.cookie('csrf_token')},
     beforeSend: function(){
@@ -79,7 +78,6 @@ function formViewModel(){
 
   var self = this;
 
-  self.confidence = ko.observable(1);
   self.forms = ko.observableArray();
   self.target_forms = ko.observableArray();
   self.selectedForm = ko.observable();

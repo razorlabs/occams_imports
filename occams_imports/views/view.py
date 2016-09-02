@@ -151,7 +151,6 @@ def get_schemas_mapped(context, request):
                     'variable': target_variable.name,
                     'description': schema.title,
                     'type': target_variable.type,
-                    'confidence': mapping.confidence,
                     'label': choice.title,
                     'key': choice.name,
 
@@ -185,7 +184,6 @@ def get_schemas_mapped(context, request):
                 'variable': target_variable.name,
                 'description': mapping.mapped_attribute.schema.title,
                 'type': mapping.mapped_attribute.type,
-                'confidence': mapping.confidence,
                 'label': u'N/A',
                 'key': u'N/A',
             })

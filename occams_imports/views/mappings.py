@@ -307,7 +307,6 @@ def mappings_direct_map(context, request):
         status=status,
         mapped_attribute=mapped_attribute,
         type=u'direct',
-        confidence=request.json['confidence'],
         logic=data
     )
 
@@ -367,7 +366,6 @@ def mappings_imputations_map(context, request):
         study=study,
         mapped_attribute=mapped_attribute,
         mapped_choice=mapped_choice,
-        confidence=request.json[u'confidence'],
         type=u'imputation',
         description=request.json['description'],
         logic=logic
