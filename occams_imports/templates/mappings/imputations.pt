@@ -86,26 +86,10 @@
 
           <div class="form-group">
             <label class="control-label col-sm-2"
-                   for="confidence">Description</label>
+                   for="description">Description</label>
             <div class="col-sm-5">
               <textarea class="form-control"
                         data-bind="value: description"></textarea>
-            </div>
-          </div> <!-- /.form-group -->
-
-          <div class="form-group">
-            <label class="control-label col-sm-2 required"
-                   for="confidence">Confidence</label>
-            <div class="col-sm-5">
-              <select class="form-control"
-                       id="confidence"
-                       data-bind="value: confidence, select2: {}"
-                       data-placeholder="Select confidence level...">
-                <option value=""></option>
-                <option value="1">1 - No/little manipulation/interpretation</option>
-                <option value="2">2 - Some manipulation/interpretation</option>
-                <option value="3">3 - Significant manipulation/interpretation</option>
-              </select>
             </div>
           </div> <!-- /.form-group -->
 
