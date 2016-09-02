@@ -280,15 +280,6 @@ def mappings_direct_map(context, request):
         .filter(datastore.Schema.name == request.json['source_schema'])
         .filter(datastore.Schema.publish_date == request.json['source_schema_publish_date']).one())
 
-    mapped_attribute = (
-        db_session.query(datastore.Attribute)
-        .filter(
-            (datastore.Attribute.name == request.json['target_variable'])
-            & (datastore.Attribute.schema.has(
-                name=request.json['target_schema'],
-                publish_date=request.json['target_schema_publish_date'])))
-        .one())
-
     data = request.json
 
     if request.json['choices_mapping']:
@@ -305,7 +296,6 @@ def mappings_direct_map(context, request):
     mapped_obj = models.Mapping(
         study=target_study,
         status=status,
-        mapped_attribute=mapped_attribute,
         type=u'direct',
         logic=data
     )

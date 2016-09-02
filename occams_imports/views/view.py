@@ -45,8 +45,8 @@ def get_schemas(context, request):
     for mapping in mappings:
         row = {}
 
-        row['target_form'] = mapping.mapped_attribute.schema.name
-        row['target_variable'] = mapping.mapped_attribute.name
+        row['target_form'] = mapping.logic['target_schema']
+        row['target_variable'] = mapping.logic['target_variable']
         row['study'] = mapping.study.title
 
         # imputation mappings may have multiple forms and variables
@@ -142,14 +142,20 @@ def get_schemas_mapped(context, request):
 
         attribute = schema.attributes[mapping.logic['source_variable']]
 
-        target_variable = mapping.mapped_attribute
+        target_variable = (
+            db_session.query(datastore.Attribute)
+            .filter(datastore.Attribute.name == mapping.logic['target_variable'])
+            .filter(datastore.Attribute.schema.has(
+                name=mapping.logic['target_schema'],
+                publish_date=mapping.logic['target_schema_publish_date']))
+            .one())
 
         if target_variable.type == u'choice':
             # data to populate target table
             for choice in target_variable.iterchoices():
                 target_form_rows.append({
                     'variable': target_variable.name,
-                    'description': schema.title,
+                    'description': target_variable.title,
                     'type': target_variable.type,
                     'label': choice.title,
                     'key': choice.name,
@@ -169,7 +175,7 @@ def get_schemas_mapped(context, request):
                 mappings_form_rows.append({
                     'variable': attribute.name,
                     'description': attribute.title,
-                    'type': mapping.mapped_attribute.type,
+                    'type': u'direct',
                     'study': study.title,
                     'form': schema.name,
                     'label': choice.title,
@@ -182,8 +188,8 @@ def get_schemas_mapped(context, request):
             # no choices processing
             target_form_rows.append({
                 'variable': target_variable.name,
-                'description': mapping.mapped_attribute.schema.title,
-                'type': mapping.mapped_attribute.type,
+                'description': target_variable.title,
+                'type': target_variable.type,
                 'label': u'N/A',
                 'key': u'N/A',
             })
@@ -191,7 +197,7 @@ def get_schemas_mapped(context, request):
             mappings_form_rows.append({
                 'variable': attribute.name,
                 'description': attribute.title,
-                'type': mapping.mapped_attribute.type,
+                'type': target_variable.type,
                 'study': study.title,
                 'form': schema.name,
                 'label': attribute.title,
@@ -202,8 +208,8 @@ def get_schemas_mapped(context, request):
             })
 
     return {
-        'target_form': mapping.mapped_attribute.schema.name,
-        'target_publish_date': mapping.mapped_attribute.schema.publish_date,
+        'target_form': mapping.logic['target_schema'],
+        'target_publish_date': mapping.logic['target_schema_publish_date'],
         'target_form_rows': target_form_rows,
         'mappings_form_rows': mappings_form_rows,
         'status': mapping.status.name

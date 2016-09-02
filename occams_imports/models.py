@@ -158,17 +158,6 @@ class Mapping(ImportsModel, datastore.Referenceable, datastore.Modifiable):
 
     status = orm.relationship(Status)
 
-    mapped_attribute_id = sa.Column(
-        sa.ForeignKey(datastore.Attribute.id, ondelete='CASCADE'),
-        nullable=False)
-
-    mapped_attribute = orm.relationship(datastore.Attribute)
-
-    mapped_choice_id = sa.Column(
-        sa.ForeignKey(datastore.Choice.id, ondelete='CASCADE'))
-
-    mapped_choice = orm.relationship(datastore.Choice)
-
     description = sa.Column(sa.UnicodeText())
 
     type = sa.Column(
@@ -177,6 +166,3 @@ class Mapping(ImportsModel, datastore.Referenceable, datastore.Modifiable):
 
     logic = sa.Column(JSON)
 
-    __table_args__ = (
-        sa.UniqueConstraint(study_id, mapped_attribute_id, mapped_choice_id),
-    )
