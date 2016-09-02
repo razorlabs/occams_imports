@@ -2,7 +2,7 @@ function Mapping(data){
   'use strict';
   var self = this;
 
-  self.description = ko.observable();
+  self.description = ko.observable('');
 
   self.target = ko.observable();
   self.targetChoice = ko.observable();
