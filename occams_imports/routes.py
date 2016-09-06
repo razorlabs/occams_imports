@@ -13,7 +13,7 @@ def includeme(config):
 
     config.add_static_view(path='occams_imports:static',    name='/static', cache_max_age=3600)
 
-    config.add_route('imports.index',                       '/',                          factory=models.RootFactory)
+    config.add_route('imports.index',                       '/',                          factory=models.ImportFactory)
     config.add_route('imports.codebooks_iform',             '/codebooks/iform',           factory=models.ImportFactory)
     config.add_route('imports.codebooks_occams',            '/codebooks/occams',          factory=models.ImportFactory)
     config.add_route('imports.codebooks_qds',               '/codebooks/qds',             factory=models.ImportFactory)

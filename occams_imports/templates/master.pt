@@ -45,7 +45,7 @@
       </li>
 
       <li tal:define="
-            factory   import:occams_imports.models.RootFactory;
+            factory   import:occams_imports.models.ImportFactory;
             resource  factory(request);
             url       request.route_path('imports.index');
             active    False;"

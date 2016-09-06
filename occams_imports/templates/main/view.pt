@@ -130,15 +130,17 @@
     </tbody>
   </table>
   <br />
-  <div id="delete_button"
-       style="display: none;"
-       data-bind="visible: isChecked">
-    <button class="btn btn-danger btn-lg"
-            type="button"
-            data-bind="click: deleteRows">
-        <span class="fa fa-trash"></span>
-        <span>Delete Selected</span>
-    </button>
+    <div tal:condition="request.has_permission('delete')">
+      <div id="delete_button"
+           style="display: none;"
+           data-bind="visible: isChecked">
+        <button class="btn btn-danger btn-lg"
+                type="button"
+                data-bind="click: deleteRows">
+            <span class="fa fa-trash"></span>
+            <span>Delete Selected</span>
+        </button>
+        </div>
     </div>
   </div>
 

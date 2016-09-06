@@ -55,13 +55,6 @@ class Resource(object):
         self.request = request
 
 
-class RootFactory(Resource):
-
-    __acl__ = [
-        (Allow, Authenticated, 'view'),
-    ]
-
-
 class ImportFactory(Resource):
     __acl__ = [
         (
@@ -72,6 +65,7 @@ class ImportFactory(Resource):
         (Allow, groups.manager(), ('view', 'add', 'edit', 'delete', 'approve')),
         (Allow, groups.reviewer(), ('view', 'approve')),
         (Allow, groups.member(), ('view',)),
+        (Allow, Authenticated, 'view')
     ]
 
 
