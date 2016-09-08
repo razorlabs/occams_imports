@@ -138,7 +138,7 @@ def group_imports_by_schema(imports, study, db_session):
     fields_inserted = 0
     attr_dict = {}
     for attribute, schema in imports:
-        if schema.name == current_schema.name:
+        if schema.name == current_schema.name and schema.publish_date == current_schema.publish_date:
             attr_dict[attribute.name] = attribute
             fields_inserted += 1
         else:
