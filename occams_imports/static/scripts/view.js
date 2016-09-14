@@ -51,6 +51,8 @@ function deleteRows(){
       self.msg('All selected records deleted from database.');
 
       self.numOfMappings(self.mapped().length);
+      self.vars = ko.utils.arrayMap(self.mapped(), function(item){ return item.targetVariable()})
+      self.numOfDRSCMappings(ko.utils.arrayGetDistinctValues(self.vars).length);
     },
     error: function(data, textStatus, jqXHR){
       console.log(data.responseJSON);
@@ -80,6 +82,7 @@ function formListViewModel(){
   self.isInfo = ko.observable(true);
 
   self.numOfMappings = ko.observable(0);
+  self.numOfDRSCMappings = ko.observable(0);
   self.filter = ko.observable();
 
   self.totalShowing  = ko.pureComputed(function(){
@@ -106,7 +109,9 @@ function formListViewModel(){
 
     // No filter, return mapped list
     if (!filter) {
-      return self.mapped();
+      return self.mapped().sort(function (a, b) {
+        return a.targetVariable().toLowerCase() > b.targetVariable().toLowerCase()  ? 1 : -1;
+      });
     }
 
     filter = filter.toLowerCase();
@@ -165,6 +170,8 @@ function formListViewModel(){
     },
     complete: function(){
       self.numOfMappings(self.mapped().length);
+      self.vars = ko.utils.arrayMap(self.mapped(), function(item){ return item.targetVariable()})
+      self.numOfDRSCMappings(ko.utils.arrayGetDistinctValues(self.vars).length);
       self.isReady(true);
   }
   });
