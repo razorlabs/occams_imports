@@ -135,6 +135,11 @@ def populate_default_statuses(target, connection, **kw):
             title=u'Approved',
             description=u'Denotes mapping has been approved by reviewer.'
         ),
+        status_type(
+            name=u'rejected',
+            title=u'Rejected',
+            description=u'Denotes mapping has been rejected by reviewer.'
+        ),
     ]))
 
 class Mapping(ImportsModel, datastore.Referenceable, datastore.Modifiable):

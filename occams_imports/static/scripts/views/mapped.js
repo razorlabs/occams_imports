@@ -28,6 +28,9 @@ function statusViewModel(){
     else if (statusType == 'approved'){
       return 'label-success'
     }
+    else if (statusType == 'rejected'){
+      return 'label-danger'
+    }
   });
 
   var url = function(){
