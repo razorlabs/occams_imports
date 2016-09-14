@@ -89,6 +89,12 @@ function formListViewModel(){
     return self.filteredMapped().length;
   });
 
+  self.totalDRSCShowing  = ko.pureComputed(function(){
+    self.vars = ko.utils.arrayMap(self.filteredMapped(), function(item){ return item.targetVariable()})
+
+    return ko.utils.arrayGetDistinctValues(self.vars).length;
+  });
+
   // determine if box is checked
   // delete button only visible if at least one box is checked
   self.isChecked = ko.computed(function() {

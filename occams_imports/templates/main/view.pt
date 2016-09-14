@@ -29,10 +29,15 @@
   </header>
   <div class="pull-left">
     <p>
-      <span>Total DRSC Mappings:</span>
+      <span>Showing</span>
       <strong>
+        <!-- ko if: filter -->
+        <span data-bind="text: totalDRSCShowing"></span>
+        <span i18n:translate="">of</span>
+        <!-- /ko -->
         <span data-bind="text: numOfDRSCMappings"></span>
       </strong>
+      <span>DRSC mappings</span>
       <br />
       <span>Showing</span>
       <strong>
@@ -42,7 +47,7 @@
         <!-- /ko -->
         <span data-bind="text: numOfMappings"></span>
       </strong>
-      <span>total mappings</span>
+      <span>Total mappings</span>
     </p>
   </div>
 
