@@ -126,7 +126,8 @@
               css:{
                 'label-warning': status() == 'review',
                 'label-info': status() == 'in-progress',
-                'label-success': status() == 'approved'
+                'label-success': status() == 'approved',
+                'label-danger': status() == 'rejected'
               },
 
             text: status">
