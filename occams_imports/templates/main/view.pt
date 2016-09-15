@@ -75,13 +75,27 @@
     <thead>
       <tr>
         <th></th>
-        <th>Target Form</th>
-        <th>Target Variable</th>
-        <th>Study</th>
-        <th>Study Form(s)</th>
-        <th>Study Variable(s)</th>
-        <th>Date Mapped</th>
-        <th>Status</th>
+        <th data-bind="click: function(){sortBy('targetForm');}">Target Form
+          <span data-bind="css: sortArrow('targetForm')"></span>
+        </th>
+        <th data-bind="click: function(){sortBy('targetVariable');}">Target Variable
+          <span data-bind="css: sortArrow('targetVariable')"></span>
+        </th>
+        <th data-bind="click: function(){sortBy('study');}">Study
+          <span data-bind="css: sortArrow('study')"></span>
+        </th>
+        <th data-bind="click: function(){sortBy('studyForm');}">Study Form(s)
+          <span data-bind="css: sortArrow('studyForm')"></span>
+        </th>
+        <th data-bind="click: function(){sortBy('studyVariable');}">Study Variable(s)
+          <span data-bind="css: sortArrow('studyVariable')"></span>
+        </th>
+        <th data-bind="click: function(){sortBy('dateMapped');}">Date Mapped
+          <span data-bind="css: sortArrow('dateMapped')"></span>
+        </th>
+        <th data-bind="click: function(){sortBy('status');}">Status
+          <span data-bind="css: sortArrow('status')"></span>
+        </th>
         <th></th>
       </tr>
     </thead>

@@ -85,6 +85,25 @@ function formListViewModel(){
   self.numOfDRSCMappings = ko.observable(0);
   self.filter = ko.observable();
 
+  self.sorts = {
+    'targetForm asc': { field: 'targetForm', direction: 'asc'},
+    'targetForm desc': { field: 'targetForm', direction: 'desc'},
+    'targetVariable asc': { field: 'targetVariable', direction: 'asc'},
+    'targetVariable desc': { field: 'targetVariable', direction: 'desc'},
+    'study asc': { field: 'study', direction: 'asc'},
+    'study desc': { field: 'study', direction: 'desc'},
+    'studyForm asc': { field: 'studyForm', direction: 'asc'},
+    'studyForm desc': { field: 'studyForm', direction: 'desc'},
+    'studyVariable asc': { field: 'studyVariable', direction: 'asc'},
+    'studyVariable desc': { field: 'studyVariable', direction: 'desc'},
+    'dateMapped asc': { field: 'dateMapped', direction: 'asc'},
+    'dateMapped desc': { field: 'dateMapped', direction: 'desc'},
+    'status asc': { field: 'status', direction: 'asc'},
+    'status desc': { field: 'status', direction: 'desc'},
+  };
+
+  self.sort = ko.observable(self.sorts['targetForm asc']);
+
   self.totalShowing  = ko.pureComputed(function(){
     return self.filteredMapped().length;
   });
@@ -94,6 +113,38 @@ function formListViewModel(){
 
     return ko.utils.arrayGetDistinctValues(self.vars).length;
   });
+
+  /**
+   * Given a column name, determine the current sort type & order.
+   */
+  self.sortBy = function(columnName) {
+      self.sort(self.sortForName(self.sort(),
+          columnName, self.sorts));
+  };
+
+  //determine arrow type
+  self.sortArrow =  function(columnName) {
+    var arrow = '';
+      if (columnName === self.sort().field) {
+        if (self.sort().direction === 'asc') {
+          arrow = 'fa fa-arrow-up fa-color';
+        } else {
+          arrow = 'fa fa-arrow-down fa-color';
+        }
+      }
+      return arrow;
+    },
+
+  //obtain current sort
+  self.sortForName = function(sort, columnName, allSorts) {
+    var newSort;
+      if (sort.field === columnName && sort.direction === 'asc') {
+        newSort = allSorts[columnName+' desc'];
+      } else {
+        newSort = allSorts[columnName+' asc'];
+      }
+      return newSort;
+    }
 
   // determine if box is checked
   // delete button only visible if at least one box is checked
@@ -112,14 +163,23 @@ function formListViewModel(){
    */
   self.filteredMapped = ko.pureComputed(function(){
     var filter = self.filter();
+    var asc = self.sort().direction === 'asc' ? true : false;
 
     // No filter, return mapped list
     if (!filter) {
       return self.mapped().sort(function (a, b) {
-        return a.targetVariable().toLowerCase() > b.targetVariable().toLowerCase()  ? 1 : -1;
+        // sort here
+        var aprop = a[self.sort().field]();
+        var bprop = b[self.sort().field]();
+        if (asc) {
+          return aprop > bprop ? 1 : -1;
+        } else {
+         return aprop < bprop ? 1 : -1;
+        }
       });
     }
 
+    // filter and sort mappings
     filter = filter.toLowerCase();
 
     return self.mapped().filter(function(mapping) {
@@ -144,6 +204,15 @@ function formListViewModel(){
         || mapping.studyVariable().toLowerCase().indexOf(filter) > -1
         || mapping.dateMapped().toLowerCase().indexOf(filter) > -1
         || mapping.status().toLowerCase().indexOf(filter) > -1
+      })
+      .sort(function(a, b){
+        var aprop = a[self.sort().field]();
+        var bprop = b[self.sort().field]();
+        if (asc) {
+          return aprop > bprop ? 1 : -1;
+        } else {
+         return aprop < bprop ? 1 : -1;
+        }
       });
   })
 
