@@ -61,6 +61,7 @@ def get_schemas(context, request):
         row['mapped_id'] = mapping.id
 
         row['status'] = mapping.status.name
+        row['note'] = mapping.notes
 
         data['rows'].append(row)
 

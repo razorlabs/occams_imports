@@ -120,29 +120,57 @@
         </table>
       </div>
   </div>
-  </div>
 
-  <div class="form-group"
-       tal:condition="request.has_permission('approve')">
-    <label class="control-label col-sm-2"
-           for="confidence">Change Status: </label>
-    <div class="col-sm-2">
-      <select class="form-control"
-              data-bind="value: selectedStatus, select2: {}, event: {change: updateStatus}"
-              data-placeholder="Update status...">
-        <option value="review">review</option>
-        <option value="in-progress">in-progress</option>
-        <option value="approved">approved</option>
-        <option value="rejected">rejected</option>
-      </select>
+  <div class="row">
+    <div class="form-group"
+         tal:condition="request.has_permission('approve')">
+      <label class="control-label col-sm-2"
+             for="confidence">Change Status: </label>
+      <div class="col-sm-2">
+        <select class="form-control"
+                data-bind="value: selectedStatus, select2: {}, event: {change: updateStatus}"
+                data-placeholder="Update status...">
+          <option value="review">review</option>
+          <option value="in-progress">in-progress</option>
+          <option value="approved">approved</option>
+          <option value="rejected">rejected</option>
+        </select>
+      </div>
     </div>
   </div>
+  <hr>
+  <br />
+  <div class="row">
+    <div class="form-group">
+      <label class="control-label col-sm-2"
+             for="notes">Notes: </label>
+      <div class="col-sm-6">
+        <textarea rows="4"
+                  class="form-control"
+                  id="notes"
+                  name="notes"
+                  data-bind="value: note">
+        </textarea>
+      </div>
+    </div>
+  </div>
+  <br />
+  <div class="row">
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-2">
+        <button type="button"
+                class="btn btn-default"
+                data-bind="click: updateNotes">Update Notes</button>
+      </div>
+    </div>
+  </div>
+</div> <!-- end isReady -->
   </metal:content-slot>
 
   <metal:javascript-slot fill-slot="javascript-slot">
     <script type="text/javascript">
       $(function(){
-        ko.applyBindings(new statusViewModel());
+        ko.applyBindings(new mappedViewModel());
       });
     </script>
   </metal:javascript-slot>

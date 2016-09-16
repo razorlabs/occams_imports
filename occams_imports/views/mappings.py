@@ -377,15 +377,16 @@ def mappings_imputations_map(context, request):
     request_method='GET',
     xhr=True,
     renderer='json')
-def get_status(context, request):
+def get_status_and_notes(context, request):
     check_csrf_token(request)
     db_session = request.db_session
     mapping_id = int(request.params['id'])
 
     mapping = db_session.query(models.Mapping).filter_by(id=mapping_id).one()
     status = mapping.status.name
+    notes = mapping.notes
 
-    return {'status': status}
+    return {'status': status, 'notes': notes}
 
 
 @view_config(
@@ -404,6 +405,28 @@ def update_status(context, request):
     status = db_session.query(models.Status).filter_by(name=new_status_name).one()
 
     mapping.status = status
+
+    db_session.add(mapping)
+    db_session.flush()
+
+    return {}
+
+
+@view_config(
+    route_name='imports.mapping.notes',
+    permission='approve',
+    request_method='PUT',
+    xhr=True,
+    renderer='json')
+def update_notes(context, request):
+    check_csrf_token(request)
+    db_session = request.db_session
+    mapping_id = int(request.params['id'])
+
+    mapping = db_session.query(models.Mapping).filter_by(id=mapping_id).one()
+    updated_notes = request.json['notes']
+
+    mapping.notes = updated_notes
 
     db_session.add(mapping)
     db_session.flush()

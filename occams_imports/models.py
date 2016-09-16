@@ -159,6 +159,8 @@ class Mapping(ImportsModel, datastore.Referenceable, datastore.Modifiable):
 
     description = sa.Column(sa.UnicodeText())
 
+    notes = sa.Column(sa.UnicodeText())
+
     type = sa.Column(
         sa.Enum(u'direct', u'imputation', name='mapping_type'),
         nullable=False)

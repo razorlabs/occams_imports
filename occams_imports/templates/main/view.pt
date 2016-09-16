@@ -104,20 +104,25 @@
         <td><input type="checkbox"
                    data-bind="checked: deleteRow"
                    value=""></td>
-        <td data-bind="text: targetForm"></td>
-        <td><code data-bind="text: targetVariable"></code></td>
-        <td data-bind="text: study"></td>
+        <td data-bind="text: targetForm, click: $root.goToMapping"
+            style="cursor:pointer;"></td>
+        <td><code data-bind="text: targetVariable, click: $root.goToMapping"
+                  style="cursor:pointer;"></code></td>
+        <td data-bind="text: study, click: $root.goToMapping"
+            style="cursor:pointer;"></td>
 
         <td>
           <div data-bind="if: imputationForms().length >= 1">
             <div data-bind="foreach: imputationForms">
-              <div data-bind="text: form"><br />
+              <div data-bind="text: form, click: $root.goToMapping"
+                   style="cursor:pointer;"><br />
               </div>
             </div>
           </div>
 
           <div data-bind="if: imputationForms().length == 0">
-              <div data-bind="text: studyForm">
+              <div data-bind="text: studyForm, click: $root.goToMapping"
+                   style="cursor:pointer;">
             </div>
           </div>
         </td>
@@ -125,18 +130,20 @@
         <td>
           <div data-bind="if: imputationForms().length >= 1">
             <div data-bind="foreach: imputationForms">
-              <code data-bind="text: variable"></code><br />
+              <code data-bind="text: variable, click: $root.goToMapping"
+                    style="cursor:pointer;"></code><br />
             </div>
           </div>
 
           <div data-bind="if: imputationForms().length == 0">
-            <code data-bind="text: studyVariable"></code>
+            <code data-bind="text: studyVariable, click: $root.goToMapping"
+                  style="cursor:pointer;"></code>
           </div>
         </td>
-        <td data-bind="text: dateMapped"></td>
-
+        <td data-bind="text: dateMapped, click: $root.goToMapping"
+            style="cursor:pointer;"></td>
         <td>
-          <span class="label label-warning" data-bind="
+          <span class="label label-warning" style="cursor:pointer;" data-bind="
               css:{
                 'label-warning': status() == 'review',
                 'label-info': status() == 'in-progress',
@@ -144,13 +151,15 @@
                 'label-danger': status() == 'rejected'
               },
 
-            text: status">
+            text: status, click: $root.goToMapping">
           </span>
         </td>
-        <td><a data-bind="attr: { href: url }">
-              <span class="fa fa-chevron-right"></span>
-            </a></td>
-
+        <td>
+          <!-- ko if: note() -->
+          <span class="fa fa-comment"
+                aria-hidden="true"></span>
+          <!-- /ko -->
+        </td>
       </tr>
     </tbody>
   </table>

@@ -26,6 +26,7 @@ def includeme(config):
     config.add_route('imports.mappings.view_mapped',        '/mappings/view_mapped',      factory=models.ImportFactory)
     config.add_route('imports.mappings.delete',             '/mappings/delete',           factory=models.ImportFactory)
     config.add_route('imports.mapping.status',              '/mapping/status',            factory=models.ImportFactory)
+    config.add_route('imports.mapping.notes',               '/mapping/notes',             factory=models.ImportFactory)
     config.add_route('imports.demos.cytoscapejs',           '/demos/cytoscapejs',         factory=models.ImportFactory)
 
     log.debug('Routes configured')
