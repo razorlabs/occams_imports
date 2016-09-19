@@ -15,8 +15,10 @@ from occams_studies import models as studies
 from .. import models
 
 
-def update_schema_data(data, schemas):
+def update_schema_data(data, schemas, drsc):
     """Converts sql alchemy schema objects to dictionary for rendering"""
+
+    site = u'DRSC' if drsc else u''
 
     for schema in schemas:
         attributes = []
@@ -46,7 +48,8 @@ def update_schema_data(data, schemas):
         data['forms'].append({
             u'name': schema.name,
             u'publish_date': schema.publish_date.strftime('%Y-%m-%d'),
-            u'attributes': attributes
+            u'attributes': attributes,
+            u'site': site
         })
 
     return data
@@ -67,12 +70,22 @@ def get_all_schemas(context, request):
         .options(joinedload('attributes').joinedload('choices'))
         .select_from(studies.Study)
         .join(studies.Study.schemata)
+        .filter(studies.Study.name != u'drsc')
+        .distinct().order_by(datastore.Schema.name).all())
+
+    drsc_schemas = (
+        db_session.query(datastore.Schema)
+        .options(joinedload('attributes').joinedload('choices'))
+        .select_from(studies.Study)
+        .join(studies.Study.schemata)
+        .filter(studies.Study.name == u'drsc')
         .distinct().order_by(datastore.Schema.name).all())
 
     data = {}
     data['forms'] = []
 
-    data = update_schema_data(data, schemas)
+    data = update_schema_data(data, schemas, drsc=False)
+    data = update_schema_data(data, drsc_schemas, drsc=True)
 
     return data
 

@@ -104,8 +104,12 @@ function formViewModel(){
     success: function(data, textStatus, jqXHR){
       $.each(data.forms, function(){
         var form = new formModel(this.name, this.publish_date, this.attributes);
+        if (this.site != 'DRSC'){
           self.forms.push(form);
+        }
+        else {
           self.target_forms.push(form);
+        }
       });
     },
     complete: function(){
