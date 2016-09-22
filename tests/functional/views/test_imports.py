@@ -484,7 +484,6 @@ class TestImports:
 
         assert response.status_code == 200
 
-
     def test_get_schemas_not_authenticated(self, app):
         url = '/imports/mappings/view'
 

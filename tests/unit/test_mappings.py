@@ -360,22 +360,14 @@ class TestDirectMapping:
         """
         from occams_imports import models
         req.json = {
-            u'confidence': 1,
-            u'selected': {u'label': u'',
-                          u'variable': u'question'},
-            u'selected_target': {u'choices': [{u'label': u'Always',
-                                               u'mapped': u'0',
-                                               u'name': u'0'},
-                                              {u'label': u'Never',
-                                               u'mapped': u'1',
-                                               u'name': u'1'}],
-                                 u'label': u'',
-                                 u'variable': u'ucsd_question'},
-            u'site': {u'name': u'demographics',
-                      u'publish_date': u'2015-01-01'},
-            u'target': {u'name': u'ucsd_demographics',
-                        u'publish_date': u'2015-01-01'}
-        }
+            "source_variable": "question",
+            "target_schema_publish_date": "2015-01-01",
+            "choices_mapping": [{"mapped": "0", "name": "0"},
+                                {"mapped": "1", "name": "0"}],
+            "source_schema_publish_date": "2015-01-01",
+            "target_schema": "ucsd_demographics",
+            "target_variable": "ucsd_question",
+            "source_schema": "demographics"}
 
         response = self._call_fut(None, req)
 
@@ -383,11 +375,10 @@ class TestDirectMapping:
 
         mapping = db_session.query(models.Mapping).one()
 
-        assert mapping.confidence == 1
         assert mapping.type == u'direct'
         assert mapping.study.name == u'drsc'
-        assert mapping.mapped_attribute.name == u'ucsd_question'
-        assert mapping.logic['source_attribute'] == u'question'
+        assert mapping.logic['target_variable'] == u'ucsd_question'
+        assert mapping.logic['source_variable'] == u'question'
 
 
 class TestImputationMapping:
@@ -511,7 +502,5 @@ class TestImputationMapping:
 
         assert imputation.study.title == u'DRSC'
         assert imputation.type == u'imputation'
-        assert imputation.confidence == 1
         assert imputation.description == u'Test Description'
-        assert imputation.mapped_attribute.name == u'ucsd_question'
         assert imputation.logic['forms'] == [[u'demographics', u'question']]

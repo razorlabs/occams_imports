@@ -138,6 +138,7 @@ def db_session(config):
     :returns: An instantiated sqalchemy database session
     """
     from occams_datastore import models
+    from occams_imports import models as import_models
     import occams_datastore.models.events
     import zope.sqlalchemy
 
@@ -161,7 +162,27 @@ def db_session(config):
         models.State(name=u'pending-review', title=u'Pending Review'),
         models.State(name=u'pending-correction',
                      title=u'Pending Correction'),
-        models.State(name=u'complete', title=u'Complete')
+        models.State(name=u'complete', title=u'Complete'),
+        import_models.Status(
+            name=u'review',
+            title=u'Review',
+            description=u'Denotes mapping in need of review.'
+        ),
+        import_models.Status(
+            name=u'in-progress',
+            title=u'In Progress',
+            description=u'Denotes mapping in is not ready to review.'
+        ),
+        import_models.Status(
+            name=u'approved',
+            title=u'Approved',
+            description=u'Denotes mapping has been approved by reviewer.'
+        ),
+        import_models.Status(
+            name=u'rejected',
+            title=u'Rejected',
+            description=u'Denotes mapping has been rejected by reviewer.'
+        )
     ])
 
     return db_session
@@ -280,6 +301,7 @@ def app(request, wsgi, db_session):
     from webtest import TestApp
     from zope.sqlalchemy import mark_changed
     from occams_datastore import models
+    from occams_imports import models as import_models
 
     # Save all changes up tho this point (db_session does some configuration)
     with transaction.manager:
@@ -293,7 +315,27 @@ def app(request, wsgi, db_session):
             models.State(name=u'pending-review', title=u'Pending Review'),
             models.State(name=u'pending-correction',
                          title=u'Pending Correction'),
-            models.State(name=u'complete', title=u'Complete')
+            models.State(name=u'complete', title=u'Complete'),
+            import_models.Status(
+                name=u'review',
+                title=u'Review',
+                description=u'Denotes mapping in need of review.'
+            ),
+            import_models.Status(
+                name=u'in-progress',
+                title=u'In Progress',
+                description=u'Denotes mapping in is not ready to review.'
+            ),
+            import_models.Status(
+                name=u'approved',
+                title=u'Approved',
+                description=u'Denotes mapping has been approved by reviewer.'
+            ),
+            import_models.Status(
+                name=u'rejected',
+                title=u'Rejected',
+                description=u'Denotes mapping has been rejected by reviewer.'
+            )
         ])
 
     app = TestApp(wsgi)
@@ -306,6 +348,7 @@ def app(request, wsgi, db_session):
         # We also have to do this as a raw query becuase SA does
         # not have a way to invoke server-side cascade
         db_session.execute('DELETE FROM "imports"."import" CASCADE')
+        db_session.execute('DELETE FROM "imports"."status" CASCADE')
         db_session.execute('DELETE FROM "schema" CASCADE')
         db_session.execute('DELETE FROM "state" CASCADE')
         db_session.execute('DELETE FROM "study" CASCADE')
