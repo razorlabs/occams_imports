@@ -1,19 +1,22 @@
 import os
+import re
 from subprocess import Popen, PIPE
 from setuptools import setup, find_packages
 from setuptools.command.develop import develop as _develop
 import sys
 
+
+def yield_packages(path):
+    """Simple parser for requirements.txt files"""
+    with open(path) as requirements:
+        for line in requirements:
+            if re.match('^[a-zA-Z]', line):
+                yield line.strip()
+
+
 HERE = os.path.abspath(os.path.dirname(__file__))
-
-REQUIRES = [
-    'occams',
-    'occams_datastore'
-]
-
-EXTRAS = {
-    'test': []
-}
+REQUIRES = list(yield_packages(os.path.join(HERE, 'requirements.txt')))
+DEVELOP = list(yield_packages(os.path.join(HERE, 'requirements-develop.txt')))
 
 
 def get_version():
@@ -68,16 +71,16 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
     ],
     keywords='',
-    author='The YoungLabs',
+    author='RazorLabs',
     author_email='younglabs@ucsd.edu',
-    url='https://github.com/younglabs/occams_imports',
+    url='https://github.com/razorlabs/occams_imports',
     license='BSD',
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
     install_requires=REQUIRES,
-    extras_require=EXTRAS,
-    tests_require=EXTRAS['test'],
+    extras_require={'develop': DEVELOP, 'test': DEVELOP},
+    tests_require=DEVELOP,
     cmdclass={'develop': _custom_develop},
     entry_points="""\
     [console_scripts]
