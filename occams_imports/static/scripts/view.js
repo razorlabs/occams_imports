@@ -78,9 +78,9 @@ function formListViewModel(){
 
   self.isDanger = ko.observable(false);
   self.isSuccess = ko.observable(false);
-  self.msgType = ko.observable('Info - ');
-  self.msg = ko.observable('Please click chevron on the right to view mapping.');
-  self.isInfo = ko.observable(true);
+  self.msgType = ko.observable('');
+  self.msg = ko.observable('');
+  self.isInfo = ko.observable(false);
 
   self.numOfMappings = ko.observable(0);
   self.numOfDRSCMappings = ko.observable(0);
