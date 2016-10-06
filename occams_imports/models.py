@@ -1,7 +1,7 @@
 from pyramid.security import Allow, Authenticated
 import sqlalchemy as sa
 from sqlalchemy import orm, event
-from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.dialects.postgresql import JSONB
 
 
 from occams_datastore import models as datastore
