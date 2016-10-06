@@ -165,5 +165,5 @@ class Mapping(ImportsModel, datastore.Referenceable, datastore.Modifiable):
         sa.Enum(u'direct', u'imputation', name='mapping_type'),
         nullable=False)
 
-    logic = sa.Column(JSON)
+    logic = sa.Column(JSONB)
 
