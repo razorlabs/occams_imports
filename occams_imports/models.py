@@ -70,6 +70,7 @@ class ImportFactory(Resource):
 
 
 class Import(ImportsModel, datastore.Referenceable, datastore.Modifiable):
+    """Record imports and track by study and schema."""
     __tablename__ = 'import'
 
     study_id = sa.Column(
@@ -88,10 +89,12 @@ class Import(ImportsModel, datastore.Referenceable, datastore.Modifiable):
         sa.UniqueConstraint(study_id, schema_id),
     )
 
+
 class Status(ImportsModel,
              datastore.Describeable,
              datastore.Referenceable,
              datastore.Modifiable):
+    """Stats to track approval state of mappings."""
 
     __tablename__ = 'status'
 
@@ -142,7 +145,9 @@ def populate_default_statuses(target, connection, **kw):
         ),
     ]))
 
+
 class Mapping(ImportsModel, datastore.Referenceable, datastore.Modifiable):
+    """Table to store direct and imputation mappings."""
     __tablename__ = 'mapping'
 
     study_id = sa.Column(
@@ -167,3 +172,21 @@ class Mapping(ImportsModel, datastore.Referenceable, datastore.Modifiable):
 
     logic = sa.Column(JSONB)
 
+
+class SiteData(ImportsModel, datastore.Referenceable, datastore.Modifiable):
+    """Table to store patient site data."""
+    __tablename__ = 'sitedata'
+
+    study_id = sa.Column(
+        sa.ForeignKey(studies.Study.id, ondelete='CASCADE'),
+        nullable=False)
+
+    study = orm.relationship(studies.Study)
+
+    schema_id = sa.Column(
+        sa.ForeignKey(datastore.Schema.id, ondelete='CASCADE'),
+        nullable=False)
+
+    schema = orm.relationship(datastore.Schema)
+
+    data = sa.Column(JSONB)
