@@ -14,6 +14,7 @@ branch_labels = None
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy import sql
+from sqlalchemy.dialects.postgresql import JSONB
 
 
 def upgrade():
@@ -28,7 +29,7 @@ def upgrade():
             nullable=False),
         sa.Column('study_id', sa.Integer, nullable=False),
         sa.Column('schema_id', sa.Integer, nullable=False),
-
+        sa.Column('data', JSONB, nullable=False),
         sa.Column('create_user_id', sa.Integer, nullable=False),
         sa.Column('create_date',
                   sa.DateTime,
