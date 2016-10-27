@@ -27,6 +27,12 @@ def includeme(config):
     config.add_route('imports.mappings.delete',             '/mappings/delete',           factory=models.ImportFactory)
     config.add_route('imports.mapping.status',              '/mapping/status',            factory=models.ImportFactory)
     config.add_route('imports.mapping.notes',               '/mapping/notes',             factory=models.ImportFactory)
+    config.add_route('imports.upload',                      '/upload',                    factory=models.ImportFactory)
+    config.add_route('imports.upload_status',               '/upload/status',             factory=models.ImportFactory)
+    config.add_route('imports.apply_direct',                '/apply/direct',              factory=models.ImportFactory)
+    config.add_route('imports.apply_direct_status',         '/apply/direct/status',       factory=models.ImportFactory)
+    config.add_route('imports.apply_imputation',            '/apply/imputation',          factory=models.ImportFactory)
+    config.add_route('imports.direct_notifications',        '/direct_notifications',      factory=models.ImportFactory)
     config.add_route('imports.demos.cytoscapejs',           '/demos/cytoscapejs',         factory=models.ImportFactory)
 
     log.debug('Routes configured')

@@ -1,0 +1,55 @@
+<html metal:use-macro="load: ../master.pt">
+  <metal:content-slot fill-slot="content-slot">
+    <br />
+
+    <h1 i18n:translate="">Upload Site Patient Data</h1>
+    <p i18n:translate="" class="lead">
+      This service was designed so you can upload patient data files from a site
+      and apply the DRSC mappings into the OCCAMS system.
+    </p>
+
+    <form
+        role="form"
+        name="upload_data"
+        method="POST"
+        autocomplete="on"
+        enctype="multipart/form-data"
+        action="${request.route_path('imports.upload_status')}">
+
+      <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
+
+      <h3>Step 1</h3>
+
+      <div class="row">
+        <div class="form-group col-lg-3">
+            <p i18n:translate="">Select site:</p>
+              <select class="form-control" id="site" name="site">
+                <option value="ucsd">UCSD</option>
+                <option value="lac">LAC</option>
+                <option value="ebac">EBAC</option>
+                <option value="ucla">UCLA</option>
+              </select>
+        </div>
+      </div>
+      <hr>
+
+      <div class="form-group">
+        <h3>Step 2</h3>
+        <p i18n:translate="">Select file to upload: </p>
+        <input type="file" name="data-file" required>
+      </div>
+      <hr>
+
+
+      <button
+          type="submit"
+          name="submit"
+          class="btn btn-lg btn-primary"
+          i18n:translate="">Upload file</button>
+    </form>
+
+  </metal:content-slot>
+
+  <metal:javascript-slot fill-slot="javascript-slot">
+  </metal:javascript-slot>
+</html>
