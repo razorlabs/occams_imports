@@ -22,11 +22,6 @@ function ImputationList(data){
     self.imputations.splice(index + 1, 0, new Imputation());
   };
 
-  self.addSubImputation = function(after){
-    var index = after ? self.imputations.indexOf(after) : self.imputationsLength();
-    self.imputations.splice(index + 1, 0, new ImputationList());
-  };
-
   self.removeImpuation = function(imputation){
     self.imputations.remove(imputation);
   };

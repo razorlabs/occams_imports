@@ -281,11 +281,6 @@
                       </button>
                       <button type="button"
                               class="btn btn-default"
-                              data-bind="click: $parent.addSubImputation">
-                         <span class="fa fa-level-down"></span>
-                      </button>
-                      <button type="button"
-                              class="btn btn-default"
                               data-bind="click: $parent.addImputation">
                          <span class="fa fa-plus"></span>
                       </button>
