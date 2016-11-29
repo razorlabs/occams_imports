@@ -127,3 +127,29 @@ def apply_direct_mappings(task):
         for key in ('count', 'total'):
             data[key] = int(data[key])
         redis.publish('direct', json.dumps(data))
+
+
+@app.task(name='apply_imputation_mappings', ignore_result=True, bind=True)
+@with_transaction
+def apply_imputation_mappings(task):
+    redis = app.redis
+    total_mappings = 1000
+
+    count = 0
+
+    mappings_id = six.text_type(str(uuid.uuid4()))
+
+    redis.hmset(mappings_id, {
+        'count': count,
+        'total': total_mappings
+    })
+
+    for i in xrange(1000):
+
+        redis.hincrby(mappings_id, 'count')
+
+        data = redis.hgetall(mappings_id)
+        # redis-py returns everything as string, so we need to clean it
+        for key in ('count', 'total'):
+            data[key] = int(data[key])
+        redis.publish('imputation', json.dumps(data))
