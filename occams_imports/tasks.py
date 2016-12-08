@@ -256,10 +256,16 @@ def apply_imputation_mappings(task):
                 # apply the match rules
                 for pid, data in running_totals.iteritems():
                     rules_results = []
+
+                    # default operator is ALL
+                    if 'operator' not in match_rule:
+                        match_rule['operator'] = u'ALL'
+
                     for imputation in match_rule['imputations']:
                         rules_results.append(operators_map[imputation['operator']](data['total'], int(imputation['value'])))
 
                     # test any or all for the results of the group match rules
+                    # the below code runs if the match rules pass
                     if operators_map[match_rule['operator']](rules_results):
 
                         patient = (
@@ -299,7 +305,14 @@ def apply_imputation_mappings(task):
 
                             patient.entities.add(entity)
 
-                        payload = {target_variable: data['total']}
+                        # if we are mapping to a choice, the payload is the name
+                        # of the selected choice
+                        if mapping.logic['target_choice']:
+                            payload = {target_variable: mapping.logic['target_choice']['name']}
+                        # if it is not a choice
+                        else:
+                            payload = {target_variable: data['total']}
+
                         upload_dir = tempfile.mkdtemp()
                         apply_data(Session, entity, payload, upload_dir)
                         shutil.rmtree(upload_dir)

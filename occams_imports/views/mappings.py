@@ -359,6 +359,7 @@ def mappings_imputations_map(context, request):
     logic['condition'] = request.json['condition']
     logic['target_schema'] = request.json['target']['schema']['name']
     logic['target_variable'] = request.json['target']['attribute']['name']
+    logic['target_choice'] = request.json.get('targetChoice', {})
     logic['forms'] = []
     for group in request.json['groups']:
         for conversion in group['conversions']:
