@@ -15,12 +15,8 @@ from occams_imports import tasks, log
     xhr=True,
     renderer='json')
 def direct(context, request):
-    """Process direct mappings."""
-    task_id = six.text_type(str(uuid.uuid4()))
-
     tasks.apply_direct_mappings.apply_async(
-        args=[],
-        task_id=task_id
+        args=[]
     )
 
     return {}

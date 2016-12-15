@@ -88,6 +88,7 @@ def create_tables(request):
             models.ImportsModel.metadata.create_all(connection)
             # Clear out the state table since the data is populated on each test
             connection.execute('DELETE FROM state')
+            connection.execute('DELETE FROM imports.status')
 
     def drop_tables():
         if url.drivername == 'sqlite':
@@ -354,3 +355,47 @@ def app(request, wsgi, db_session):
         db_session.execute('DELETE FROM "study" CASCADE')
         db_session.execute('DELETE FROM "user" CASCADE')
         mark_changed(db_session)
+
+
+@pytest.fixture
+@pytest.mark.usefixtures('create_tables')
+def celery(request):
+    """
+    (Function Testing) Sets up a celery application for testing
+
+    :param request: The pytest context
+    """
+    import shutil
+    import tempfile
+    import mock
+    from redis import StrictRedis
+    from sqlalchemy import create_engine
+    from occams.celery import Session
+    from occams_datastore import models as datastore
+    from occams_studies import tasks
+
+    settings = {
+        'studies.export.dir': tempfile.mkdtemp(),
+        'celery.blame': USERID
+    }
+
+    tasks.app.userid = settings['celery.blame']
+    tasks.app.redis = StrictRedis.from_url(REDIS_URL)
+    tasks.app.settings = settings
+
+    db_url = request.config.getoption('--db')
+    engine = create_engine(db_url)
+    Session.configure(bind=engine, info={'settings': settings})
+    Session.add(datastore.User(key=settings['celery.blame']))
+
+    Session.flush()
+
+    commitmock = mock.patch('occams_imports.tasks.Session.commit')
+    commitmock.start()
+
+    def cleanup():
+        commitmock.stop()
+        shutil.rmtree(settings['studies.export.dir'])
+        Session.remove()
+
+    request.addfinalizer(cleanup)
