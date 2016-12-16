@@ -31,7 +31,9 @@ def includeme(config):
     config.add_route('imports.upload_status',               '/upload/status',             factory=models.ImportFactory)
     config.add_route('imports.apply_direct',                '/apply/direct',              factory=models.ImportFactory)
     config.add_route('imports.apply_direct_status',         '/apply/direct/status',       factory=models.ImportFactory)
+    config.add_route('imports.apply_imputation_status',     '/apply/imputation/status',   factory=models.ImportFactory)
     config.add_route('imports.apply_imputation',            '/apply/imputation',          factory=models.ImportFactory)
     config.add_route('imports.direct_notifications',        '/direct_notifications',      factory=models.ImportFactory)
+    config.add_route('imports.imputations_notifications',   '/import_notifications',      factory=models.ImportFactory)
 
     log.debug('Routes configured')

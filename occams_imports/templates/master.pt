@@ -56,7 +56,7 @@
         <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="${request.route_path('imports.apply_direct_status')}">Direct Mappings</a></li>
-            <li><a href="${request.route_path('imports.apply_imputation')}">Imputation Mappings</a></li>
+            <li><a href="${request.route_path('imports.apply_imputation_status')}">Imputation Mappings</a></li>
         </ul>
       </li>
 
