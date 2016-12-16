@@ -17,8 +17,8 @@ from occams_studies import models as studies
 from occams_forms.views.field import FieldFormFactory
 from occams_forms.views.form import FormFormFactory
 
-from occams_imports import models
-from occams_imports.parsers import parse
+from .. import models
+from ..parsers import parse
 
 
 def log_errors(errors, record):
@@ -259,52 +259,35 @@ def validate_delimiter(delimiter, codebook):
     route_name='imports.codebooks_occams',
     permission='import',
     request_method='GET',
-    renderer='../templates/codebooks/occams_codebook.pt')
-def occams(context, request):
-    db_session = request.db_session
-
-    all_studies = (
-        db_session.query(studies.Study).all()
-    )
-
-    return {'study_options': [study.title for study in all_studies]}
-
-
+    renderer='../templates/codebooks/occams_codebook.pt'
+)
 @view_config(
     route_name='imports.codebooks_iform',
     permission='import',
     request_method='GET',
-    renderer='../templates/codebooks/iform_codebook.pt')
-def iform(context, request):
-    db_session = request.db_session
-
-    all_studies = (
-        db_session.query(studies.Study).all()
-    )
-
-    return {'study_options': [study.title for study in all_studies]}
-
-
+    renderer='../templates/codebooks/iform_codebook.pt'
+)
 @view_config(
     route_name='imports.codebooks_qds',
     permission='import',
     request_method='GET',
-    renderer='../templates/codebooks/qds_codebook.pt')
-def qds(context, request):
+    renderer='../templates/codebooks/qds_codebook.pt'
+)
+def codebook_uploader(context, request):
     db_session = request.db_session
 
-    all_studies = (
-        db_session.query(studies.Study).all()
-    )
+    studies_ = db_session.query(studies.Study).order_by(studies.Study.title)
+    options = [studies.title for study in studies_]
 
-    return {'study_options': [study.title for study in all_studies]}
+    return {'study_options': options}
 
 
 @view_config(
     route_name='imports.codebooks_status',
     permission='import',
     request_method='POST',
-    renderer='../templates/codebooks/status.pt')
+    renderer='../templates/codebooks/status.pt'
+)
 def insert_codebooks(context, request):
     """
     Insert appropriate records to the database
