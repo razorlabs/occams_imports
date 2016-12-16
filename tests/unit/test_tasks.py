@@ -211,7 +211,7 @@ class TestDirectMappingPipeline:
 
 
 class TestDirectMappingGetErrors:
-    """Test Direct Mapping Pipeline."""
+    """Test Direct Mapping Pipeline Errors."""
 
     def _call_fut(self, *args, **kw):
         """Function under test."""
@@ -278,3 +278,120 @@ class TestDirectMappingGetErrors:
                                 target_variable, target_value)
 
         assert errors == []
+
+
+class TestAddDRSCEntitiy:
+    """Test Direct Mapping Pipeline add DRSC entity."""
+
+    def _call_fut(self, *args, **kw):
+        """Function under test."""
+        from occams_imports.tasks import add_drsc_entity as view
+
+        return view(*args, **kw)
+
+    def test_add_drsc_entity(self, db_session):
+        """Should add drsc entity to the patient."""
+        from datetime import date
+
+        from occams_studies import models as studies
+        from occams_datastore import models as datastore
+
+        patient_site = studies.Site(
+            name=u'test_site',
+            title=u'test_clinic'
+        )
+
+        patient = studies.Patient(
+            pid=u'1234',
+            site=patient_site
+        )
+
+        target_schema = datastore.Schema(
+            name=u'Demographics',
+            title=u'Demographics',
+            publish_date=date.today(),
+            attributes={
+                'yob': datastore.Attribute(
+                    name=u'yob',
+                    title=u'yob',
+                    type=u'number',
+                    order=0
+                )}
+        )
+
+        collect_date = date.today()
+
+        target_schema_name = u'Demographics'
+
+        self._call_fut(db_session, patient, target_schema_name,
+                       target_schema, collect_date)
+
+        patient = (
+            db_session.query(studies.Patient)
+            .filter_by(pid=u'1234')
+            .one()
+        )
+
+        entity = patient.entities.pop()
+
+        assert entity.schema.name == target_schema_name
+
+    def test_add_drsc_entity_already_has_entity(self, db_session):
+        """Should not add entity becuase it exists already."""
+        from datetime import date
+
+        from occams_studies import models as studies
+        from occams_datastore import models as datastore
+
+        patient_site = studies.Site(
+            name=u'test_site',
+            title=u'test_clinic'
+        )
+
+        patient = studies.Patient(
+            pid=u'1234',
+            site=patient_site
+        )
+
+        default_state = (
+            db_session.query(datastore.State)
+            .filter_by(name='complete')
+            .one()
+        )
+
+        target_schema = datastore.Schema(
+            name=u'Demographics',
+            title=u'Demographics',
+            publish_date=date.today(),
+            attributes={
+                'yob': datastore.Attribute(
+                    name=u'yob',
+                    title=u'yob',
+                    type=u'number',
+                    order=0
+                )}
+        )
+
+        collect_date = date.today()
+
+        entity = datastore.Entity(
+            schema=target_schema,
+            collect_date=collect_date,
+            state=default_state
+        )
+
+        patient.entities.add(entity)
+        db_session.flush()
+
+        target_schema_name = u'Demographics'
+
+        self._call_fut(db_session, patient, target_schema_name,
+                       target_schema, collect_date)
+
+        patient = (
+            db_session.query(studies.Patient)
+            .filter_by(pid=u'1234')
+            .one()
+        )
+
+        assert len(patient.entities) == 1

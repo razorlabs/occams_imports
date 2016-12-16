@@ -29,8 +29,8 @@ def get_target_value(choices_mapping, record, source_variable, source_schema):
 
     :param choices_mapping: a list of mapping dicts ({'source': 2 'target': 3})
     :param record: an occams_imports SiteData object
-    :source_variable: string name of the source variable
-    :source_schema: an occams Schema Object
+    :param source_variable: string name of the source variable
+    :param source_schema: an occams Schema Object
 
     rtype: the key to be mapped if a choice to choice map or a value for all
            other mappings
@@ -67,9 +67,10 @@ def get_target_value(choices_mapping, record, source_variable, source_schema):
 def get_errors(db_session, target_schema,
                target_variable, target_value):
     """Return wtforms errors.
-    :db_session: SQL Alchemy session
-    :target_schema: an occams Schema object
-    :target_variable: string name of the target variable
+
+    :param db_session: SQL Alchemy session
+    :param target_schema: an occams Schema object
+    :param target_variable: string name of the target variable
     :rtype: list of wtforms errors
     """
     Form = make_form(db_session, target_schema)
@@ -84,48 +85,80 @@ def get_errors(db_session, target_schema,
     return target_has_errors
 
 
+def add_drsc_entity(db_session, patient, target_schema_name,
+                    target_schema, collect_date):
+    """Add DRSC entity if required.
+
+    If the target schema entity exists we want to add mapped data
+    to the exisiting entity rather than create a new entity
+    Need a default state to retrieve OCCAMS entities
+
+    :param db_session: SQLAlchemy session object
+    :param patient: patient mapping will be applied to
+    :param target_schema_name: name of the target schema
+    :param target_schema: occams Schema object of the target schema
+    :collect_date: collect date of the entity in iso format
+    :rtype: Entity
+    """
+    entity_exists = False
+    for item in patient.entities:
+        if item.schema.name == target_schema_name:
+            entity = item
+            entity_exists = True
+            return entity
+
+    if not entity_exists:
+        default_state = (
+            db_session.query(datastore.State)
+            .filter_by(name='complete')
+            .one()
+        )
+        entity = datastore.Entity(
+            schema=target_schema,
+            collect_date=collect_date,
+            state=default_state
+        )
+
+        patient.entities.add(entity)
+
+        return entity
+
+
 @app.task(name='apply_direct_mappings', ignore_result=True, bind=True)
 @with_transaction
 def apply_direct_mappings(task):
     """ Direct mappings pipeline.
 
-        From a high level, this function walks the approved mappings from the
-        mappings table, gets patient records matching the source schema, for
-        each patient record determines if the target schema exists, applies the
-        mapping, validates the mapping, and inserts the mapped data into
-        the target variable/schema.
+    From a high level, this function walks the approved mappings from the
+    mappings table, gets patient records matching the source schema, for
+    each patient record determines if the target schema exists, applies the
+    mapping, validates the mapping, and inserts the mapped data into
+    the target variable/schema.
 
-        If the source value is not valid with the target attribute wtforms
-        validator, the entry is logged and the mapping does not occur.  If no
-        target choice is found in the choices mapping, the entry is logged and
-        the mapping does not occur.
+    If the source value is not valid with the target attribute wtforms
+    validator, the entry is logged and the mapping does not occur.  If no
+    target choice is found in the choices mapping, the entry is logged and
+    the mapping does not occur.
 
-        If a schema already exists, the variable will be overwritten.  An
-        improvement may be to log the entry if the variable has been mapped
-        and do not overwrite.
+    If a schema already exists, the variable will be overwritten.  An
+    improvement may be to log the entry if the variable has been mapped
+    and do not overwrite.
 
-        Currently the method supports 3 direct mappings types:
+    Currently the method supports 3 direct mappings types:
 
-          * Source Choice to Target Choice
-          * Source Choice to Target Value
-          * Source Value to Target Value
+    * Source Choice to Target Choice
+    * Source Choice to Target Value
+    * Source Value to Target Value
 
-        :param task: celery task object
-        :rtype: count and total is broadcast to the 'direct' redis channel,
-                currently the logs are not returned
+    :param task: celery task object
+    :rtype: count and total is broadcast to the 'direct' redis channel,
+    currently the logs are not returned
     """
     # Retrieve mappings in 'approved' status
     mappings = (
         Session.query(models.Mapping)
         .filter_by(type=u'direct')
         .filter_by(status_id=3).all()
-    )
-
-    # Need a default state to retrieve OCCAMS entities
-    default_state = (
-        Session.query(datastore.State)
-        .filter_by(name='complete')
-        .one()
     )
 
     redis = app.redis
@@ -188,25 +221,8 @@ def apply_direct_mappings(task):
                 .filter_by(publish_date=source_schema_publish_date)
             ).one()
 
-            # If the target schema entity exists we want to add mapped data
-            # to the exisiting entity rather than create a new entity
-            entity_exists = False
-            for item in patient.entities:
-                if item.schema.name == target_schema_name and \
-                   item.schema.publish_date.isoformat() == \
-                   target_schema_publish_date:
-                    entity = item
-                    entity_exists = True
-                    break
-
-            if not entity_exists:
-                entity = datastore.Entity(
-                    schema=target_schema,
-                    collect_date=collect_date,
-                    state=default_state
-                )
-
-                patient.entities.add(entity)
+            entity = add_drsc_entity(Session, patient, target_schema_name,
+                                     target_schema, collect_date)
 
             target_value = get_target_value(mapping.logic['choices_mapping'],
                                             record, source_variable,
@@ -308,9 +324,11 @@ def apply_imputation_mappings(task):
                 for conversion in group['conversions']:
                     if conversion['byVariable']:
                         schema_name = conversion['value']['schema']['name']
-                        schema_publish_date = conversion['value']['schema']['publish_date']
+                        schema_publish_date = \
+                            conversion['value']['schema']['publish_date']
                         attribute = conversion['value']['attribute']['name']
-                        attribute_type = conversion['value']['attribute']['type']
+                        attribute_type = \
+                            conversion['value']['attribute']['type']
 
                         source_schema = (
                             Session.query(datastore.Schema)
@@ -322,7 +340,8 @@ def apply_imputation_mappings(task):
                         records = (
                             Session.query(models.SiteData)
                             .filter(
-                                models.SiteData.data['form_name'].astext == schema_name
+                                models.SiteData.data['form_name'].astext == \
+                                schema_name
                             )
                             .filter(
                                 models.SiteData.data['form_publish_date'].astext == schema_publish_date
@@ -359,7 +378,9 @@ def apply_imputation_mappings(task):
                             collect_date = record.data['collect_date']
 
                             running_totals[pid] = {
-                                'total': operators_map[conversion_operator](running_totals[pid]['total'], int(conversion_operand)),
+                                'total': operators_map[conversion_operator](
+                                    running_totals[pid]['total'],
+                                    int(conversion_operand)),
                                 'collect_date': collect_date
                             }
 
@@ -374,7 +395,10 @@ def apply_imputation_mappings(task):
                         match_rule['operator'] = u'ALL'
 
                     for imputation in match_rule['imputations']:
-                        rules_results.append(operators_map[imputation['operator']](data['total'], int(imputation['value'])))
+                        rules_results.append(
+                            operators_map[imputation['operator']](
+                                data['total'],
+                                int(imputation['value'])))
 
                     # test any or all for the results of the group match rules
                     # the below code runs if the match rules pass
@@ -386,12 +410,6 @@ def apply_imputation_mappings(task):
                             .one()
                         )
 
-                        default_state = (
-                            Session.query(datastore.State)
-                            .filter_by(name='pending-entry')
-                            .one()
-                        )
-
                         # schema with most recent publish date
                         target_schema = (
                             Session.query(datastore.Schema)
@@ -399,28 +417,17 @@ def apply_imputation_mappings(task):
                             .order_by(asc(datastore.Schema.publish_date))
                         ).limit(1).one()
 
-                        # if the target schema already exists we want to add data
-                        # to the schema rather than creating a new entity
-                        entity_exists = False
-                        for item in patient.entities:
-                            if item.schema.name == target_schema_name:
-                                entity = item
-                                entity_exists = True
-                                break
+                        entity = add_drsc_entity(Session, patient,
+                                                 target_schema_name,
+                                                 target_schema, collect_date)
 
-                        if not entity_exists:
-                            entity = datastore.Entity(
-                                schema=target_schema,
-                                collect_date=data['collect_date'],
-                                state=default_state
-                            )
-
-                            patient.entities.add(entity)
-
-                        # if we are mapping to a choice, the payload is the name
-                        # of the selected choice
+                        # if we are mapping to a choice, the payload is the
+                        # name of the selected choice
                         if mapping.logic['target_choice']:
-                            payload = {target_variable: mapping.logic['target_choice']['name']}
+                            choice_name = mapping.logic['target_choice']['name']
+                            payload = {
+                                target_variable: choice_name
+                            }
                         # if it is not a choice
                         else:
                             payload = {target_variable: data['total']}
