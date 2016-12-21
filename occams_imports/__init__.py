@@ -18,7 +18,7 @@ __version__ = pkg_resources.require(__name__)[0].version
 
 
 def initdb(connectable): # pragma: no cover
-    models.ImportsModel.metadata.create_all(connectable)
+    models.Base.metadata.create_all(connectable)
 
 
 def includeme(config):

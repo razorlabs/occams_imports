@@ -277,7 +277,7 @@ def codebook_uploader(context, request):
     db_session = request.db_session
 
     studies_ = db_session.query(studies.Study).order_by(studies.Study.title)
-    options = [studies.title for study in studies_]
+    options = [study.title for study in studies_]
 
     return {'study_options': options}
 
