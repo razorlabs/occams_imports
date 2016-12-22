@@ -31,6 +31,5 @@ def includeme(config):
         'version': __version__
     }
 
-    config.include('.assets')
     config.include('.routes')
     config.scan()

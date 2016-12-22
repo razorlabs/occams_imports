@@ -5,6 +5,10 @@ from .mapping import Mapping  # noqa
 from .sitedata import SiteData  # noqa
 from .status import Status  # noqa
 
+from .project import ProjectFactory, Project  # noqa
+from .table import TableFactory, Table  # noqa
+from .variable import VariableFactory, Variable, Choice  # noqa
+
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
 configure_mappers()

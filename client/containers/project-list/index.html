@@ -1,0 +1,37 @@
+<div style="display: none" data-bind="visible: isReady">
+
+  <div class="btn-toolbar pull-right">
+    <a href="#"
+        class="btn btn-default"
+        data-bind="click: $component.addProject.bind($component)">Add Project</a>
+  </div>
+
+  <div class="page-header">
+    <h1>Projects</h1>
+  </div>
+
+  <div class="container">
+    <div class="row">
+
+      <div class="col-md-4">
+        <ul class="nav nav-pills nav-stacked" data-bind="foreach: projects">
+          <li role="presentation"
+              data-bind="css: {active: $parent.selectedProject() == $data}">
+            <a  href="#"
+                data-bind="
+                  text: title,
+                  click: $component.selectProject.bind($component)"></a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-md-8" data-bind="with: selectedProject">
+        <!-- Use "with" instead of "if" so that the sub-component
+             is properly refreshed
+        -->
+        <rl-project-detail params="project: $data"></rl-project-detail>
+      </div>
+
+    </div>
+  </div>
+</div>

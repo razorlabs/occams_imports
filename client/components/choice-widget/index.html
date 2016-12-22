@@ -1,0 +1,14 @@
+<input type="hidden"
+       class="form-control"
+       data-placeholder="Select answer choice..."
+       data-bind="selectedData: choice,
+                  dataKey: 'name',
+                  dataLabel: 'toString',
+                  select2: {
+                    ajax: {
+                        url: '/imports/schemas',
+                        data: queryChoiceData,
+                        results: parseChoiceResults
+                    }
+                  }" />
+

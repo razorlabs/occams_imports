@@ -1,0 +1,22 @@
+$icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
+@import "~bootstrap-sass/assets/stylesheets/bootstrap";
+
+// Accomodate the feature-rich navbar by collapsing only for phones/tablets
+$grid-float-breakpoint: $screen-desktop;
+
+// The navbar margin is a bit excessive
+$navbar-margin-bottom: (-($line-height-computed));
+
+// Turn off the gratuituos amount of margin page headers have
+.page-header, .page-header h1 {
+  margin-top: 0;
+}
+
+label.required:after {
+  color: $brand-danger;
+  content: '\25A0';
+  vertical-align: super;
+}
+
+$fa-font-path: '~font-awesome/fonts';
+@import "~font-awesome/scss/font-awesome";

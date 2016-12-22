@@ -1,67 +1,216 @@
+<!--! Master Application Layout Template
+
+      This template provides a baseline layout for applications.
+
+      Its use is not required if apps want full control of the entire layout.
+--><!DOCTYPE html>
 <html
-    i18n:domain="occams_studies"
+    lang="${request.locale_name}"
+    i18n:domain="drsc"
     tal:define="
-      bundle_css  'imports-css';
-      bundle_js   'imports-js';
-      app_title   'Imports';
-      admin_url   nothing;
-    "
-    metal:use-macro="load: occams:templates/layout.pt">
+      css_container 'container';
+      development   request.registry.settings['occams.development'] | False;
+    ">
 
-  <metal:navbar-header-slot fill-slot="navbar-header-slot">
-    <a class="navbar-brand"
-        href="${request.route_path('imports.index')}">OCCAMS Imports</a>
-  </metal:navbar-header-slot>
+  <head>
+    <meta charset="utf-8">
 
-  <metal:navbar-nav-slot fill-slot="navbar-nav-slot">
-    <ul class="nav navbar-nav"
-        tal:define="section request.current_route_path(_query={})">
+    <title>DRSC</title>
 
-      <li tal:define="
-            factory   import:occams_imports.models.ImportFactory;
-            resource  factory(request);
-            url       request.route_path('imports.index');
-            active    False;"
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-          tal:attributes="class python:'active' if active else ''"
-          tal:condition="request.has_permission('import', resource)">
-        <a href="${url}" class="dropdown-toggle" data-toggle="dropdown">Codebooks
-        <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="${request.route_path('imports.codebooks_iform')}">iForm</a></li>
-            <li><a href="${request.route_path('imports.codebooks_occams')}">OCCAMS</a></li>
-            <li><a href="${request.route_path('imports.codebooks_qds')}">QDS</a></li>
-        </ul>
-      </li>
+    <!-- Shortcut icons -->
+    <link rel="shortcut icon" href="${request.static_path('occams:static/images/favicon.ico')}"/>
+    <link rel="shortcut icon" sizes="1024x1024" href="${request.static_path('occams:static/images/favicon-highres.png')}">
+    <link rel="shortcut icon" sizes="128x128" href="${request.static_path('occams:static/images/favicon.png')}">
+    <link rel="apple-touch-icon" sizes="128x128" href="${request.static_path('occams:static/images/favicon.png')}">
+    <link rel="apple-touch-icon-precomposed" sizes="128x128" href="${request.static_path('occams:static/images/favicon.png')}">
 
-      <li tal:define="
-            factory   import:occams_imports.models.ImportFactory;
-            resource  factory(request);
-            url       request.route_path('imports.upload');
-            active    False;"
-          tal:attributes="class python:'active' if active else ''"
-          tal:condition="request.has_permission('import', resource)">
-        <a  href="${url}">Upload</a>
-      </li>
+  </head>
 
-      <li tal:define="
-            factory   import:occams_imports.models.ImportFactory;
-            resource  factory(request);
-            url       request.route_path('imports.index');
-            active    False;"
+  <body
+      data-view-name="${request.matched_route.name}"
+      data-view-path="${request.current_route_path()}">
 
-          tal:attributes="class python:'active' if active else ''"
-          tal:condition="request.has_permission('import', resource)">
-        <a href="${url}" class="dropdown-toggle" data-toggle="dropdown">Apply
-        <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="${request.route_path('imports.apply_direct_status')}">Direct Mappings</a></li>
-            <li><a href="${request.route_path('imports.apply_imputation_status')}">Imputation Mappings</a></li>
-        </ul>
-      </li>
+    <div id="wrap">
+      <!--! Keep the app navbar separate from the content container -->
+
+      <metal:navbar-slot define-slot="navbar-slot">
+
+        <nav
+            role="navigation"
+            i18n:domain="occams"
+            tal:define="user request.user|nothing;"
+            tal:attributes="class 'navbar navbar-inverse navbar-static-top' if development else 'navbar navbar-default navbar-static-top'">
+
+          <div class="${css_container}">
+
+            <div class="navbar-header">
+
+              <button
+                  type="button"
+                  class="navbar-toggle"
+                  data-toggle="collapse"
+                  data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+                <a class="navbar-brand"
+                    href="${request.route_path('imports.index')}">OCCAMS Imports</a>
+
+            </div> <!--/.navbar-header -->
+
+            <div class="collapse navbar-collapse">
+
+              <p class="navbar-text" tal:condition="development">
+                <span class="fa fa-bug text-danger"
+                      title="Development Mode"
+                      i18n:attributes="title"></span>
+              </p>
+
+               <ul class="nav navbar-nav"
+                    tal:define="section request.current_route_path(_query={})">
+
+                  <li tal:define="
+                        factory   import:occams_imports.models.ProjectFactory;
+                        resource  factory(request);
+                        url       request.route_path('imports.project_app');
+                        active    False;"
+                      tal:attributes="class python:'active' if active else ''"
+                      tal:condition="request.has_permission('view', resource)">
+                    <a  href="${url}">Projects</a>
+                  </li>
+
+                  <li tal:define="
+                        factory   import:occams_imports.models.ImportFactory;
+                        resource  factory(request);
+                        url       request.route_path('imports.index');
+                        active    False;"
+
+                      tal:attributes="class python:'active' if active else ''"
+                      tal:condition="request.has_permission('import', resource)">
+                    <a href="${url}" class="dropdown-toggle" data-toggle="dropdown">Codebooks
+                    <span class="caret"></span></a>
+                      <ul class="dropdown-menu">
+                        <li><a href="${request.route_path('imports.codebooks_iform')}">iForm</a></li>
+                        <li><a href="${request.route_path('imports.codebooks_occams')}">OCCAMS</a></li>
+                        <li><a href="${request.route_path('imports.codebooks_qds')}">QDS</a></li>
+                    </ul>
+                  </li>
+
+                  <li tal:define="
+                        factory   import:occams_imports.models.ImportFactory;
+                        resource  factory(request);
+                        url       request.route_path('imports.upload');
+                        active    False;"
+                      tal:attributes="class python:'active' if active else ''"
+                      tal:condition="request.has_permission('import', resource)">
+                    <a  href="${url}">Upload</a>
+                  </li>
+
+                  <li tal:define="
+                        factory   import:occams_imports.models.ImportFactory;
+                        resource  factory(request);
+                        url       request.route_path('imports.index');
+                        active    False;"
+
+                      tal:attributes="class python:'active' if active else ''"
+                      tal:condition="request.has_permission('import', resource)">
+                    <a href="${url}" class="dropdown-toggle" data-toggle="dropdown">Apply
+                    <span class="caret"></span></a>
+                      <ul class="dropdown-menu">
+                        <li><a href="${request.route_path('imports.apply_direct_status')}">Direct Mappings</a></li>
+                        <li><a href="${request.route_path('imports.apply_imputation_status')}">Imputation Mappings</a></li>
+                    </ul>
+                  </li>
 
 
-    </ul>
-  </metal:navbar-nav-slot>
+                </ul>
 
+              <metal:navbar-user-slot define-slot="navbar-user-slot">
+                <ul class="nav navbar-nav navbar-right"
+                    tal:define="user request.environ['repoze.who.identity']['properties']|nothing;"
+                      tal:condition="user">
+                  <li><p class="navbar-text">${user['first_name']}</p></li>
+                  <li class="dropdown"
+                      tal:condition="request.apps">
+                    <a href="#apps"
+                      role="button"
+                      class="dropdown-toggle"
+                      rel="tooltip"
+                      data-toggle="dropdown"
+                      data-placement="bottom"
+                      data-container="body"
+                      data-animation="false"
+                      title="Services"
+                      ><span class="glyphicon glyphicon-th"></span><span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="Apps Menu">
+                      <tal:apps repeat="app request.apps">
+                        <li role="presentation">
+                          <a href="${request.route_path(app['route'])}" role="menuitem">${app['title']}</a>
+                        </li>
+                      </tal:apps>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="${request.route_path('accounts.logout')}"
+                        rel="tooltip"
+                        data-placement="bottom"
+                        data-container="body"
+                        data-animation="false"
+                        title="Log Out"
+                      ><span class="glyphicon glyphicon-log-out"></span></a>
+                  </li>
+                </ul>
+              </metal:navbar-user-slot>
+
+            </div><!--/.nav-collapse -->
+
+          </div>
+        </nav>
+
+      </metal:navbar-slot>
+
+      <main
+          id="view-${request.matched_route.name}"
+          class="${css_container}"
+          data-view-name="${request.matched_route.name}"
+          data-view-path="${request.current_route_path()}">
+
+        <tal:alerts
+            define="types python:['danger', 'warning', 'success', 'info']"
+            repeat="type types">
+          <div
+              class="alert alert-${type}"
+              tal:define="alerts python:request.session.pop_flash(type)"
+              tal:repeat="alert alerts">${alert}</div>
+        </tal:alerts>
+
+        <metal:content-slot define-slot="content-slot" />
+
+      </main>
+
+    </div> <!-- /#wrap -->
+
+
+    <footer id="footer">
+      <div class="${css_container}">
+        <p class="text-muted credit">
+          <span i18n:translate="">Developed by the</span>
+          <a href="https://github.com/razorlabs" i18n:translate="">RazorLabs</a>.
+        </p>
+      </div>
+    </footer>
+
+    <!--! Javascript assets -->
+
+    <!--! Load scripts at the end so we don't block rendering -->
+
+    <script src="${request.static_path('occams_imports:static/vendor.bundle.js')}" type="text/javascript"></script>
+    <script src="${request.static_path('occams_imports:static/main.bundle.js')}" type="text/javascript"></script>
+
+  </body>
 </html>

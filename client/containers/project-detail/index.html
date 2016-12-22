@@ -1,0 +1,25 @@
+<div style="display: none" data-bind="visible: isReady">
+  <!-- ko ifnot: hasTables -->
+    <div class="well well-lg">This project has no tables configured</div>
+  <!-- /ko -->
+  <!-- ko if: hasTables -->
+    <table class="table table-hover table-striped">
+      <colgroup>
+        <col width="50%"></col>
+        <col width="50%"></col>
+      </colgroup>
+      <thead>
+        <tr>
+          <th>CRF</th>
+          <th>Table</th>
+        </tr>
+      </thead>
+      <tbody data-bind="foreach: tables">
+        <tr>
+          <td data-bind="text: title"></td>
+          <td><code data-bind="text: name"></code></td>
+        </tr>
+      </tbody>
+    </table>
+  <!-- /ko -->
+</div>

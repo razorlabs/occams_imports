@@ -57,7 +57,7 @@ class _custom_develop(_develop):
 
 def _post_develop():
     from subprocess import call
-    call(['bower', 'install'], cwd=HERE)
+    call(['npm', 'build'], cwd=HERE)
 
 
 setup(
