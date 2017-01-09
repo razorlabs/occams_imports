@@ -68,6 +68,7 @@ VERSION
 npm_modules
 node_modules
 bower_components
+npm-debug.log
 
 ##### Buildout / Unit test / Coverage Reports
 .coverage
@@ -76,6 +77,7 @@ bower_components
 .tox
 bin
 build
+coverage/
 coverage.xml
 dist
 develop-eggs
@@ -99,3 +101,6 @@ webassets-external
 ##### Installer Logs
 pip-log.txt
 
+
+### webpack build files
+static

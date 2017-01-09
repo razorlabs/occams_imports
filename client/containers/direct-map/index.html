@@ -1,0 +1,254 @@
+<div id="views-mappings" style="display: none;" data-bind="visible: isReady">
+  <header class="page-header">
+    <h1 i18n:translate="">Direct Mapping</h1>
+  </header>
+  <p i18n:translate="" class="lead">
+    This interface was designed so you can map variables directly with no imputation.
+  </p>
+  <div data-bind="css: { 'alert': true, 'alert-success': isSuccess, 'alert-info': isInfo }">
+    <strong data-bind="text: msgType"></strong>
+    <span data-bind="text: msg"></span>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="panel panel-primary">
+        <div class="panel-heading">Source variable selection</div>
+        <div class="panel-body">
+          <form class="form-horizontal" role="form">
+            <div class="form-group">
+              <label class="control-label col-sm-3"
+                     for="direct_forms">Form:</label>
+              <div class="col-sm-6">
+                <select data-bind="options: forms,
+                                   optionsText: 'name',
+                                   value: selectedForm,
+                                   optionsCaption: 'Select a form...'"
+                        class="form-control"
+                        id="direct_forms"
+                        name="direct_forms"></select>
+              </div>
+              <div id="loading"
+                   style="display: none;"
+                   data-bind="visible: isLoading">
+                <div class="col-sm-1">
+                  <div class="throbber-loader">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label col-sm-3"
+                     for="direct_version">Version:</label>
+              <div class="col-sm-6">
+                <div data-bind="ifnot: selectedForm">
+                  <input type="text"
+                         readonly="readonly"
+                         class="form-control"
+                         placeholder="Publish date of the form"></input>
+                </div>
+                <div data-bind="with: selectedForm">
+                  <input data-bind="value: publish_date"
+                         readonly="readonly"
+                         type="text"
+                         id="direct_version"
+                         name="direct_version"
+                         class="form-control"></input>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label col-sm-3"
+                     for="direct_variables">Variable:</label>
+                <div data-bind="ifnot: selectedForm">
+                  <div class="col-sm-6">
+                   <input type="text"
+                         readonly="readonly"
+                         class="form-control"
+                         placeholder="Variable to be mapped"></input>
+                  </div>
+                </div>
+              <div data-bind="with: selectedForm">
+              <div class="col-sm-6">
+                  <select data-bind="options: attributes,
+                                     optionsText: 'variable',
+                                     value: $component.selectedAttribute"
+                          class="form-control"
+                          id="direct_variables"
+                          name="direct_variables"></select>
+               </div>
+              </div>
+            </div>
+            <br />
+
+            <div data-bind="with: selectedAttribute">
+              <div class="form-group">
+                <div class="col-sm-8 col-sm-offset-3">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Attribute Label</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td data-bind="text: label"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div data-bind="if: choices().length != 0">
+                <div class="form-group">
+                  <div class="col-sm-8 col-sm-offset-3">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Choice Key</th>
+                          <th>Choice Label</th>
+                        </tr>
+                      </thead>
+                      <tbody data-bind="foreach: choices">
+                        <tr>
+                          <td data-bind="text: name"></td>
+                          <td data-bind="text: label"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div> <!-- end if choices -->
+            </div> <!--end with selected attribute -->
+          </form>
+        </div> <!-- end panel body -->
+      </div> <!-- end panel primary -->
+    </div> <!-- end col 6 -->
+
+    <div class="col-md-6">
+      <div class="panel panel-primary">
+      <div class="panel-heading">Target variable selection</div>
+        <div class="panel-body">
+          <form class="form-horizontal" role="form">
+            <div class="form-group">
+              <label class="control-label col-sm-3"
+                     for="direct_forms">Form:</label>
+              <div class="col-sm-6">
+                <select data-bind="options: target_forms,
+                                   optionsText: 'name',
+                                   value: selectedTargetForm,
+                                   optionsCaption: 'Select a form...'"
+                        class="form-control"
+                        id="direct_forms"
+                        name="direct_forms"></select>
+              </div>
+              <div id="loading"
+                   style="display: none;"
+                   data-bind="visible: isLoading">
+                <div class="col-sm-1">
+                  <div class="throbber-loader">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label col-sm-3"
+                     for="direct_version">Version:</label>
+              <div class="col-sm-6">
+                <div data-bind="ifnot: selectedTargetForm">
+                  <input type="text"
+                         readonly="readonly"
+                         class="form-control"
+                         placeholder="Publish date of the form"></input>
+                </div>
+                <div data-bind="with: selectedTargetForm">
+                  <input data-bind="value: publish_date"
+                         readonly="readonly"
+                         type="text"
+                         id="direct_version"
+                         name="direct_version"
+                         class="form-control"></input>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label col-sm-3"
+                     for="direct_variables">Variable:</label>
+                <div data-bind="ifnot: selectedTargetForm">
+                  <div class="col-sm-6">
+                   <input type="text"
+                         readonly="readonly"
+                         class="form-control"
+                         placeholder="Variable to be mapped"></input>
+                  </div>
+                </div>
+                <div data-bind="with: selectedTargetForm">
+                  <div class="col-sm-6">
+                      <select data-bind="options: attributes,
+                                         optionsText: 'variable',
+                                         value: $component.selectedTargetAttribute"
+                              class="form-control"
+                              id="direct_variables"
+                              name="direct_variables"></select>
+                   </div>
+                </div>
+            </div>
+            <br />
+
+            <div data-bind="with: selectedTargetAttribute">
+              <div class="form-group">
+                <div class="col-sm-8 col-sm-offset-3">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Attribute Label</th>
+                      </tr>
+                    </thead>
+                  <tbody>
+                    <tr>
+                      <td data-bind="text: label"></td>
+                    </tr>
+                  </tbody>
+                 </table>
+                </div>
+              </div>
+
+            <div data-bind="if: choices().length != 0">
+              <div class="form-group">
+                <div class="col-sm-8 col-sm-offset-3">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Map</th>
+                        <th>Choice Key</th>
+                        <th>Choice Label</th>
+                      </tr>
+                    </thead>
+                    <tbody data-bind="foreach: choices">
+                      <tr>
+                        <td><input data-bind="value: mapped"
+                                   class="form-control"></input></td>
+                        <td data-bind="text: name"></td>
+                        <td data-bind="text: label"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div> <!-- end if choices -->
+            </div> <!--end with selected attribute -->
+
+            <button class="btn btn-primary btn-lg pull-right"
+                    type="button"
+                    data-bind="click: mapVariable">Map</button>
+          </form>
+        </div> <!-- end panel body -->
+      </div> <!-- end panel primary -->
+    </div> <!--end column -->
+  </div> <!-- end row -->
+<div> <!-- views - mapings -->
+
+

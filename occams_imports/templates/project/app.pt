@@ -1,0 +1,5 @@
+<html metal:use-macro="load: ../master.pt">
+  <metal:content-slot fill-slot="content-slot">
+    <rl-project-list></rl-project-list>
+  </metal:content-slot>
+</html>

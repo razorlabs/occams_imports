@@ -1,0 +1,169 @@
+<div id="view-mappings" style="display: none;" data-bind="visible: isReady">
+  <header class="page-header">
+    <div class="pull-right">
+      <div class="btn-group" data-bind="if: canAdd">
+        <button type="button"
+                class="btn btn-default dropdown-toggle"
+                data-toggle="dropdown" >
+          <span class="fa fa-plus"></span>
+          Mapping
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="#" data-bind="attr: {href: addDirectUrl}">Direct</a></li>
+          <li><a href="#" data-bind="attr: {href: addImputationUrl}">Imputation</a></li>
+        </ul>
+      </div> <!-- btn-group-->
+    </div> <!-- pull-right-->
+    <h1>Mapped Variables</h1>
+  </header>
+  <div class="pull-left">
+    <p>
+      <span>Showing</span>
+      <strong>
+        <!-- ko if: filter -->
+        <span data-bind="text: totalDRSCShowing"></span>
+        <span>of</span>
+        <!-- /ko -->
+        <span data-bind="text: numOfDRSCMappings"></span>
+      </strong>
+      <span>DRSC mappings</span>
+      <br />
+      <span>Showing</span>
+      <strong>
+        <!-- ko if: filter -->
+        <span data-bind="text: totalShowing"></span>
+        <span>of</span>
+        <!-- /ko -->
+        <span data-bind="text: numOfMappings"></span>
+      </strong>
+      <span>Total mappings</span>
+    </p>
+  </div>
+
+  <div class="pull-right">
+    <form>
+      <div class="form-group">
+        <input type="search"
+               data-bind="value: filter,
+                          valueUpdate: ['input', 'afterkeydown']"
+               class="form-control"
+               name="filter"
+               placeholder="Filter Target form..." >
+      </div>
+    </form>
+  </div>
+  <br />
+  <br />
+  <br />
+  <div data-bind="css: { 'alert': true, 'alert-success': isSuccess, 'alert-info': isInfo, 'alert-danger': isDanger }">
+    <strong data-bind="text: msgType"></strong>
+    <span data-bind="text: msg"></span>
+  </div>
+
+  <table class="table table-hover table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th data-bind="click: function(){sortBy('targetForm');}">Target Form
+          <span data-bind="css: sortArrow('targetForm')"></span>
+        </th>
+        <th data-bind="click: function(){sortBy('targetVariable');}">Target Variable
+          <span data-bind="css: sortArrow('targetVariable')"></span>
+        </th>
+        <th data-bind="click: function(){sortBy('study');}">Study
+          <span data-bind="css: sortArrow('study')"></span>
+        </th>
+        <th data-bind="click: function(){sortBy('studyForm');}">Study Form(s)
+          <span data-bind="css: sortArrow('studyForm')"></span>
+        </th>
+        <th data-bind="click: function(){sortBy('studyVariable');}">Study Variable(s)
+          <span data-bind="css: sortArrow('studyVariable')"></span>
+        </th>
+        <th data-bind="click: function(){sortBy('dateMapped');}">Date Mapped
+          <span data-bind="css: sortArrow('dateMapped')"></span>
+        </th>
+        <th data-bind="click: function(){sortBy('status');}">Status
+          <span data-bind="css: sortArrow('status')"></span>
+        </th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody data-bind="foreach: filteredMapped">
+      <tr>
+        <td><input type="checkbox"
+                   data-bind="checked: deleteRow"
+                   value=""></td>
+        <td data-bind="text: targetForm, click: $component.goToMapping"
+            style="cursor:pointer;"></td>
+        <td><code data-bind="text: targetVariable, click: $component.goToMapping"
+                  style="cursor:pointer;"></code></td>
+        <td data-bind="text: study, click: $component.goToMapping"
+            style="cursor:pointer;"></td>
+
+        <td>
+          <div data-bind="if: imputationForms().length >= 1">
+            <div data-bind="foreach: imputationForms">
+              <div data-bind="text: form, click: $component.goToMapping"
+                   style="cursor:pointer;"><br />
+              </div>
+            </div>
+          </div>
+
+          <div data-bind="if: imputationForms().length == 0">
+              <div data-bind="text: studyForm, click: $component.goToMapping"
+                   style="cursor:pointer;">
+            </div>
+          </div>
+        </td>
+
+        <td>
+          <div data-bind="if: imputationForms().length >= 1">
+            <div data-bind="foreach: imputationForms">
+              <code data-bind="text: variable, click: $component.goToMapping"
+                    style="cursor:pointer;"></code><br />
+            </div>
+          </div>
+
+          <div data-bind="if: imputationForms().length == 0">
+            <code data-bind="text: studyVariable, click: $component.goToMapping"
+                  style="cursor:pointer;"></code>
+          </div>
+        </td>
+        <td data-bind="text: dateMapped, click: $component.goToMapping"
+            style="cursor:pointer;"></td>
+        <td>
+          <span class="label label-warning" style="cursor:pointer;" data-bind="
+              css:{
+                'label-warning': status() == 'review',
+                'label-info': status() == 'in-progress',
+                'label-success': status() == 'approved',
+                'label-danger': status() == 'rejected'
+              },
+
+            text: status, click: $component.goToMapping">
+          </span>
+        </td>
+        <td>
+          <!-- ko if: note() -->
+          <span class="fa fa-comment"
+                aria-hidden="true"></span>
+          <!-- /ko -->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <br />
+  <div data-bind="if: deleteUrl">
+    <div id="delete_button"
+         style="display: none;"
+         data-bind="visible: isChecked">
+      <button class="btn btn-danger btn-lg"
+              type="button"
+              data-bind="click: deleteRows">
+          <span class="fa fa-trash"></span>
+          <span>Delete Selected</span>
+      </button>
+      </div>
+  </div>
+</div>

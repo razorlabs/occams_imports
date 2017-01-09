@@ -1,0 +1,50 @@
+<div class="row" data-bind="with: variable">
+  <div class="col-sm-7">
+    <div class="input-group select2-bootstrap-append">
+      <input type="hidden"
+             class="form-control"
+             data-placeholder="Select a form..."
+             data-bind="selectedData: schema,
+                        dataKey: 'name',
+                        dataLabel: 'name',
+                        select2: {
+                          nextSearchTerm: $parent.nextSchemaSearch,
+                          ajax: {
+                              url: '/imports/schemas',
+                              data: $parent.querySchemaData,
+                              results: $parent.parseSchemaResults
+                          }
+                        }" />
+      <div class="input-group-addon">
+        <!-- ko with: schema -->
+          <code data-bind="text: publish_date"></code>
+        <!-- /ko --> <!-- /with -->
+      </div> <!-- /.input-group-addon -->
+    </div> <!-- /.input-group -->
+  </div> <!-- /.col-sm-5-->
+
+  <div class="col-sm-5">
+    <div class="input-group select2-bootstrap-append">
+      <input type="hidden"
+             class="form-control"
+             data-placeholder="Select a variable..."
+             data-bind="selectedData: attribute,
+                        dataKey: 'name',
+                        dataLabel: 'name',
+                        enable: schema,
+                        select2: {
+                          nextSearchTerm: $parent.nextAttributeSearch,
+                          ajax: {
+                              url: '/imports/schemas',
+                              data: $parent.queryAttributeData,
+                              results: $parent.parseAttributeResults
+                          }
+                        }" />
+      <span class="input-group-addon">
+        <!-- ko with: attribute -->
+        <a href="#" data-bind="text: type, tooltip: { title: title, placement: 'bottom' }"></a>
+        <!-- /ko -->
+      </span>
+    </div> <!-- /.input-group -->
+  </div> <!-- /.col-sm-5 -->
+</div><!-- /.row -->
