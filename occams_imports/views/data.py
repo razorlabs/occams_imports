@@ -19,7 +19,7 @@ from occams_imports import models as models, tasks, log
 @view_config(
     route_name='imports.upload',
     permission='import',
-    renderer='../templates/uploads/upload.pt')
+    renderer='../templates/data/upload.pt')
 def index(context, request):
     """Serve the index page for file uploads."""
     return {}
@@ -28,7 +28,7 @@ def index(context, request):
 @view_config(
     route_name='imports.upload_status',
     permission='import',
-    renderer='../templates/uploads/status.pt')
+    renderer='../templates/data/status.pt')
 def status(context, request):
     """Process file upload."""
     check_csrf_token(request)
@@ -116,7 +116,7 @@ def imputation(context, request):
 @view_config(
     route_name='imports.apply_direct_status',
     permission='import',
-    renderer='../templates/apply/direct.pt')
+    renderer='../templates/data/direct.pt')
 def apply_direct_status(context, request):
     """Serve mappings result page."""
     return {}
@@ -125,7 +125,7 @@ def apply_direct_status(context, request):
 @view_config(
     route_name='imports.apply_imputation_status',
     permission='import',
-    renderer='../templates/apply/imputation.pt')
+    renderer='../templates/data/imputation.pt')
 def imputation_status(context, request):
     """Serve imputations mappings result page."""
     return {}
