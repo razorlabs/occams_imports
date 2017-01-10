@@ -8,7 +8,7 @@
   "scripts": {
     "start": "rimraf $npm_package_config_builddir && webpack --progress --watch",
     "build": "rimraf $npm_package_config_builddir && webpack --progress --optimize-minimize --config webpack.dist.js",
-    "test": "karma start"
+    "test": "karma start || exit 0"
   },
   "dependencies": {
     "bootstrap-sass": "^3.3.6",

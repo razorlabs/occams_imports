@@ -71,6 +71,7 @@ bower_components
 npm-debug.log
 
 ##### Buildout / Unit test / Coverage Reports
+.cache
 .coverage
 .installed.cfg
 .mr.developer.cfg

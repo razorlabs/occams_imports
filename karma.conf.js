@@ -37,12 +37,13 @@ module.exports = function (config) {
 
     // "coverage" plugin configuration
     coverageReporter: {
-      dir: 'coverage/',
+      dir: 'build/jscoverage/',
       includeAllSources: true,
       reporters: [
-        {type: 'lcov', subdir: '.'},
+        //{type: 'lcov', subdir: '.'},  // Print line coverage and HTML summary
+        {type: 'text'},
         {type: 'text-summary'},
-        {type: 'text'}
+        {type: 'html'}
       ]
     },
 

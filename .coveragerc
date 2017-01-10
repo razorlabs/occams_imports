@@ -1,0 +1,5 @@
+# pytest-coverage configuration
+
+[html]
+directory = build/pycoverage
+

@@ -70,7 +70,7 @@ def create_tables(request):
     from sqlalchemy import create_engine
     from occams_datastore import models as datastore
     from occams_studies import models as studies
-    from occams_imports import models
+    from occams_imports.models.meta import Base
 
     db_url = request.config.getoption('--db')
     reuse = request.config.getoption('--reuse')
@@ -85,7 +85,7 @@ def create_tables(request):
             connection.info['blame'] = 'test_installer'
             datastore.DataStoreModel.metadata.create_all(connection)
             studies.StudiesModel.metadata.create_all(connection)
-            models.ImportsModel.metadata.create_all(connection)
+            Base.metadata.create_all(connection)
             # Clear out the state table since the data is populated on each test
             connection.execute('DELETE FROM state')
             connection.execute('DELETE FROM imports.status')
@@ -95,7 +95,7 @@ def create_tables(request):
             if url.database not in ('', ':memory:'):
                 os.unlink(url.database)
         elif not reuse:
-            models.ImportsModel.metadata.drop_all(engine)
+            Base.metadata.drop_all(engine)
             studies.StudiesModel.metadata.drop_all(engine)
             datastore.DataStoreModel.metadata.drop_all(engine)
 

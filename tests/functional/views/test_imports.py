@@ -397,24 +397,6 @@ class TestImports:
 
         assert response.status_code == 401
 
-    @pytest.mark.parametrize('group', [ADMINISTRATOR, MANAGER, REVIEWER, MEMBER])
-    def test_cytoscape_demo_allowed(self, app, group):
-        url = '/imports/demos/cytoscapejs'
-
-        environ = make_environ(userid=USERID, groups=[group])
-        response = app.get(url, extra_environ=environ)
-
-        assert response.status_code == 200
-
-    def test_cytoscape_demo_not_authenticated(self, app):
-        url = '/imports/demos/cytoscapejs'
-
-        response = app.get(
-            url,
-            status='*')
-
-        assert response.status_code == 401
-
     @pytest.mark.parametrize('group', [ADMINISTRATOR, MANAGER])
     def test_imports_mappings_direct(self, app, group):
         url = '/imports/mappings/direct'

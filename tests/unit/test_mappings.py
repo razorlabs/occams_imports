@@ -142,7 +142,7 @@ class TestSchemasSearchTerm:
         db_session.flush()
 
     def _call_fut(self, *args, **kw):
-        from occams_imports.views.mappings import get_schemas as view
+        from occams_imports.views.mappings import schemas as view
 
         return view(*args, **kw)
 
