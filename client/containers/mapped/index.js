@@ -3,122 +3,123 @@ import Cookies from 'js-cookie'
 
 import template from './index.html'
 
-function mappedViewModel(){
-  'use strict';
 
-  var self = this;
+class MappingView {
 
-  self.isReady = ko.observable(false);
-  self.selectedStatus = ko.observable();
-  self.note = ko.observable('');
-  self.msg = ko.observable();
-  self.isSuccess = ko.observable();
-  self.isDanger = ko.observable();
+  constructor() {
+    this.mapping = ko.observable()
+    this.canApprove = ko.pureComputed(() => (this.mapping() || {}).$approveUrl)
 
-  self.statusLevel = ko.computed(function() {
-    var statusType = self.selectedStatus();
-    if (statusType == 'review'){
-      return 'label-warning'
-    }
-    else if (statusType == 'in-progress'){
-      return 'label-primary'
-    }
-    else if (statusType == 'approved'){
-      return 'label-success'
-    }
-    else if (statusType == 'rejected'){
-      return 'label-danger'
-    }
-  });
+    this.isReady = ko.observable(false)
 
-  var url = function(){
-    var queryString = window.location.search;
-    var mappingID = queryString.split('=')[1];
-    var baseURL = '/imports/mapping/status?id=';
+    this.selectedStatus = ko.observable()
 
-    return baseURL + mappingID
-  };
+    this.note = ko.observable('')
+    this.msg = ko.observable()
 
-  var urlNotes = function(){
-    var queryString = window.location.search;
-    var mappingID = queryString.split('=')[1];
-    var baseURL = '/imports/mapping/notes?id=';
+    this.isSuccess = ko.observable()
+    this.isDanger = ko.observable()
 
-    return baseURL + mappingID
-  };
+    this.statusLevel = ko.pureComputed(() => {
+      switch( this.selectedStatus() ) {
+        case 'review':       return 'label-warning'
+        case 'in-progress':  return 'label-primary'
+        case 'approved':     return 'label-approved'
+        case 'rejected':     return 'label-danger'
+        default:             return 'label-default'
+      }
+    })
 
-  self.updateStatus = function(){
-    var data = self.selectedStatus();
-    console.log('Sending data:', data);
-    $.ajax({
-      url: url(),
-      method: 'PUT',
-      data: JSON.stringify({'status': data}),
-      headers: {'X-CSRF-Token': Cookies.get('csrf_token'), contentType: 'application/json; charset=utf-8'},
-      beforeSend: function(){
-      },
-      success: function(data, textStatus, jqXHR){
-        self.isDanger(false);
-        self.isSuccess(true);
-        self.msg('Status successfully updated in the database.')
-      },
-      error: function(data, textStatus, jqXHR){
-        self.isSuccess(false);
-        self.isDanger(true);
-        self.msg('There was an error updating the status in the database.  Status Code: ' + data.status + ' - ' + data.statusText);
-      },
-      complete: function(){
-    }
-    });
-  };
+    let statusPromise = new Promise( (resolve, reject) => {
+      fetch(this.getStatusUrl(), {credentials: 'include'})
+        .then(response => response.json())
+        .then(data => {
+          this.selectedStatus(data.status)
+          this.note(data.notes)
+          resolve()
+        })
+    })
 
-  self.updateNotes = function(){
-    var data = self.note();
-    console.log('Sending data:', data);
-    $.ajax({
-      url: urlNotes(),
-      method: 'PUT',
-      data: JSON.stringify({'notes': data}),
-      headers: {'X-CSRF-Token': Cookies.get('csrf_token'), contentType: 'application/json; charset=utf-8'},
-      beforeSend: function(){
-      },
-      success: function(data, textStatus, jqXHR){
-        self.isDanger(false);
-        self.isSuccess(true);
-        self.msg('Your note was successfully updated in the database.')
-      },
-      error: function(data, textStatus, jqXHR){
-        self.isSuccess(false);
-        self.isDanger(true);
-        self.msg('There was an error updating your note in the database.  Status Code: ' + data.status + ' - ' + data.statusText);
-      },
-      complete: function(){
-    }
-    });
-  };
+    let mappingPromise = new Promise( (resolve, reject) => {
+      fetch('/imports/api/mappings/' + window.location.search.split('=')[1], {credentials: 'include'})
+        .then(response => response.json())
+        .then(data => {
+          this.mapping(data)
+          resolve()
+        })
+    })
 
-  // get the initial status level and notes
-  $.ajax({
-    url: url(),
-    method: 'GET',
-    headers: {'X-CSRF-Token': Cookies.get('csrf_token')},
-    beforeSend: function(){
-    },
-    success: function(data, textStatus, jqXHR){
-      var status = data.status;
-      var notes = data.notes;
-
-      self.selectedStatus(status);
-      self.note(notes);
-
-    },
-    complete: function(){
-      self.isReady(true);
+    Promise.all([statusPromise, mappingPromise])
+      .then( () => this.isReady(true) )
   }
-  });
+
+  getStatusUrl () {
+    let mappingID = window.location.search.split('=')[1]
+    let url = `/imports/mapping/status?id=${mappingID}`
+    return url
+  }
+
+  getNotesUrl () {
+    let mappingID = window.location.search.split('=')[1]
+    let url = `/imports/mapping/notes?id=${mappingID}`
+    return url
+  }
+
+  updateStatus () {
+    fetch( this.getStatusUrl(), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {'X-CSRF-Token': Cookies.get('csrf_token')},
+        body: JSON.stringify({'status': this.selectedStatus()})
+      })
+      .then( response => {
+        if (response.ok) {
+          return response.json()
+        } else {
+          throw Error(resposne.statusText)
+        }
+      })
+      .then( data => {
+        this.isDanger(false)
+        this.isSuccess(true)
+        this.msg('Status successfully updated in the database.')
+      })
+      .catch( error => {
+        this.isSuccess(false)
+        this.isDanger(true)
+        this.msg(`There was an error updating the status in the database.  ${error}`)
+      })
+  }
+
+  updateNotes () {
+
+    fetch( this.getNotesUrl(), {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {'X-CSRF-Token': Cookies.get('csrf_token')},
+        body: JSON.stringify({'notes': this.note()})
+      })
+      .then( response => {
+        if (response.ok) {
+          return response.json()
+        } else {
+          throw Error(resposne.statusText)
+        }
+      })
+      .then( data => {
+        this.isDanger(false)
+        this.isSuccess(true)
+        this.msg('Your note was successfully updated in the database.')
+      })
+      .catch( error => {
+        this.isSuccess(false)
+        this.isDanger(true)
+        this.msg(`There was an error updating your note in the database.  ${error}`)
+      })
+  }
 }
 
 ko.components.register(
   'rl-mapped',
-  {viewModel: mappedViewModel, template: template}
+  {viewModel: MappingView, template: template}
 )

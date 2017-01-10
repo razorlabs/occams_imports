@@ -392,10 +392,8 @@ def mappings_imputations_map(context, request):
     route_name='imports.mapping.status',
     permission='view',
     request_method='GET',
-    xhr=True,
     renderer='json')
 def get_status_and_notes(context, request):
-    check_csrf_token(request)
     db_session = request.db_session
     mapping_id = int(request.params['id'])
 
@@ -410,7 +408,6 @@ def get_status_and_notes(context, request):
     route_name='imports.mapping.status',
     permission='approve',
     request_method='PUT',
-    xhr=True,
     renderer='json')
 def update_status(context, request):
     check_csrf_token(request)
@@ -549,105 +546,110 @@ def delete_mappings(context, request):
 @view_config(
     route_name='imports.mappings.view_mapped',
     permission='view',
-    request_method='GET',
-    renderer='../templates/mapping/direct-view.pt')
+    renderer='../templates/mapping/direct-view.pt'
+)
+def direct(context, request):
+    return {}
+
+
+@view_config(
+    route_name='imports.mapping_detail',
+    permission='view',
+    renderer='json'
+)
 def get_schemas_mapped(context, request):
     db_session = request.db_session
 
     mapping = db_session.query(models.Mapping).filter(
-        models.Mapping.id == request.params['id']).one()
-
-    if mapping.type == u'imputation':
-        return render_to_response('../templates/mapping/imputation-view.pt',
-                                  {}, request=request)
+        models.Mapping.id == request.matchdict['mapping']).one()
 
     study = mapping.study
 
     mappings_form_rows = []
     target_form_rows = []
 
-    if mapping.type == u'direct':
-        # get site form and choices
-        # we need to display the label map on visualization page
-        # site labels for choices is not available in json map in mappings tbl
-        schema = (
-            db_session.query(datastore.Schema)
-            .filter_by(
-                name=mapping.logic['source_schema'],
-                publish_date=mapping.logic['source_schema_publish_date'])
-            .one())
+    # get site form and choices
+    # we need to display the label map on visualization page
+    # site labels for choices is not available in json map in mappings tbl
+    schema = (
+        db_session.query(datastore.Schema)
+        .filter_by(
+            name=mapping.logic['source_schema'],
+            publish_date=mapping.logic['source_schema_publish_date'])
+        .one())
 
-        attribute = schema.attributes[mapping.logic['source_variable']]
+    attribute = schema.attributes[mapping.logic['source_variable']]
 
-        target_variable = (
-            db_session.query(datastore.Attribute)
-            .filter(datastore.Attribute.name == mapping.logic['target_variable'])
-            .filter(datastore.Attribute.schema.has(
-                name=mapping.logic['target_schema'],
-                publish_date=mapping.logic['target_schema_publish_date']))
-            .one())
+    target_variable = (
+        db_session.query(datastore.Attribute)
+        .filter(datastore.Attribute.name == mapping.logic['target_variable'])
+        .filter(datastore.Attribute.schema.has(
+            name=mapping.logic['target_schema'],
+            publish_date=mapping.logic['target_schema_publish_date']))
+        .one())
 
-        if target_variable.type == u'choice':
-            # data to populate target table
-            for choice in target_variable.iterchoices():
-                target_form_rows.append({
-                    'variable': target_variable.name,
-                    'description': target_variable.title,
-                    'type': target_variable.type,
-                    'label': choice.title,
-                    'key': choice.name,
-
-                })
-
-            for choice in attribute.iterchoices():
-                mapped_value = u''
-                mapped_label = u''
-                for row in mapping.logic['choices_mapping']:
-                    if choice.name in row['source']:
-                        mapped_value = row['target']
-                        for target in target_variable.iterchoices():
-                            if target.name == mapped_value:
-                                mapped_label = target.title
-
-                mappings_form_rows.append({
-                    'variable': attribute.name,
-                    'description': attribute.title,
-                    'type': u'direct',
-                    'study': study.title,
-                    'form': schema.name,
-                    'label': choice.title,
-                    'value': choice.name,
-                    'mapped_variable': target_variable.name,
-                    'mapped_label': mapped_label,
-                    'mapped_value': mapped_value
-                })
-        else:
-            # no choices processing
+    if target_variable.type == u'choice':
+        # data to populate target table
+        for choice in target_variable.iterchoices():
             target_form_rows.append({
                 'variable': target_variable.name,
                 'description': target_variable.title,
                 'type': target_variable.type,
-                'label': u'N/A',
-                'key': u'N/A',
+                'label': choice.title,
+                'key': choice.name,
+
             })
+
+        for choice in attribute.iterchoices():
+            mapped_value = u''
+            mapped_label = u''
+            for row in mapping.logic['choices_mapping']:
+                if choice.name in row['source']:
+                    mapped_value = row['target']
+                    for target in target_variable.iterchoices():
+                        if target.name == mapped_value:
+                            mapped_label = target.title
 
             mappings_form_rows.append({
                 'variable': attribute.name,
                 'description': attribute.title,
-                'type': target_variable.type,
+                'type': u'direct',
                 'study': study.title,
                 'form': schema.name,
-                'label': attribute.title,
-                'value': u'N/A',
+                'label': choice.title,
+                'value': choice.name,
                 'mapped_variable': target_variable.name,
-                'mapped_label': u'N/A',
-                'mapped_value': u'N/A'
+                'mapped_label': mapped_label,
+                'mapped_value': mapped_value
             })
+    else:
+        # no choices processing
+        target_form_rows.append({
+            'variable': target_variable.name,
+            'description': target_variable.title,
+            'type': target_variable.type,
+            'label': u'N/A',
+            'key': u'N/A',
+        })
+
+        mappings_form_rows.append({
+            'variable': attribute.name,
+            'description': attribute.title,
+            'type': target_variable.type,
+            'study': study.title,
+            'form': schema.name,
+            'label': attribute.title,
+            'value': u'N/A',
+            'mapped_variable': target_variable.name,
+            'mapped_label': u'N/A',
+            'mapped_value': u'N/A'
+        })
 
     return {
         'target_form': mapping.logic['target_schema'],
         'target_publish_date': mapping.logic['target_schema_publish_date'],
         'target_form_rows': target_form_rows,
         'mappings_form_rows': mappings_form_rows,
-        'status': mapping.status.name
+        'status': mapping.status.name,
+        '$approveUrl': 'FIXME' if request.has_permission('approve') else None
     }

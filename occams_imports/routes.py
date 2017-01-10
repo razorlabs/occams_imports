@@ -33,6 +33,7 @@ def includeme(config):
 
     config.add_route('imports.mappings.view',               '/mappings/view',             factory=models.ImportFactory)
     config.add_route('imports.mappings.view_mapped',        '/mappings/view_mapped',      factory=models.ImportFactory)
+    config.add_route('imports.mapping_detail',        '/api/mappings/{mapping}',      factory=models.ImportFactory)
     config.add_route('imports.mappings.delete',             '/mappings/delete',           factory=models.ImportFactory)
     config.add_route('imports.mapping.status',              '/mapping/status',            factory=models.ImportFactory)
     config.add_route('imports.mapping.notes',               '/mapping/notes',             factory=models.ImportFactory)

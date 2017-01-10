@@ -1,15 +1,13 @@
 <div style="display: none;" data-bind="visible: isReady">
+
   <header class="page-header">
-    <div class="pull-right">
-      <a href="${request.route_path('imports.index')}">
-        <span class="fa fa-chevron-left fa-lg"></span>
-      </a>
-    </div> <!-- pull-right-->
     <h1 i18n:translate="">Mapped Variables</h1>
   </header>
+
   <div data-bind="css: { 'alert': true, 'alert-success': isSuccess, 'alert-danger': isDanger }">
     <span data-bind="text: msg"></span>
   </div>
+
   <div class="panel panel-primary">
     <div class="panel-heading">Target form/variable info</div>
       <div class="panel-body">
@@ -25,8 +23,10 @@
               </thead>
               <tbody>
                 <tr>
-                  <td tal:content="target_form"></td>
-                  <td tal:content="target_publish_date"></td>
+                  <!-- ko with: mapping -->
+                    <td data-bind="text: target_form"></td>
+                    <td data-bind="text: target_publish_date"></td>
+                  <!-- /ko -->
                   <td><span data-bind="text: selectedStatus, css: statusLevel" class="label"></span></td>
                 </tr>
               </tbody>
@@ -34,7 +34,7 @@
           </div>
         </div>
 
-         <table class="table table-hover table-striped">
+         <table class="table table-hover table-striped" data-bind="with: mapping">
             <thead>
               <tr>
                 <th>Variable</th>
@@ -44,20 +44,16 @@
                 <th>Value</th>
               </tr>
             </thead>
-            <tbody>
-              <tr tal:repeat="form target_form_rows">
-                <td>
-                  <div tal:condition="form.variable">
-                    <code tal:content="form.variable"></code>
-                  </div>
+            <tbody data-bind="foreach: target_form_rows">
+              <tr>
+                <td data-bind="if: variable">
+                  <code data-bind="text: variable"></code>
                 </td>
-                <td tal:content="form.description"></td>
-                <td tal:content="form.type"></td>
-                <td tal:content="form.label"></td>
-                <td>
-                  <div tal:condition="form.key">
-                    <code tal:content="form.key"></code>
-                  </div>
+                <td data-bind="text: description"></td>
+                <td data-bind="text: type"></td>
+                <td data-bind="text: label"></td>
+                <td data-bind="if: key">
+                  <code data-bind="text: key"></code>
                 </td>
               </tr>
             </tbody>
@@ -67,10 +63,11 @@
 
   <br />
   <br />
+
   <div class="panel panel-primary">
     <div class="panel-heading">Mapping info</div>
       <div class="panel-body">
-        <table class="table table-hover table-striped">
+        <table class="table table-hover table-striped" data-bind="with: mapping">
           <thead>
             <tr>
               <th>Variable</th>
@@ -85,32 +82,30 @@
               <th>Mapped Value</th>
             </tr>
           </thead>
-          <tbody>
-            <tr tal:repeat="form mappings_form_rows">
+          <tbody data-bind="foreach: mappings_form_rows">
+            <tr>
+              <td data-bind="if: variable">
+                <code data-bind="text: variable"></code>
+              </td>
+              <td data-bind="text: description"></td>
+              <td data-bind="text: type"></td>
+              <td data-bind="text: study"></td>
+              <td data-bind="text: form"></td>
+              <td data-bind="text: label"></td>
               <td>
-                <div tal:condition="form.variable">
-                  <code tal:content="form.variable"></code>
+                <div data-bind="if: form.value">
+                  <code data-bind="text: value"></code>
                 </div>
               </td>
-              <td tal:content="form.description"></td>
-              <td tal:content="form.type"></td>
-              <td tal:content="form.study"></td>
-              <td tal:content="form.form"></td>
-              <td tal:content="form.label"></td>
               <td>
-                <div tal:condition="form.value">
-                  <code tal:content="form.value"></code>
+                <div data-bind="if: mapped_variable">
+                  <code data-bind="text: mapped_variable"></code>
                 </div>
               </td>
+              <td data-bind="text: mapped_label"></td>
               <td>
-                <div tal:condition="form.mapped_variable">
-                  <code tal:content="form.mapped_variable"></code>
-                </div>
-              </td>
-              <td tal:content="form.mapped_label"></td>
-              <td>
-                <div tal:condition="form.mapped_value">
-                  <code tal:content="form.mapped_value"></code>
+                <div data-bind="if: mapped_value">
+                  <code data-bind="text: mapped_value"></code>
                 </div>
               </td>
             </tr>
@@ -119,9 +114,8 @@
       </div>
   </div>
 
-  <div class="row">
-    <div class="form-group"
-         tal:condition="request.has_permission('approve')">
+  <div class="row" data-bind="if: canApprove">
+    <div class="form-group">
       <label class="control-label col-sm-2"
              for="confidence">Change Status: </label>
       <div class="col-sm-2">
