@@ -9,6 +9,7 @@ REVIEWER = 'reviewer'
 MEMBER = 'member'
 
 
+@pytest.mark.webtest
 class TestImports:
 
     @pytest.fixture(autouse=True)
@@ -119,8 +120,7 @@ class TestImports:
         assert response.status_code == 401
 
     @pytest.mark.parametrize('group', [ADMINISTRATOR])
-    def test_iform_upload(self, app, group):
-        from pkg_resources import resource_filename
+    def test_iform_upload(self, app, group, datadir):
 
         url = '/imports/codebooks/iform/status'
 
@@ -132,8 +132,7 @@ class TestImports:
             'study': u'DRSC'
         }
 
-        iform = open(
-            resource_filename('tests.fixtures', 'iform_input_fixture.json'))
+        iform = datadir.join('iform_input_fixture.json').open()
         json_data = iform.read()
 
         response = app.post(
@@ -151,8 +150,7 @@ class TestImports:
         assert response.status_code == 200
 
     @pytest.mark.parametrize('group', [MANAGER, REVIEWER, MEMBER])
-    def test_iform_upload_not_allowed(self, app, group):
-        from pkg_resources import resource_filename
+    def test_iform_upload_not_allowed(self, app, group, datadir):
 
         url = '/imports/codebooks/iform/status'
 
@@ -164,8 +162,7 @@ class TestImports:
             'study': u'DRSC'
         }
 
-        iform = open(resource_filename(
-            'tests.fixtures', 'iform_input_fixture.json'), 'r')
+        iform = datadir.join('iform_input_fixture.json').open()
         json_data = iform.read()
 
         response = app.post(
@@ -192,8 +189,7 @@ class TestImports:
         assert response.status_code == 401
 
     @pytest.mark.parametrize('group', [ADMINISTRATOR])
-    def test_occams_upload(self, app, group):
-        from pkg_resources import resource_filename
+    def test_occams_upload(self, app, group, datadir):
 
         url = '/imports/codebooks/occams/status'
 
@@ -206,8 +202,7 @@ class TestImports:
             'study': u'DRSC'
         }
 
-        codebook = open(
-            resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
+        codebook = datadir.join('codebook.csv').open()
         csv_data = codebook.read()
 
         response = app.post(
@@ -225,8 +220,7 @@ class TestImports:
         assert response.status_code == 200
 
     @pytest.mark.parametrize('group', [MANAGER, REVIEWER, MEMBER])
-    def test_occams_upload_not_allowed(self, app, group):
-        from pkg_resources import resource_filename
+    def test_occams_upload_not_allowed(self, app, group, datadir):
 
         url = '/imports/codebooks/occams/status'
 
@@ -239,8 +233,7 @@ class TestImports:
             'study': u'DRSC'
         }
 
-        codebook = open(
-            resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
+        codebook = datadir.join('codebook.csv').open()
         csv_data = codebook.read()
 
         response = app.post(
@@ -267,8 +260,7 @@ class TestImports:
         assert response.status_code == 401
 
     @pytest.mark.parametrize('group', [ADMINISTRATOR])
-    def test_qds_upload_codebook(self, app, group):
-        from pkg_resources import resource_filename
+    def test_qds_upload_codebook(self, app, group, datadir):
 
         url = '/imports/codebooks/qds/status'
 
@@ -281,8 +273,7 @@ class TestImports:
             'study': u'DRSC'
         }
 
-        qds = open(
-            resource_filename('tests.fixtures', 'qds_input_fixture.csv'), 'rb')
+        qds = datadir.join('qds_input_fixture.csv').open()
         qds_data = qds.read()
 
         response = app.post(
@@ -300,8 +291,7 @@ class TestImports:
         assert response.status_code == 200
 
     @pytest.mark.parametrize('group', [MANAGER, REVIEWER, MEMBER])
-    def test_qds_upload_codebook_not_allowed(self, app, group):
-        from pkg_resources import resource_filename
+    def test_qds_upload_codebook_not_allowed(self, app, group, datadir):
 
         url = '/imports/codebooks/qds/status'
 
@@ -314,8 +304,7 @@ class TestImports:
             'study': u'DRSC'
         }
 
-        qds = open(
-            resource_filename('tests.fixtures', 'qds_input_fixture.csv'), 'rb')
+        qds = datadir.join('qds_input_fixture.csv').open()
         qds_data = qds.read()
 
         response = app.post(

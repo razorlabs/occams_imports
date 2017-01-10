@@ -14,8 +14,8 @@ each time the tests are run.
 
 """
 
+from __future__ import unicode_literals
 import pytest
-
 from sqlalchemy.schema import CreateTable
 from sqlalchemy.ext.compiler import compiles
 
@@ -399,3 +399,32 @@ def celery(request):
         Session.remove()
 
     request.addfinalizer(cleanup)
+
+
+@pytest.fixture
+def datadir(tmpdir, request):
+    """
+    Returns a path to the data file for the tests data directory
+
+    This Fixture responsible for searching a folder with the same name of test
+    module and, if available, moving all contents to a temporary directory so
+    tests can use them freely without interfering with other tests.
+
+    :param tmpdir: pytest's tmpdir fixture
+    :param request: pytest fixture request object
+
+    .. notes:: This module depends on pytest's provided tmpdir module
+    .. seealso:: http://doc.pytest.org/en/latest/tmpdir.html
+    .. seealso:: http://stackoverflow.com/a/29631801/148781
+
+    """
+    import os
+    from distutils import dir_util
+
+    filename = request.module.__file__
+    test_dir, _ = os.path.splitext(filename)
+
+    if os.path.isdir(test_dir):
+        dir_util.copy_tree(test_dir, bytes(tmpdir))
+
+    return tmpdir

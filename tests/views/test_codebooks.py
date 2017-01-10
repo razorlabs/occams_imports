@@ -5,7 +5,7 @@ import mock
 
 from occams.testing import USERID, make_environ, get_csrf_token
 
-
+@pytest.mark.webtest
 class TestCodebooks:
 
     @pytest.fixture(autouse=True)
@@ -40,8 +40,7 @@ class TestCodebooks:
             db_session.flush()
 
     @pytest.mark.parametrize('group', ['administrator'])
-    def test_qds_upload_validate(self, app, group):
-        from pkg_resources import resource_filename
+    def test_qds_upload_validate(self, app, group, datadir):
 
         url = '/imports/codebooks/qds/status'
 
@@ -54,8 +53,7 @@ class TestCodebooks:
             'study': u'DRSC'
         }
 
-        qds = open(
-            resource_filename('tests.fixtures', 'qds_input_fixture.csv'), 'rb')
+        qds = datadir.join('qds_input_fixture.csv').open()
         qds_data = qds.read()
 
         response = app.post(
@@ -78,8 +76,7 @@ class TestCodebooks:
         assert u'Fields evaluated' in response.body
 
     @pytest.mark.parametrize('group', ['administrator'])
-    def test_occams_upload_validate(self, app, group):
-        from pkg_resources import resource_filename
+    def test_occams_upload_validate(self, app, group, datadir):
 
         url = '/imports/codebooks/occams/status'
 
@@ -92,8 +89,7 @@ class TestCodebooks:
             'study': u'DRSC'
         }
 
-        codebook = open(
-            resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
+        codebook = datadir.join('/codebook.csv').open()
         csv_data = codebook.read()
 
         response = app.post(
@@ -115,8 +111,7 @@ class TestCodebooks:
         assert u'Fields evaluated' in response.body
 
     @pytest.mark.parametrize('group', ['administrator'])
-    def test_iform_upload_validate(self, app, group):
-        from pkg_resources import resource_filename
+    def test_iform_upload_validate(self, app, group, datadir):
 
         url = '/imports/codebooks/iform/status'
 
@@ -128,9 +123,7 @@ class TestCodebooks:
             'study': u'DRSC'
         }
 
-        iform = open(
-            resource_filename(
-                'tests.fixtures', 'iform_input_fixture.json'), 'r')
+        iform = datadir.join('iform_input_fixture.json').open()
         json_data = iform.read()
 
         response = app.post(
@@ -151,9 +144,8 @@ class TestCodebooks:
         assert u'Fields evaluated' in response.body
 
     @pytest.mark.parametrize('group', ['administrator'])
-    def test_qds_insert(self, app, db_session, group):
+    def test_qds_insert(self, app, db_session, group, datadir):
         import datetime
-        from pkg_resources import resource_filename
         from occams_datastore import models as datastore
 
         url = '/imports/codebooks/qds/status'
@@ -167,8 +159,7 @@ class TestCodebooks:
             'delimiter': u'comma'
         }
 
-        qds = open(
-            resource_filename('tests.fixtures', 'qds_input_fixture.csv'), 'rb')
+        qds = datadir.join('qds_input_fixture.csv').open()
         qds_data = qds.read()
 
         app.post(
@@ -199,9 +190,8 @@ class TestCodebooks:
         assert attributes[2].type == u'string'
 
     @pytest.mark.parametrize('group', ['administrator'])
-    def test_occams_codebook_insert(self, app, db_session, group):
+    def test_occams_codebook_insert(self, app, db_session, group, datadir):
         import datetime
-        from pkg_resources import resource_filename
         from occams_datastore import models as datastore
 
         url = '/imports/codebooks/occams/status'
@@ -215,7 +205,7 @@ class TestCodebooks:
             'delimiter': u'comma'
         }
 
-        codebook = open(resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
+        codebook = datadir.join('codebook.csv').open()
         csv_data = codebook.read()
 
         app.post(
@@ -248,9 +238,8 @@ class TestCodebooks:
 
 
     @pytest.mark.parametrize('group', ['administrator'])
-    def test_iform_insert(self, app, db_session, group):
+    def test_iform_insert(self, app, db_session, group, datadir):
         import datetime
-        from pkg_resources import resource_filename
         from occams_datastore import models as datastore
 
         url = '/imports/codebooks/iform/status'
@@ -263,8 +252,7 @@ class TestCodebooks:
             'study': u'DRSC'
         }
 
-        iform = open(
-            resource_filename('tests.fixtures', 'iform_input_fixture.json'), 'r')
+        iform = datadir.join('iform_input_fixture.json').open()
         json_data = iform.read()
 
         app.post(
@@ -292,8 +280,7 @@ class TestCodebooks:
         assert attributes[0].choices['2'].order == 2
 
     @pytest.mark.parametrize('group', ['administrator'])
-    def test_iform_insert_import_table(self, app, db_session, group):
-        from pkg_resources import resource_filename
+    def test_iform_insert_import_table(self, app, db_session, group, datadir):
         from occams_imports import models
         from occams_studies import models as studies
 
@@ -307,9 +294,7 @@ class TestCodebooks:
             'study': u'DRSC'
         }
 
-        iform = open(
-            resource_filename(
-                'tests.fixtures', 'iform_input_fixture.json'), 'r')
+        iform = datadir.join('iform_input_fixture.json').open()
         json_data = iform.read()
 
         app.post(
@@ -337,7 +322,7 @@ class TestCodebooks:
 
         from occams_datastore import models as datastore
         from occams_studies import models as studies
-        from occams_imports.views.codebooks import process_import
+        from occams_imports.views.codebook import process_import
 
         attr_dict = {}
 
@@ -368,7 +353,7 @@ class TestCodebooks:
         import transaction
 
         from occams_datastore import models as datastore
-        from occams_imports.views.codebooks import is_duplicate_schema
+        from occams_imports.views.codebook import is_duplicate_schema
 
         forms = {}
         errors = []
@@ -403,7 +388,7 @@ class TestCodebooks:
 def test_validate_populate_imports(monkeypatch):
     import datetime
 
-    from occams_imports.views.codebooks import validate_populate_imports
+    from occams_imports.views.codebook import validate_populate_imports
 
     record = {
         'schema_name': u'test_schema_name',
@@ -431,11 +416,11 @@ def test_validate_populate_imports(monkeypatch):
     mock_form_form.from_json.return_value = mock_form_validate
 
     monkeypatch.setattr(
-        'occams_imports.views.codebooks.FieldFormFactory',
+        'occams_imports.views.codebook.FieldFormFactory',
         lambda **x: mock_field_form)
 
     monkeypatch.setattr(
-        'occams_imports.views.codebooks.FormFormFactory',
+        'occams_imports.views.codebook.FormFormFactory',
         lambda **x: mock_form_form)
 
     errors, imports, forms = validate_populate_imports(None, [record])
@@ -452,7 +437,7 @@ def test_validate_populate_imports(monkeypatch):
 def test_validate_populate_imports_schema_with_errors(monkeypatch):
     import datetime
 
-    from occams_imports.views.codebooks import validate_populate_imports
+    from occams_imports.views.codebook import validate_populate_imports
 
     record = {
         'schema_name': u'test_schema_name',
@@ -480,11 +465,11 @@ def test_validate_populate_imports_schema_with_errors(monkeypatch):
     mock_form_form.from_json.return_value = mock_form_validate
 
     monkeypatch.setattr(
-        'occams_imports.views.codebooks.FieldFormFactory',
+        'occams_imports.views.codebook.FieldFormFactory',
         lambda **x: mock_field_form)
 
     monkeypatch.setattr(
-        'occams_imports.views.codebooks.FormFormFactory',
+        'occams_imports.views.codebook.FormFormFactory',
         lambda **x: mock_form_form)
 
     errors, imports, forms = validate_populate_imports(None, [record])
@@ -495,7 +480,7 @@ def test_validate_populate_imports_schema_with_errors(monkeypatch):
 
 
 def test_log_errors():
-    from occams_imports.views.codebooks import log_errors
+    from occams_imports.views.codebook import log_errors
     errors = {
         'error': 'something is broken'
     }
@@ -517,9 +502,9 @@ def test_group_imports_by_schema():
     import datetime
 
     from occams_datastore import models as datastore
-    from occams_imports.views.codebooks import group_imports_by_schema
+    from occams_imports.views.codebook import group_imports_by_schema
 
-    with mock.patch('occams_imports.views.codebooks.process_import') \
+    with mock.patch('occams_imports.views.codebook.process_import') \
         as mock_process_import:
 
         db_session = None
@@ -558,7 +543,7 @@ def test_group_imports_by_schema():
 
 
 def test_get_unique_forms():
-    from occams_imports.views.codebooks import get_unique_forms
+    from occams_imports.views.codebook import get_unique_forms
 
     forms = [{
         'name': u'test_schema_name',
@@ -582,7 +567,7 @@ def test_get_unique_forms():
 
 
 def test_convert_delimiter():
-    from occams_imports.views.codebooks import convert_delimiter
+    from occams_imports.views.codebook import convert_delimiter
 
     delimiter = u'comma'
     actual = convert_delimiter(delimiter)
@@ -595,12 +580,11 @@ def test_convert_delimiter():
     assert actual == expected
 
 
-def test_validate_delimiter():
-    from pkg_resources import resource_filename
-    from occams_imports.views.codebooks import validate_delimiter
+def test_validate_delimiter(datadir):
+    from occams_imports.views.codebook import validate_delimiter
 
     delimiter = ','
-    codebook = open(resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
+    codebook = datadir.join('codebook.csv').open()
 
     delimiter_mismatch, errors = validate_delimiter(delimiter, codebook)
 

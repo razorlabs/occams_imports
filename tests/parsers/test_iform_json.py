@@ -116,11 +116,8 @@ def test_populate_objects():
     assert actual == expected
 
 
-def test_convert():
-    from pkg_resources import resource_filename
-
-    codebook = open(
-        resource_filename('tests.fixtures', 'iform_input_fixture.json'), 'r')
+def test_convert(datadir):
+    codebook = datadir.join('iform_input_fixture.json').open()
 
     converted = iform_json.convert(codebook)
 

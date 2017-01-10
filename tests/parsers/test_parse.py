@@ -149,12 +149,10 @@ def test_choices_list():
     assert actual == [['0', 'MyLabel']]
 
 
-def test_parse():
+def test_parse(datadir):
     from datetime import date
-    from pkg_resources import resource_filename
 
-    codebook = open(
-        resource_filename('tests.fixtures', 'codebook.csv'), 'rb')
+    codebook = datadir.join('codebook.csv').open()
     records = parse.parse(codebook)
 
     assert len(records) == 27

@@ -101,11 +101,8 @@ def test_flush_row():
     output_csv.close()
     os.remove('output.csv')
 
-def test_convert():
-    from pkg_resources import resource_filename
-
-    codebook = open(
-        resource_filename('tests.fixtures', 'qds_input_fixture.csv'), 'r')
+def test_convert(datadir):
+    codebook = datadir.join('qds_input_fixture.csv').open()
 
     converted = cqo.convert(codebook)
 
