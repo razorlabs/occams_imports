@@ -27,7 +27,8 @@ export default class Table {
   }
 
   static query (params={}) {
-    return apiFetch(ENDPOINT(params), {credentials: 'include'})
+    return fetch(ENDPOINT(params), {credentials: 'include'})
+      .then( checkStatus )
       .then( data => data.items.map( item => new Table(item) ))
   }
 
