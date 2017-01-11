@@ -1,6 +1,6 @@
 import ko from 'knockout'
 
-import Choice from 'services'
+import {Choice} from 'services'
 import template from './index.html'
 
 function ChoiceWidgetView(params){

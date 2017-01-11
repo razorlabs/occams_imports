@@ -86,7 +86,8 @@
         <th data-bind="click: function(){sortBy('status');}">Status
           <span data-bind="css: sortArrow('status')"></span>
         </th>
-        <th></th>
+        <th>Type</th>
+        <th>Notes</th>
       </tr>
     </thead>
     <tbody data-bind="foreach: filteredMapped">
@@ -143,6 +144,14 @@
 
             text: status, click: $component.goToMapping">
           </span>
+        </td>
+        <td>
+          <!-- ko ifnot: imputationForms().length >= 1 -->
+          <span class="fa fa-arrows-h"></span>
+          <!-- /ko -->
+          <!-- ko if: imputationForms().length >= 1 -->
+          <span class="fa fa-random"></span>
+          <!-- /ko -->
         </td>
         <td>
           <!-- ko if: note() -->

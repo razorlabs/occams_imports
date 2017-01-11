@@ -1,7 +1,6 @@
 import ko from 'knockout'
 import Cookies from 'js-cookie'
-
-import Mapping from 'services'
+import {Mapping} from 'services'
 import 'components/choice-widget'
 import 'components/variable-widget'
 import template from './index.html'
