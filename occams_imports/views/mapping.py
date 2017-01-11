@@ -430,7 +430,6 @@ def update_status(context, request):
     route_name='imports.mapping.notes',
     permission='approve',
     request_method='PUT',
-    xhr=True,
     renderer='json')
 def update_notes(context, request):
     check_csrf_token(request)
