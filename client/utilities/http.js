@@ -16,7 +16,9 @@
  */
 export function checkStatus (response) {
   if ( response.status > 400 ) {
-    return response.then( e => { throw e } )
+    let error = new Error(response.statusText)
+    error.response = response
+    throw error
   } else {
     return response.json()
   }

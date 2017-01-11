@@ -48,7 +48,12 @@ module.exports = function (config) {
     },
 
     // list of files/patterns to load in browser
-    files: ['client/**/*.spec.js'],
+    // This includes items normally in the "entry" of webpack
+    files: [
+      'node_modules/babel-polyfill/dist/polyfill.min.js',
+      'node_modules/whatwg-fetch/fetch.js',
+      'client/**/*.spec.js'
+    ],
 
     // preprocess files before serving
     preprocessors: {'client/**/*.spec.js': ['webpack']},
