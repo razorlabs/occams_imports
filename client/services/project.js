@@ -1,6 +1,8 @@
 import ko from 'knockout'
 import pathToRegexp from 'path-to-regexp'
 
+import {checkStatus} from 'utilities/http'
+
 const ENDPOINT = pathToRegexp.compile('/imports/api/projects/:projectName?')
 
 export default class Project {
@@ -25,25 +27,40 @@ export default class Project {
   }
 
   static query (params={}) {
-    return fetch(ENDPOINT(params), {credentials: 'include'})
-      .then( response => response.json() )
-      .then( response => response.items.map( item => new Project(item) ))
+    return fetch(
+        ENDPOINT(params),
+        {credentials: 'include'}
+      )
+      .then( checkStatus )
+      .then( data => data.items.map( item => new Project(item) ))
   }
 
   post () {
     let payload = ko.toJSON(this)
-    return fetch(ENDPOINT(), {method: 'POST', credentials: 'include', body: payload})
-      .then( response => this._update(response.json() ) )
+    return fetch(
+        ENDPOINT(),
+        {method: 'POST', credentials: 'include', body: payload}
+      )
+      .then( checkStatus )
+      .then( data => this._update(data) )
   }
 
   patch () {
     let payload = ko.toJSON(this)
-    return fetch(this.$url, {method: 'PATCH', credentials: 'include', body: payload})
-      .then( response => this._update(response.json() ) )
+    return fetch(
+        this.$url,
+        {method: 'PATCH', credentials: 'include', body: payload}
+      )
+      .then( checkStatus )
+      .then( data => this._update(data) )
   }
 
   delete_ () {
-    return fetch(this.$deleteUrl, {method: 'DELETE', credentials: 'include'})
+    return fetch(
+        this.$deleteUrl,
+        {method: 'DELETE', credentials: 'include'}
+      )
+      .then( checkStatus )
   }
 
 }

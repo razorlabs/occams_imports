@@ -1,6 +1,7 @@
 import ko from 'knockout'
 import Cookies from 'js-cookie'
 
+import {checkStatus} from 'utilities/http'
 import template from './index.html'
 
 
@@ -32,7 +33,7 @@ class MappingView {
 
     let statusPromise = new Promise( (resolve, reject) => {
       fetch(this.getStatusUrl(), {credentials: 'include'})
-        .then(response => response.json())
+        .then(checkStatus)
         .then(data => {
           this.selectedStatus(data.status)
           this.note(data.notes)
@@ -42,7 +43,7 @@ class MappingView {
 
     let mappingPromise = new Promise( (resolve, reject) => {
       fetch('/imports/api/mappings/' + window.location.search.split('=')[1], {credentials: 'include'})
-        .then(response => response.json())
+        .then(checkStatus)
         .then(data => {
           this.mapping(data)
           resolve()
@@ -72,13 +73,7 @@ class MappingView {
         headers: {'X-CSRF-Token': Cookies.get('csrf_token')},
         body: JSON.stringify({'status': this.selectedStatus()})
       })
-      .then( response => {
-        if (response.ok) {
-          return response.json()
-        } else {
-          throw Error(resposne.statusText)
-        }
-      })
+      .then(checkStatus)
       .then( data => {
         this.isDanger(false)
         this.isSuccess(true)
@@ -99,13 +94,7 @@ class MappingView {
         headers: {'X-CSRF-Token': Cookies.get('csrf_token')},
         body: JSON.stringify({'notes': this.note()})
       })
-      .then( response => {
-        if (response.ok) {
-          return response.json()
-        } else {
-          throw Error(resposne.statusText)
-        }
-      })
+      .then(checkStatus)
       .then( data => {
         this.isDanger(false)
         this.isSuccess(true)
