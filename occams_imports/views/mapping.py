@@ -106,7 +106,7 @@ def occams_direct(context, request):
     route_name='imports.mappings.imputation',
     permission='add',
     request_method='GET',
-    renderer='../templates/mapping/impuation.pt')
+    renderer='../templates/mapping/imputation.pt')
 def occams_imputation(context, request):
     return {}
 
