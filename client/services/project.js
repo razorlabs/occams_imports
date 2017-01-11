@@ -1,7 +1,7 @@
 import ko from 'knockout'
 import pathToRegexp from 'path-to-regexp'
 
-import {checkStatus} from 'utilities/http'
+import checkStatus from 'utilities/fetch/checkStatus'
 
 const ENDPOINT = pathToRegexp.compile('/imports/api/projects/:projectName?')
 
@@ -32,6 +32,7 @@ export default class Project {
         {credentials: 'include'}
       )
       .then( checkStatus )
+      .then( response => response.json() )
       .then( data => data.items.map( item => new Project(item) ))
   }
 
@@ -42,6 +43,7 @@ export default class Project {
         {method: 'POST', credentials: 'include', body: payload}
       )
       .then( checkStatus )
+      .then( response => response.json() )
       .then( data => this._update(data) )
   }
 
@@ -52,6 +54,7 @@ export default class Project {
         {method: 'PATCH', credentials: 'include', body: payload}
       )
       .then( checkStatus )
+      .then( response => response.json() )
       .then( data => this._update(data) )
   }
 

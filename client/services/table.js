@@ -1,7 +1,7 @@
 import ko from 'knockout'
 import pathToRegexp from 'path-to-regexp'
 
-import {checkStatus} from 'utilities/http'
+import checkStatus from 'utilities/fetch/checkStatus'
 
 const ENDPOINT = pathToRegexp.compile('/imports/api/projects/:projectName/tables/:tableName?')
 
@@ -29,6 +29,7 @@ export default class Table {
   static query (params={}) {
     return fetch(ENDPOINT(params), {credentials: 'include'})
       .then( checkStatus )
+      .then( response => response.json() )
       .then( data => data.items.map( item => new Table(item) ))
   }
 
@@ -39,6 +40,7 @@ export default class Table {
         {method: 'POST', credentials: 'include', body: payload}
       )
       .then( checkStatus )
+      .then( response => response.json() )
       .then( data => this._update(data) )
   }
 
@@ -49,6 +51,7 @@ export default class Table {
         {method: 'PATCH', credentials: 'include', body: payload}
       )
       .then( checkStatus )
+      .then( response => response.json() )
       .then( data => this._update(data) )
   }
 
