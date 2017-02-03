@@ -1,0 +1,78 @@
+  <!-- Tab panes -->
+
+      <div class="col-sm-5">
+        <table class="table table-hover table-striped">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Filename</th>
+              <th>Upload Date</th>
+            </tr>
+          </thead>
+          <tbody data-bind="foreach: uploads">
+            <tr>
+              <td><input type="checkbox"
+                         data-bind="value: $data, checked: $parent.selectedUploads"
+                         value="checked"></td>
+              <td data-bind="text: filename"></td>
+              <td data-bind="text: uploadDate"></td>
+            </tr>
+          </tbody>
+        </table>
+        <div data-bind="visible: atLeastOneChecked" class="col-sm-6">
+          <button class="btn btn-danger"
+                  type="button"
+                  data-bind="click: removeUploads">
+            <span class="fa fa-trash"></span>
+            <span>Delete Selected</span>
+          </button>
+        </div>
+        <div class="btn-toolbar pull-right" class="col-sm-6">
+          <button type="button"
+                  data-bind="click: beginUpload"
+                  class="btn btn-default">Upload</button>
+        </div>
+      </div> <!-- end col-sm-5 -->
+
+      <div class="modal fade"
+           role="dialog"
+           data-bind="modalVisible: showUploadModal">
+        <div class="modal-dialog" data-bind="if: showUploadModal">
+          <div class="modal-content">
+            <h4 class="modal-header"
+                data-bind="text: modalHeaderName"></h4>
+            <div class="modal-body">
+              <form
+                  role="form"
+                  name="upload_data"
+                  method="POST"
+                  autocomplete="on"
+                  enctype="multipart/form-data"
+                  data-bind="submit: uploadFile">
+
+                <input type="hidden"
+                       name="csrf_token"
+                       value="${request.session.get_csrf_token()}">
+
+                <div class="form-group">
+                  <p i18n:translate="">Select file to upload: </p>
+                  <input type="file" id="data-file" name="data-file" required>
+                </div>
+
+                <div class="modal-footer">
+                  <button type="button"
+                          class="btn btn-link"
+                          data-bind="click: clear">Cancel</button>
+                  <button
+                      type="submit"
+                      name="submit"
+                      class="btn btn-primary"
+                      data-bind="uploadFile"
+                      i18n:translate="">Upload</button>
+                </div>
+              </form>
+            </div> <!-- end modal body -->
+          </div> <!-- end modal content -->
+        </div> <!-- end modal dialog -->
+      </div> <!-- end modal fade -->
+

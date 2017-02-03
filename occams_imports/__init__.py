@@ -4,9 +4,7 @@ import pkg_resources
 
 from pyramid.i18n import TranslationStringFactory
 import wtforms_json; wtforms_json.init()  # flake8: noqa
-
-from . import models
-
+from .models.meta import Base
 
 log = logging.getLogger('occams').getChild(__name__)
 
@@ -18,7 +16,7 @@ __version__ = pkg_resources.require(__name__)[0].version
 
 
 def initdb(connectable): # pragma: no cover
-    models.Base.metadata.create_all(connectable)
+    Base.metadata.create_all(connectable)
 
 
 def includeme(config):

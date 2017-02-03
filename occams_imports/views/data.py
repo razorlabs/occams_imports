@@ -5,6 +5,7 @@ Views to support data file uploads after study lock.
 import six
 import uuid
 import json
+import datetime
 import unicodecsv as csv
 
 from pyramid.view import view_config
@@ -22,6 +23,106 @@ from occams_imports import models as models, tasks, log
     renderer='../templates/data/upload.pt')
 def index(context, request):
     """Serve the index page for file uploads."""
+    return {}
+
+
+@view_config(
+    route_name='imports.new_upload',
+    permission='import',
+    renderer='../templates/data/new_upload.pt')
+def upload_index(context, request):
+    """Serve the index page for the new file uploads queue."""
+    return {}
+
+
+@view_config(
+    route_name='imports.uploads_list',
+    request_method='GET',
+    permission='add',
+    renderer='json')
+def uploads_list(context, request):
+    """Return the uploads for a particular project."""
+    # TODO Add permissions
+    db_session = request.db_session
+
+    project = request.matchdict['project']
+
+    this_url = request.route_path('imports.project_list')
+    url = '{}/{}/uploads'.format(this_url, project)
+
+    files = db_session.query(models.Upload).filter(
+        models.Upload.study.has(name=project)).all()
+
+    result = {}
+    result['items'] = []
+    for file in files:
+        delete_url = '{}/{}'.format(url, file.id)
+        result['items'].append({
+            'filename': file.filename,
+            'uploadDate': file.modify_date.date().isoformat(),
+            '$url': url,
+            '$deleteUrl': delete_url
+        })
+
+    return result
+
+
+@view_config(
+    route_name='imports.uploads_list',
+    request_method='POST',
+    permission='add',
+    renderer='json')
+def add_uploads(context, request):
+    """Return the uploads for a particular project."""
+    # TODO: add premissions
+    db_session = request.db_session
+
+    project = request.matchdict['project']
+    this_url = request.route_path('imports.project_list')
+    url = '{}/{}/uploads'.format(this_url, project)
+
+    study = db_session.query(studies.Study).filter_by(name=project).one()
+    upload = request.POST['uploadFile']
+    filename = upload.filename
+    upload_file = upload.file.read()
+
+    if study and upload_file:
+        upload = models.Upload(
+            study=study,
+            project_file=upload_file,
+            filename=filename
+        )
+        db_session.add(upload)
+        db_session.flush()
+
+        delete_url = '{}/{}'.format(url, upload.id)
+
+        result = {
+            'filename': filename,
+            'uploadDate': datetime.datetime.now().date(),
+            '$url': url,
+            '$deleteUrl': delete_url
+        }
+    else:
+        # TODO: do something
+        pass
+
+    return result
+
+
+@view_config(
+    route_name='imports.uploads_detail',
+    request_method='DELETE',
+    permission='add',
+    renderer='json')
+def delete_upload(context, request):
+    """Return the uploads for a particular project."""
+    # TODO: add premissions
+    db_session = request.db_session
+    upload_id = request.matchdict['upload']
+
+    db_session.query(models.Upload).filter_by(id=upload_id).delete()
+
     return {}
 
 
@@ -81,6 +182,18 @@ def status(context, request):
         db_session.add(data_row)
 
     return {'site': site, 'filename': filename}
+
+
+@view_config(
+    route_name='imports.sitedata',
+    request_method='GET',
+    permission='import',
+    renderer='json')
+def get_sitedata(context, request):
+    """Get all sitedata"""
+    # TODO I think you can delete this.
+
+    return {}
 
 
 @view_config(

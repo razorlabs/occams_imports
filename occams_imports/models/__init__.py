@@ -4,6 +4,7 @@ from .import_ import ImportFactory, Import  # noqa
 from .mapping import Mapping  # noqa
 from .sitedata import SiteData  # noqa
 from .status import Status  # noqa
+from .upload import Upload  # noqa
 
 from .project import ProjectFactory, Project  # noqa
 from .table import TableFactory, Table  # noqa

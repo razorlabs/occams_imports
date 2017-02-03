@@ -33,7 +33,7 @@ def includeme(config):
 
     config.add_route('imports.mappings.view',               '/mappings/view',             factory=models.ImportFactory)
     config.add_route('imports.mappings.view_mapped',        '/mappings/view_mapped',      factory=models.ImportFactory)
-    config.add_route('imports.mapping_detail',        '/api/mappings/{mapping}',      factory=models.ImportFactory)
+    config.add_route('imports.mapping_detail',              '/api/mappings/{mapping}',    factory=models.ImportFactory)
     config.add_route('imports.mappings.delete',             '/mappings/delete',           factory=models.ImportFactory)
     config.add_route('imports.mapping.status',              '/mapping/status',            factory=models.ImportFactory)
     config.add_route('imports.mapping.notes',               '/mapping/notes',             factory=models.ImportFactory)
@@ -45,11 +45,14 @@ def includeme(config):
     config.add_route('imports.apply_imputation_status',     '/apply/imputation/status',   factory=models.ImportFactory)
     config.add_route('imports.apply_imputation',            '/apply/imputation',          factory=models.ImportFactory)
 
+    config.add_route('imports.new_upload',                  '/new_upload',                factory=models.ImportFactory)
+    config.add_route('imports.sitedata',                    '/sitedata',                  factory=models.ImportFactory)
+
     config.add_route('imports.direct_notifications',        '/direct_notifications',      factory=models.ImportFactory)
     config.add_route('imports.imputations_notifications',   '/import_notifications',      factory=models.ImportFactory)
 
 
-    config.add_route('imports.project_app',       '/projects',                                                    factory=models.ProjectFactory)
+    config.add_route('imports.project_app',     '/projects',                                                    factory=models.ProjectFactory)
 
     config.add_route('imports.project_list',    '/api/projects',                                                factory=models.ProjectFactory, traverse='/')
     config.add_route('imports.project_detail',  '/api/projects/{project}',                                      factory=models.ProjectFactory, traverse='/{project}')
@@ -57,3 +60,6 @@ def includeme(config):
     config.add_route('imports.table_detail',    '/api/projects/{project}/tables/{table}',                       factory=models.ProjectFactory, traverse='/{project}/tables/{table}')
     config.add_route('imports.variable_list',   '/api/projects/{project}/tables/{table}/variables',             factory=models.ProjectFactory, traverse='/{project}/tables/{table}/variables')
     config.add_route('imports.variable_detail', '/api/projects/{project}/tables/{table}/variables/{variable}',  factory=models.ProjectFactory, traverse='/{project}/tables/{table}/variables/{variable}')
+
+    config.add_route('imports.uploads_list',    '/api/projects/{project}/uploads',                              factory=models.ProjectFactory)
+    config.add_route('imports.uploads_detail',  '/api/projects/{project}/uploads/{upload}',                     factory=models.ProjectFactory)
