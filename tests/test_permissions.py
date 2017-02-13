@@ -132,6 +132,7 @@ class TestImports:
             'study': u'DRSC'
         }
 
+        # from pytest import set_trace; set_trace()
         iform = datadir.join('iform_input_fixture.json').open()
         json_data = iform.read()
 

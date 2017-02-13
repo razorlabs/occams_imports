@@ -5,13 +5,11 @@ Views to support data file uploads after study lock.
 import six
 import uuid
 import json
-import unicodecsv as csv
+import datetime
 
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
-from sqlalchemy.sql import exists
 
-from occams_datastore import models as datastore
 from occams_studies import models as studies
 from occams_imports import models as models, tasks, log
 
@@ -26,61 +24,99 @@ def index(context, request):
 
 
 @view_config(
-    route_name='imports.upload_status',
-    permission='import',
-    renderer='../templates/data/status.pt')
-def status(context, request):
-    """Process file upload."""
+    route_name='imports.uploads_list',
+    request_method='GET',
+    permission='add',
+    renderer='json')
+def uploads_list(context, request):
+    """Return the uploads for a particular project."""
+    db_session = request.db_session
+
+    project = request.matchdict['project']
+
+    this_url = request.route_path('imports.project_list')
+    url = '{}/{}/uploads'.format(this_url, project)
+
+    files = db_session.query(models.Upload).filter(
+        models.Upload.study.has(name=project)).all()
+
+    result = {}
+    result['items'] = []
+    for file in files:
+        delete_url = '{}/{}'.format(url, file.id)
+        result['items'].append({
+            'filename': file.filename,
+            'uploadDate': file.modify_date.date().isoformat(),
+            '$url': url,
+            '$deleteUrl': delete_url
+        })
+
+    return result
+
+
+@view_config(
+    route_name='imports.uploads_list',
+    request_method='POST',
+    permission='add',
+    renderer='json')
+def add_uploads(context, request):
+    """Return the uploads for a particular project."""
     check_csrf_token(request)
     db_session = request.db_session
 
-    site = request.POST['site'].lower()
-    patient_site = studies.Site(name=site.lower(), title=site.upper())
-    filename = request.POST['data-file'].filename
+    project = request.matchdict['project']
+    this_url = request.route_path('imports.project_list')
+    url = '{}/{}/uploads'.format(this_url, project)
 
-    upload_file = request.POST['data-file'].file
+    study = db_session.query(studies.Study).filter_by(name=project).one()
+    upload = request.POST['uploadFile']
+    filename = upload.filename
+    upload_file = upload.file.read()
 
-    reader = csv.DictReader(upload_file, encoding='utf-8', delimiter=',')
-
-    for row in reader:
-        schema_name = row['form_name']
-        schema_publish_date = row['form_publish_date']
-
-        schema = (
-            db_session.query(datastore.Schema)
-            .filter_by(name=schema_name)
-            .filter_by(publish_date=schema_publish_date)
-        ).one()
-
-        study = (
-            db_session.query(studies.Study)
-            .filter_by(name=site.lower())
-        ).one()
-
-        patient_pid = row['pid']
-        patient_exists = (
-            db_session.query(
-                exists()
-                .where(studies.Patient.pid == patient_pid)).scalar()
-        )
-
-        if not patient_exists:
-            patient = studies.Patient(
-                pid=patient_pid,
-                site=patient_site
-            )
-            db_session.add(patient)
-            db_session.flush()
-
-        data_row = models.SiteData(
-            schema=schema,
+    if study and upload_file:
+        upload = models.Upload(
             study=study,
-            data=row
+            project_file=upload_file,
+            filename=filename
         )
+        db_session.add(upload)
+        db_session.flush()
 
-        db_session.add(data_row)
+        delete_url = '{}/{}'.format(url, upload.id)
 
-    return {'site': site, 'filename': filename}
+        result = {
+            'filename': filename,
+            'uploadDate': datetime.datetime.now().date(),
+            '$url': url,
+            '$deleteUrl': delete_url
+        }
+    else:
+        request.response.status = 400
+        errors = []
+        if not study:
+            errors.append('No study found in the db for: '.format(project))
+        if not upload_file:
+            errors.append('No file found in the request')
+
+        return {'errors': errors}
+
+    return result
+
+
+@view_config(
+    route_name='imports.uploads_detail',
+    request_method='DELETE',
+    permission='add',
+    renderer='json')
+def delete_upload(context, request):
+    """Return the uploads for a particular project."""
+    check_csrf_token(request)
+    db_session = request.db_session
+    upload_id = request.matchdict['upload']
+
+    db_session.query(models.Upload).filter_by(id=upload_id).delete()
+
+    return {}
 
 
 @view_config(
@@ -92,6 +128,32 @@ def direct(context, request):
     tasks.apply_direct_mappings.apply_async(
         args=[]
     )
+
+    return {}
+
+
+@view_config(
+    route_name='imports.apply',
+    request_method='GET',
+    permission='add',
+    renderer='json')
+def apply_mappings(context, request):
+    db_session = request.db_session
+    project = request.matchdict['project']
+
+    records = (
+        db_session.query(models.Upload).filter(models.Upload.study.has(
+            name=project)).all()
+    )
+
+    study = records[0].study.name
+    filename = records[0].filename
+    # this is the new one
+    # this will apply direct and imputation for a particular project
+    from pdb import set_trace; set_trace()
+    # tasks.apply_direct_mappings.apply_async(
+    #     args=[]
+    # )
 
     return {}
 
