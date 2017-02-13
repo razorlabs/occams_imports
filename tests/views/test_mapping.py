@@ -814,7 +814,7 @@ class TestGetSchemasMapped:
 
         mapping = db_session.query(models.Mapping).one()
 
-        req.params = {'id': mapping.id}
+        req.matchdict['mapping'] = mapping.id
 
         response = self._call_fut(None, req)
 

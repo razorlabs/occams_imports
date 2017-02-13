@@ -1,5 +1,6 @@
 import ko from 'knockout'
 import pathToRegexp from 'path-to-regexp'
+import Cookies from 'js-cookie'
 
 import checkStatus from 'utilities/fetch/checkStatus'
 
@@ -42,13 +43,21 @@ export default class Upload {
    * @param uploadFile file contents to be uploaded
    */
   post (uploadFile) {
+    let csrf_token = Cookies.get('csrf_token')
+    let headers = new Headers()
+    headers.append('X-CSRF-Token', csrf_token)
 
     let formData = new FormData()
     formData.append('uploadFile', uploadFile)
 
     return fetch(
         this.$url,
-        {method: 'POST', credentials: 'include', body: formData}
+        {
+          method: 'POST',
+          credentials: 'include',
+          body: formData,
+          headers: headers
+        }
       )
       .then( checkStatus )
       .then( response => response.json() )
@@ -59,9 +68,13 @@ export default class Upload {
    * Delete selected upload
    */
   delete_ () {
+    let csrf_token = Cookies.get('csrf_token')
+    let headers = new Headers()
+    headers.append('X-CSRF-Token', csrf_token)
+
     return fetch(
         this.$deleteUrl,
-        {method: 'DELETE', credentials: 'include'}
+        {method: 'DELETE', credentials: 'include', headers: headers}
       )
       .then( checkStatus )
   }

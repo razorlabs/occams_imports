@@ -155,6 +155,8 @@ def apply_direct_mappings(task):
     currently the logs are not returned
     """
     # Retrieve mappings in 'approved' status
+
+    # TODO filter by a particular project
     mappings = (
         Session.query(models.Mapping)
         .filter_by(type=u'direct')

@@ -1,6 +1,7 @@
   <!-- Tab panes -->
 
       <div class="col-sm-5">
+        <div class="row">
         <table class="table table-hover table-striped">
           <thead>
             <tr>
@@ -19,18 +20,28 @@
             </tr>
           </tbody>
         </table>
-        <div data-bind="visible: atLeastOneChecked" class="col-sm-6">
-          <button class="btn btn-danger"
-                  type="button"
-                  data-bind="click: removeUploads">
-            <span class="fa fa-trash"></span>
-            <span>Delete Selected</span>
-          </button>
-        </div>
-        <div class="btn-toolbar pull-right" class="col-sm-6">
-          <button type="button"
-                  data-bind="click: beginUpload"
-                  class="btn btn-default">Upload</button>
+
+          <div data-bind="visible: atLeastOneChecked" class="col-sm-6">
+            <button class="btn btn-danger"
+                    type="button"
+                    data-bind="click: removeUploads">
+              <span class="fa fa-trash"></span>
+              <span>Delete Selected</span>
+            </button>
+          </div>
+          <div class="btn-toolbar pull-right" class="col-sm-6">
+            <button type="button"
+                    data-bind="click: beginUpload"
+                    class="btn btn-default">Upload</button>
+          </div>
+          </div>
+          <br />
+          <div class="row">
+          <div class="btn-toolbar pull-right" class="col-sm-12">
+            <button type="button"
+                    data-bind="click: applyMappings"
+                    class="btn btn-default">Apply Mappings</button>
+          </div>
         </div>
       </div> <!-- end col-sm-5 -->
 
@@ -49,10 +60,6 @@
                   autocomplete="on"
                   enctype="multipart/form-data"
                   data-bind="submit: uploadFile">
-
-                <input type="hidden"
-                       name="csrf_token"
-                       value="${request.session.get_csrf_token()}">
 
                 <div class="form-group">
                   <p i18n:translate="">Select file to upload: </p>

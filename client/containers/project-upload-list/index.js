@@ -74,7 +74,7 @@ export default class ProjectUploadListView{
   /**
    * Get the file contents and POST
    */
-  uploadFile(upload){
+  uploadFile(upload) {
     this.showUploadModal(false)
 
     let uploadFile = upload['data-file'].files[0]
@@ -83,8 +83,17 @@ export default class ProjectUploadListView{
     this.uploads.push(this.newUpload)
   }
 
+  applyMappings(){
+    let url = '/imports/api/projects/' + this.project.name() + '/apply'
+    fetch(
+            url,
+            {
+              method: 'GET',
+              credentials: 'include'
+            }
+          )
+  }
 }
-
 
 ko.components.register(
   'rl-project-upload-list',

@@ -1,5 +1,0 @@
-<html metal:use-macro="load: ../master.pt">
-  <metal:content-slot fill-slot="content-slot">
-    <rl-uploads></rl-uploads>
-  </metal:content-slot>
-</html>

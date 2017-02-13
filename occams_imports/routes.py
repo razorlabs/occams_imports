@@ -45,7 +45,6 @@ def includeme(config):
     config.add_route('imports.apply_imputation_status',     '/apply/imputation/status',   factory=models.ImportFactory)
     config.add_route('imports.apply_imputation',            '/apply/imputation',          factory=models.ImportFactory)
 
-    config.add_route('imports.new_upload',                  '/new_upload',                factory=models.ImportFactory)
     config.add_route('imports.sitedata',                    '/sitedata',                  factory=models.ImportFactory)
 
     config.add_route('imports.direct_notifications',        '/direct_notifications',      factory=models.ImportFactory)
@@ -63,3 +62,5 @@ def includeme(config):
 
     config.add_route('imports.uploads_list',    '/api/projects/{project}/uploads',                              factory=models.ProjectFactory)
     config.add_route('imports.uploads_detail',  '/api/projects/{project}/uploads/{upload}',                     factory=models.ProjectFactory)
+
+    config.add_route('imports.apply',           '/api/projects/{project}/apply',                                factory=models.ProjectFactory)

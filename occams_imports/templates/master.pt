@@ -114,16 +114,6 @@
                   <li tal:define="
                         factory   import:occams_imports.models.ImportFactory;
                         resource  factory(request);
-                        url       request.route_path('imports.new_upload');
-                        active    False;"
-                      tal:attributes="class python:'active' if active else ''"
-                      tal:condition="request.has_permission('import', resource)">
-                    <a  href="${url}">NewUpload</a>
-                  </li>
-
-                  <li tal:define="
-                        factory   import:occams_imports.models.ImportFactory;
-                        resource  factory(request);
                         url       request.route_path('imports.index');
                         active    False;"
 
