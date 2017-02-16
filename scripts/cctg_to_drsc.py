@@ -93,26 +93,27 @@ def process(source_dir, target_dir):
     """Process the csv files."""
     for subdir, dirs, files in os.walk(source_dir):
         for file in files:
-            source_file = os.path.join(source_dir, file)
-            target_file = os.path.join(target_dir, file)
+            if file.endswith('.csv'):
+                source_file = os.path.join(source_dir, file)
+                target_file = os.path.join(target_dir, file)
 
-            source = []
-            with open(source_file, 'r', encoding="utf-8") as _in:
-                reader = csv.DictReader(_in)
+                source = []
+                with open(source_file, 'r', encoding="utf-8") as _in:
+                    reader = csv.DictReader(_in)
 
-                raw_headers = reader.fieldnames
-                headers = get_headers(raw_headers)
-                for row in reader:
-                    source.append(row)
+                    raw_headers = reader.fieldnames
+                    headers = get_headers(raw_headers)
+                    for row in reader:
+                        source.append(row)
 
-                with open(target_file, 'w', encoding="utf-8") as out:
-                    writer = csv.DictWriter(out, fieldnames=headers)
-                    writer.writeheader()
+                    with open(target_file, 'w', encoding="utf-8") as out:
+                        writer = csv.DictWriter(out, fieldnames=headers)
+                        writer.writeheader()
 
-                    target = get_target(source, headers)
+                        target = get_target(source, headers)
 
-                    for row in target:
-                        writer.writerow(row)
+                        for row in target:
+                            writer.writerow(row)
 
 
 if __name__ == '__main__':
