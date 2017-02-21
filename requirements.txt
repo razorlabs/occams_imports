@@ -14,6 +14,7 @@ humanize
 jsmin
 ldap3>=1.0.0,<2.0.0
 lingua
+pandas
 psycopg2
 python-dateutil
 python-slugify

@@ -15,9 +15,16 @@ each time the tests are run.
 """
 
 from __future__ import unicode_literals
+import factory
+from factory.alchemy import SQLAlchemyModelFactory
 import pytest
+from pytest_factoryboy import register as factory_fixture
 from sqlalchemy.schema import CreateTable
 from sqlalchemy.ext.compiler import compiles
+
+from occams_datastore import models as datastore
+from occams_studies import models as studies
+from occams_imports import models
 
 
 REDIS_URL = 'redis://localhost/9'
@@ -86,7 +93,7 @@ def create_tables(request):
             datastore.DataStoreModel.metadata.create_all(connection)
             studies.StudiesModel.metadata.create_all(connection)
             Base.metadata.create_all(connection)
-            # Clear out the state table since the data is populated on each test
+            # Clear state table since the data is populated on each test
             connection.execute('DELETE FROM state')
             connection.execute('DELETE FROM imports.status')
 
@@ -121,7 +128,6 @@ def config(request):
 
     # Load mimimum set of plugins
     test_config.include('occams.models')
-    #test_config.include('occams_forms.routes')
 
     yield test_config
 
@@ -428,3 +434,132 @@ def datadir(tmpdir, request):
         dir_util.copy_tree(test_dir, bytes(tmpdir))
 
     return tmpdir
+
+
+class FakeDescribeable(factory.Factory):
+    """
+    Mixin class for name/title/description models
+    """
+    name = factory.Faker('uuid4')  # Avoid collisions with trully unique slug
+    title = factory.Faker('word')
+    description = factory.Faker('paragraph')
+
+
+@factory_fixture
+class UserFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = datastore.User
+    key = factory.Faker('email')
+
+
+@factory_fixture
+class ChoiceFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = datastore.Choice
+    name = factory.Sequence(lambda n: '{0:08d}'.format(n))
+    title = factory.Faker('word')
+    order = factory.Sequence(lambda n: n)
+
+
+@factory_fixture
+class AttributeFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = datastore.Attribute
+    name = factory.Sequence(lambda n: 'var_{}'.format(n))
+    title = factory.Faker('sentence')
+    description = factory.Faker('paragraph')
+    type = 'string'
+    order = factory.Sequence(lambda n: n)
+
+
+@factory_fixture
+class SchemaFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = datastore.Schema
+    name = factory.LazyAttributeSequence(lambda o, n: '%s%s' % (o.title, n))
+    title = factory.Faker('word')
+    description = factory.Faker('paragraph')
+    publish_date = factory.Faker('date_time_this_year')
+
+
+@factory_fixture
+class EntityFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = datastore.Entity
+    schema = factory.SubFactory(SchemaFactory)
+
+
+@factory_fixture
+class StudyFactory(SQLAlchemyModelFactory, FakeDescribeable):
+    class Meta:
+        model = studies.Study
+    short_title = factory.Faker('word')
+    code = factory.Faker('credit_card_security_code')
+    consent_date = factory.Faker('date_time_this_year')
+
+
+@factory_fixture
+class SiteFactory(SQLAlchemyModelFactory, FakeDescribeable):
+    class Meta:
+        model = studies.Site
+    title = factory.Faker('city')
+
+
+@factory_fixture
+class PatientFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = studies.Patient
+    site = factory.SubFactory(SiteFactory)
+    pid = factory.Faker('uuid4')
+
+
+@factory_fixture
+class EnrollmentFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = studies.Enrollment
+    patient = factory.SubFactory(PatientFactory)
+    study = factory.SubFactory(StudyFactory)
+    reference_number = factory.Faker('ean8')
+    consent_date = factory.Faker('date_time_this_year')
+    latest_consent_date = factory.LazyAttribute(lambda o: o.consent_date)
+
+
+@factory_fixture
+class VisitFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = studies.Visit
+    patient = factory.SubFactory(PatientFactory)
+    visit_date = factory.Faker('date_time_this_year')
+
+
+@factory_fixture
+class UploadFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = models.Upload
+    study = factory.SubFactory(StudyFactory)
+    schema = factory.SubFactory(SchemaFactory)
+    project_file = None
+    filename = factory.Faker('file_name', extension='.csv')
+
+
+@pytest.fixture(autouse=True)
+def attach_factory_session(db_session):
+    """
+    Configures the data factories with a database session
+
+    :param db_session: testing session fixture
+    :returns: the configured factories module
+    """
+
+    import inspect
+    import sys
+
+    current_module = sys.modules[__name__]
+
+    classes = inspect.getmembers(
+        current_module,
+        lambda o: inspect.isclass(o) and issubclass(o, SQLAlchemyModelFactory)
+    )
+
+    for __, class_ in classes:
+        class_._meta.sqlalchemy_session = db_session

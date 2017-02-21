@@ -20,6 +20,13 @@ class Upload(Base, datastore.Referenceable, datastore.Modifiable):
 
     study = orm.relationship(studies.Study)
 
+    schema_id = sa.Column(
+        sa.ForeignKey(datastore.Schema.id, ondelete='CASCADE'),
+        nullable=False
+    )
+
+    schema = orm.relationship(datastore.Schema)
+
     project_file = sa.Column(BYTEA, nullable=False)
 
     filename = sa.Column(String, nullable=False)
