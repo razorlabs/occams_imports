@@ -264,5 +264,14 @@ def apply_direct_mappings(task):
 
 @app.task(name='apply_imputation_mappings', ignore_result=True, bind=True)
 @with_transaction
-def apply_imputation_mappings(task):
-    imputation.apply_all(Session, app.redis)
+def apply_imputation_mappings(task, project_name):
+
+    # TODO: It looks like we will be processing direct and imputations
+    #       simultaneously, so this data is what will be expected so that
+    #       both processes can continue the job. We'll figure this part out
+    #       later.
+    from .utils.pivot import load_project_frame
+    jobid = six.text_type(str(uuid.uuid4()))
+    frame = load_project_frame(project_name)
+
+    imputation.apply_all(Session, app.redis, jobid, project_name, frame)
