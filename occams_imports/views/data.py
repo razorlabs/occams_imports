@@ -6,11 +6,16 @@ import six
 import uuid
 import json
 import datetime
+from cgi import FieldStorage
 
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
+from sqlalchemy import asc
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.exc import MultipleResultsFound
 
 from occams_studies import models as studies
+from occams_datastore import models as datastore
 from occams_imports import models as models, tasks, log
 
 
@@ -64,18 +69,53 @@ def add_uploads(context, request):
     check_csrf_token(request)
     db_session = request.db_session
 
-    project = request.matchdict['project']
+    project = request.matchdict.get('project')
+    if not project:
+        request.response.status = 400
+        return {'errors': ['No project found in request']}
+
     this_url = request.route_path('imports.project_list')
     url = '{}/{}/uploads'.format(this_url, project)
 
-    study = db_session.query(studies.Study).filter_by(name=project).one()
-    upload = request.POST['uploadFile']
-    filename = upload.filename
-    upload_file = upload.file.read()
+    errors = []
+    try:
+        study = db_session.query(studies.Study).filter_by(name=project).one()
+    except MultipleResultsFound, _:
+        errors.append('Multiple studies found in the db for: {}'.format(study))
+        study = None
+    except NoResultFound, _:
+        errors.append('No study found in the db for: {}'.format(study))
+        study = None
 
-    if study and upload_file:
+    schema_name = request.POST.get('schema')
+    try:
+        # we need the schema with most recent publish date
+        schema = (
+            db_session.query(datastore.Schema)
+            .filter_by(name=schema_name)
+            .order_by(asc(datastore.Schema.publish_date))
+        ).limit(1).one()
+    except MultipleResultsFound, _:
+        msg = 'Multiple schema found with same publish date found for: {}' \
+            .format(schema)
+        errors.append(msg)
+        study = None
+    except NoResultFound, _:
+        msg = 'No schema found in the db for: {}'.format(schema)
+        errors.append(msg)
+        study = None
+
+    upload = request.POST.get('uploadFile')
+    upload_file = None
+
+    if isinstance(upload, FieldStorage):
+        filename = upload.filename
+        upload_file = upload.file.read()
+
+    if study and upload_file and schema:
         upload = models.Upload(
             study=study,
+            schema=schema,
             project_file=upload_file,
             filename=filename
         )
@@ -92,9 +132,6 @@ def add_uploads(context, request):
         }
     else:
         request.response.status = 400
-        errors = []
-        if not study:
-            errors.append('No study found in the db for: '.format(project))
         if not upload_file:
             errors.append('No file found in the request')
 

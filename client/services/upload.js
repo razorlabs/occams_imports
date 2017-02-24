@@ -41,14 +41,16 @@ export default class Upload {
    * POST new upload to the server
    *
    * @param uploadFile file contents to be uploaded
+   * @param schema name of the schema associated with the upload
    */
-  post (uploadFile) {
+  post (uploadFile, schema) {
     let csrf_token = Cookies.get('csrf_token')
     let headers = new Headers()
     headers.append('X-CSRF-Token', csrf_token)
 
     let formData = new FormData()
     formData.append('uploadFile', uploadFile)
+    formData.append('schema', schema)
 
     return fetch(
         this.$url,

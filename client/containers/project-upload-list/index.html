@@ -66,6 +66,29 @@
                   <input type="file" id="data-file" name="data-file" required>
                 </div>
 
+                <div class="row">
+                  <div class="col-sm-7">
+                  <p i18n:translate="">Select a form: </p>
+                    <div class="form-group select2-bootstrap-append">
+                      <input type=""
+                             name="schema"
+                             class="form-control"
+                             data-placeholder="Select a form..."
+                             data-bind="selectedData: schema,
+                                        dataKey: 'name',
+                                        dataLabel: 'name',
+                                        select2: {
+                                          nextSearchTerm: nextSchemaSearch,
+                                          ajax: {
+                                              url: '/imports/schemas',
+                                              data: querySchemaData,
+                                              results: parseSchemaResults
+                                          }
+                        }" />
+                    </div> <!-- /.input-group -->
+                  </div> <!-- /.col-sm-5-->
+                </div>
+
                 <div class="modal-footer">
                   <button type="button"
                           class="btn btn-link"
