@@ -137,10 +137,6 @@ def populate_project(
 
     :param db_session: Current database transaction session
     :type db_session: sqlalchemy.orm.session.Session
-    :param redis: redis id
-    :type redis: int
-    :param jobid:
-    :type jobid: int
     :param source_project_name: source study being processed
     :type source_project_name: str
     :param target_project_name: study where entities will be applied
