@@ -28,7 +28,7 @@ Additional Notes:
 """
 
 import json
-import operator
+import operator as py
 
 import numpy as np
 
@@ -41,19 +41,19 @@ from occams_imports import models
 PUBLISH_NAME = 'imputation'
 
 OPERATORS = {
-    'ID': (lambda operand: operand),  # Identity operator
-    'EQ': operator.eq,
-    'NE': operator.ne,
-    'LT': operator.lt,
-    'LTE': operator.le,
-    'GT': operator.gt,
-    'GTE': operator.ge,
-    'ADD': operator.add,
-    'SUB': operator.sub,
-    'MUL': operator.mul,
-    'DIV': operator.div,
+    'EQ': py.eq,
+    'NE': py.ne,
+    'LT': py.lt,
+    'LTE': py.le,
+    'GT': py.gt,
+    'GTE': py.ge,
+    'ADD': py.add,
+    'SUB': py.sub,
+    'MUL': py.mul,
+    'DIV': py.div,
     'ANY': any,
-    'ALL': all
+    'ALL': all,
+    'ID': (lambda operand: next(operand)),  # Identity operator
 }
 
 
@@ -81,17 +81,26 @@ def _log(redis, jobid, mapping, message):
     redis.publish(PUBLISH_NAME, json.dumps(data))
 
 
-def _query_mappings(db_session):
+def _query_mappings(db_session, project_name):
     """
     Generates a listing of the mappings
 
     :param db_session: Application database session
     :type db_session: sqlalchemy.orm.Session
+    :param project_name: Project Name
+    :type project_name: str
 
     :returns: An iterable query object that contains all of the mappins
     :rtype: sqlalchemy.orm.query.Query[ occams_imports.models.Mapping ]
     """
-    return db_session.query(models.Mapping).filter_by(type=u'imputation')
+    query = (
+        db_session.query(models.Mapping)
+        .filter(
+            (models.Mapping.study.has(name=project_name)) &
+            (models.Mapping.type == u'imputation')
+        )
+    )
+    return query
 
 
 def _count_mappings(mappings):
@@ -186,6 +195,7 @@ def _extract_value(conversion, row):
             'byVariable': True,
             'schema': {'name': str},
             'attribute': {'name': str, 'type': enum}
+            'operator': scalar operator token
         }
 
     A conversion for a value is structured as follows:
@@ -193,16 +203,21 @@ def _extract_value(conversion, row):
         {
             'byValue': True,
             'value': scalar
+            'operator': scalar operator token
         }
+
+    .. note:: The operator in the first conversion is ignored since there is
+              nothing to evaluate
 
     :param conversion: A conversion specification
     :type conversion: dict
+    :param row: The current row in the data frame being processed
+    :type row: pandas.Series
 
-
-    ""
+    :returns: value from the frame if by variable, the scalar value in the
+                conversion if by value, otherwise `pd.nan`
+    :rtype: int or `pd.nan`
     """
-
-    # TODO: might need type casting?
 
     if conversion.get('byVariable'):
         schema_name = conversion.get('schema', {}).get('name')
@@ -213,7 +228,9 @@ def _extract_value(conversion, row):
         return source_value
 
     elif conversion.get('byValue'):
-        return conversion.get('value')
+        # XXX: Making an assumption that all conversions are by integer
+        #      values as that is the the UI currently allows
+        return int(conversion.get('value'))
 
     else:
         return np.nan
@@ -221,6 +238,33 @@ def _extract_value(conversion, row):
 
 def _impute_group(group, row):
     """
+    Processes an individual group in a logic mapping
+
+    A group specification is structured as follows:
+
+        {
+            "conversions": conversion[]
+            "logic": {
+                "operator": "ALL" or "ANY"
+                "imputations": operation[]
+            }
+        }
+
+
+    :param group: The group structure to evaluate
+    :type group: dict
+    :param row: The current row in the data frame being processed
+    :type row: pandas.Series
+
+    :returns: The reduced group by the specified operator in the logic
+    :rtype: Truish or Falseish value, otherwise `pd.nan` if unable to be
+            evaluated
+
+    .. seealso::
+
+        :func:`_extract_value` - conversion specification
+        :func:`_operate` - operation specification
+
     """
 
     conversions = group.get('conversions')
@@ -235,18 +279,20 @@ def _impute_group(group, row):
         next_value = _extract_value(conversion, row)
         current_value = _operate(operator, current_value, next_value)
 
-    logic = group.get('logic')
-
-    if not logic:
-        return np.nan
-
+    logic = group.get('logic') or {}
+    condition = logic.get('operator') or 'ALL'
     imputations = logic.get('imputations')
 
     if not imputations:
-        return np.nan
+        return current_value
 
-    condition = logic.get('operator') or 'ALL'
-    clauses = iter(_operate(i, current_value) for i in imputations)
+    def impute(imputation, candidate):
+        condition = imputation.get('operator')
+        check = imputation.get('value')
+        result = _operate(condition, candidate, check)
+        return result
+
+    clauses = iter(impute(i, current_value) for i in imputations)
     imputed = _operate(condition, clauses)
 
     return imputed
@@ -261,13 +307,14 @@ def _compile_imputation(condition, target_value, groups):
         imputed_groups = iter(_impute_group(g, row) for g in groups)
         result = _operate(condition, imputed_groups)
 
-        if result is True:
-            if target_value is None:
-                return result
-            else:
+        # ALL/ANY coerce to a boolean so we need to return the desired value
+        if condition in ('ANY', 'ALL'):
+            if result:
                 return target_value
+            else:
+                return np.nan
         else:
-            return np.nan
+            return result
 
     return _process_row
 
@@ -275,6 +322,18 @@ def _compile_imputation(condition, target_value, groups):
 def _apply_mapping(db_session, redis, jobid, frame, mapping):
     """
     Apply a single mapping heuristic
+
+
+    Imputation mapping logic is structured as follows:
+
+    {
+        "target_schema": {"name": str, "title": str},
+        "target_variable": {"name", str, "title", str},
+        "target_choice": None or {"name": str, "title": str},
+        "condition": "ANY" or "ALL"
+        "groups": group[]
+    }
+
 
     :param db_session: Application database session
     :type db_session: sqlalchemy.orm.Session
@@ -293,7 +352,9 @@ def _apply_mapping(db_session, redis, jobid, frame, mapping):
         target_schema_name,
         target_attribute_name,
     )
-    target_value = mapping.logic.get('target_choice', {}).get('name') or None
+
+    target_choice = mapping.logic.get('target_choice') or {}
+    target_value = target_choice.get('name') or None
     target_column_name = '%s_%s' % (target_schema_name, target_attribute_name)
 
     groups = mapping.logic.get('groups') or []
@@ -310,7 +371,7 @@ def _apply_mapping(db_session, redis, jobid, frame, mapping):
 
     imputation = _compile_imputation(condition, target_value, groups)
 
-    frame[target_column_name] = frame.apply(imputation)
+    frame[target_column_name] = frame.apply(imputation, axis=1)
 
 
 def apply_all(db_session, redis, jobid, project_name, frame):
@@ -330,7 +391,7 @@ def apply_all(db_session, redis, jobid, project_name, frame):
     :type frame: pandas.DataFrame
     """
 
-    mappings = _query_mappings(db_session)
+    mappings = _query_mappings(db_session, project_name)
     mappings_count = _count_mappings(mappings)
 
     _start(redis, jobid, mappings_count)

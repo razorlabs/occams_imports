@@ -542,6 +542,26 @@ class UploadFactory(SQLAlchemyModelFactory):
     filename = factory.Faker('file_name', extension='.csv')
 
 
+@factory_fixture
+class StatusFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = models.Status
+    name = 'complete'
+    title = 'Complete'
+
+
+@factory_fixture
+class MappingFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = models.Mapping
+    study = factory.SubFactory(StudyFactory)
+    status = factory.SubFactory(StatusFactory)
+    description = factory.Faker('text')
+    notes = factory.Faker('text')
+    type = factory.Faker('random_element', elements=('direct', 'imputation'))
+    logic = {}
+
+
 @pytest.fixture(autouse=True)
 def attach_factory_session(db_session):
     """
