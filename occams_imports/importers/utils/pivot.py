@@ -10,9 +10,6 @@ import datetime
 import shutil
 import tempfile
 
-from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.orm.exc import MultipleResultsFound
-
 from occams_studies import models as studies
 from occams_datastore import models as datastore
 from occams_forms.renderers import apply_data
@@ -92,36 +89,38 @@ def load_schema_frame(
     return frame
 
 
-def filter_schemas(row, target_project_name):
-    """Filter consolidated pandas dataframe row by project name.
+def get_data(row, target_project_name, db_session):
+    """Get data from a row for all variables for a  particular project.
+
+    Sample return type:
+
+    {u'architecto4': {'gender': 0.0, 'collect_date': '2017-01-01'}}
 
     :param row: Row from consolidated pandas dataframe
     :type row: pandas.Dataframe.itterrows
     :param target_project_name study name to filter bvy
     :type target_project_name: str
-    :returns: Filtered schemas including only target project key
+    :param db_session: Current database transaction session
+    :type db_session: sqlalchemy.orm.session.Session
+    :returns: A dict of schemas, including var names and values
     :rtype: dict
     """
+    project = db_session.query(studies.Study).filter_by(
+        name=target_project_name).one()
+
     schemas = {}
+    for item in project.schemata:
+        schemas[item.name] = {}
+        schema = db_session.query(datastore.Schema).filter_by(
+            name=item.name).one()
 
-    for col in row.keys():
-        if col not in ['pid', 'visit']:
-            parsed_columns = col.split('_')
-            project = parsed_columns[0]
-            schema_name = parsed_columns[1]
-            variable = parsed_columns[2]
-            if variable == 'collect' and parsed_columns[3] == 'date':
-                variable = 'collect_date'
-            if project == target_project_name:
-                if schema_name in schemas:
-                    schemas[schema_name][variable] = row[col]
-                else:
-                    schemas[schema_name] = {}
-                    schemas[schema_name][variable] = row[col]
-
+        for variable in schema.iterleafs():
+            adj_variable = '{}_{}_{}'.format(
+                project.name, item.name, variable.name)
+            if adj_variable in row:
+                schemas[item.name][variable.name] = row[adj_variable]
             else:
-                # bypass non-target project variables
-                continue
+                schemas[item.name][variable.name] = np.nan
 
     return schemas
 
@@ -148,7 +147,7 @@ def populate_project(
     for index, row in consolidated_frame.iterrows():
         pid = row['pid']
 
-        schemas = filter_schemas(row, target_project_name)
+        schemas = get_data(row, target_project_name, db_session)
 
         patient = (
             db_session.query(studies.Patient)

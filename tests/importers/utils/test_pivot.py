@@ -185,7 +185,7 @@ def test_populate_project(
         assert entity['collect_date'] == '2017-01-01'
 
 
-def test_filter_schemas(
+def test_get_data(
         db_session,
         study_factory,
         schema_factory,
@@ -193,10 +193,8 @@ def test_filter_schemas(
         attribute_factory):
 
     import pandas as pd
-    import numpy as np
 
-    from occams_studies import models as studies
-    from occams_imports.importers.utils.pivot import filter_schemas
+    from occams_imports.importers.utils.pivot import get_data
 
     source_project = study_factory()
     target_project = study_factory()
@@ -243,7 +241,7 @@ def test_filter_schemas(
     assert sum(1 for _ in consolidated_frame.iterrows()) == 1
 
     for index, row in consolidated_frame.iterrows():
-        schemas = filter_schemas(row, target_project.name)
+        schemas = get_data(row, target_project.name, db_session)
 
     expected = {
         target_schema.name: {
