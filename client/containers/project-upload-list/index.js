@@ -14,8 +14,8 @@ export default class ProjectUploadListView{
    */
   constructor(params) {
 
-    this.isTarget = false;
-    this.schema = ko.observable('');
+    this.isTarget = false
+    this.schema = ko.observable('')
 
     this.project = params.project
     this.showUploadModal = ko.observable(false)
@@ -23,36 +23,25 @@ export default class ProjectUploadListView{
     this.uploads = ko.observableArray([])
     this.hasUploads = ko.pureComputed(() => this.uploads().length > 0)
 
-    this.selectedUploads = ko.observableArray([]);
+    this.selectedUploads = ko.observableArray([])
+    this.addMoreUploads = ko.observable(false)
 
-    this.nextSchemaSearch = function(){
-      var schema = this.schema;
-      return schema ? schema.name() : null;
-    };
-
-    this.querySchemaData = function(term){
+    this.nextSchemaSearch = () => this.schema() && this.schema().name()
+    this.querySchemaData = term => {
       return {
         vocabulary: 'available_schemata',
         is_target: this.isTarget,
         term: term
-      };
-    };
+      }
+    }
 
-    this.parseSchemaResults = function(data){
+    this.parseSchemaResults = data => {
       return {
-          results: data.schemata.map(function(value){
-            return new Schema(value);
-          })
-      };
-    };
+        results: data.schemata.map( value => new Schema(value) )
+      }
+    }
 
-    this.modalHeaderName = ko.computed(() => {
-      return this.project.title() + ' file upload.'
-    })
-
-    this.atLeastOneChecked = ko.computed(() => {
-      return this.selectedUploads().length > 0
-    })
+    this.atLeastOneChecked = ko.computed(() => this.selectedUploads().length > 0)
 
     Upload.query({projectName: this.project.name()})
       .then( uploads => {
@@ -73,6 +62,7 @@ export default class ProjectUploadListView{
    * Clears all UI settings
    */
   clear () {
+    this.addMoreUploads(false)
     this.showUploadModal(false)
   }
 
@@ -92,7 +82,7 @@ export default class ProjectUploadListView{
     let endpoint = pathToRegexp.compile('/imports/api/projects/:projectName/uploads')
 
     this.showUploadModal(true)
-    this.schema('');
+    this.schema('')
     this.newUpload = new Upload({'$url': endpoint(
         {'projectName':this.project.name()})})
   }
@@ -101,13 +91,22 @@ export default class ProjectUploadListView{
    * Get the file contents and POST
    */
   uploadFile(upload) {
-    this.showUploadModal(false)
 
     let uploadFile = upload['data-file'].files[0]
     let schema = upload['schema'].value
 
     this.newUpload.post(uploadFile, schema)
-    .then(this.uploads.push(this.newUpload))
+      .then(() => {
+        this.uploads.push(this.newUpload)
+
+        if (this.addMoreUploads()) {
+          upload.reset()
+          upload['add_another'].checked = true
+          this.beginUpload()
+        } else {
+          this.clear()
+        }
+      })
   }
 
   applyMappings(){

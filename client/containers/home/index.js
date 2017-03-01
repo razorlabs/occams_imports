@@ -206,7 +206,7 @@ function formListViewModel(){
       url: '/imports/mappings/delete',
       method: 'DELETE',
       data: ko.toJSON({mapped_delete: self.mapped()}),
-      headers: {'X-CSRF-Token': $.cookie('csrf_token')},
+      headers: {'X-CSRF-Token': Cookies.get('csrf_token')},
       beforeSend: function(){
       },
       success: function(data, textStatus, jqXHR){

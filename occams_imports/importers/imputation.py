@@ -106,7 +106,7 @@ def _query_mappings(db_session, project_name):
 def _count_mappings(mappings):
     """
     """
-    return mappings.count().scalar()
+    return mappings.count()
 
 
 def _get_schema(db_session, schema_name):
@@ -133,9 +133,10 @@ def _get_schema(db_session, schema_name):
             datastore.Schema,
             sa.func.row_number().over(
                 partition_by=datastore.Schema.name,
-                order_by=models.publish_date.desc().nullslast()
+                order_by=datastore.Schema.publish_date.desc().nullslast()
             ).label('row_number')
         )
+        .subquery()
     )
 
     query = (
@@ -173,7 +174,7 @@ def _get_attribute(db_session, schema_name, attribute_name):
     query = (
         db_session.query(datastore.Attribute)
         .options(orm.joinedload('choices'))
-        .filter(schema=schema)
+        .filter_by(schema=schema, name=attribute_name)
     )
     result = query.one()
     return result
@@ -185,7 +186,7 @@ def _operate(operator, *args):
     return result
 
 
-def _extract_value(conversion, row):
+def _extract_value(project_name, conversion, row):
     """
     Extracts a value from the row based on the conversion specification
 
@@ -193,8 +194,10 @@ def _extract_value(conversion, row):
 
         {
             'byVariable': True,
-            'schema': {'name': str},
-            'attribute': {'name': str, 'type': enum}
+            'value': {
+                'schema': {'name': str},
+                'attribute': {'name': str, 'type': enum}
+            }
             'operator': scalar operator token
         }
 
@@ -220,10 +223,11 @@ def _extract_value(conversion, row):
     """
 
     if conversion.get('byVariable'):
-        schema_name = conversion.get('schema', {}).get('name')
-        attribute = conversion.get('attribute', {})
+        schema_name = conversion.get('value', {}).get('schema', {}).get('name')
+        attribute = conversion.get('value', {}).get('attribute', {})
         attribute_name = attribute.get('name')
-        source_column_name = '%s_%s' % (schema_name, attribute_name)
+        source_column_name = \
+            '_'.join([project_name, schema_name, attribute_name])
         source_value = row[source_column_name]
         return source_value
 
@@ -236,7 +240,7 @@ def _extract_value(conversion, row):
         return np.nan
 
 
-def _impute_group(group, row):
+def _impute_group(project_name, group, row):
     """
     Processes an individual group in a logic mapping
 
@@ -272,11 +276,11 @@ def _impute_group(group, row):
     if not conversions:
         return np.nan
 
-    current_value = _extract_value(conversions[0], row)
+    current_value = _extract_value(project_name, conversions[0], row)
 
     for conversion in conversions[1:]:
         operator = conversion.get('operator')
-        next_value = _extract_value(conversion, row)
+        next_value = _extract_value(project_name, conversion, row)
         current_value = _operate(operator, current_value, next_value)
 
     logic = group.get('logic') or {}
@@ -298,13 +302,13 @@ def _impute_group(group, row):
     return imputed
 
 
-def _compile_imputation(condition, target_value, groups):
+def _compile_imputation(project_name, condition, target_value, groups):
     """
     Compiles impuation to process a dataframe row into a new column
     """
 
     def _process_row(row):
-        imputed_groups = iter(_impute_group(g, row) for g in groups)
+        imputed_groups = iter(_impute_group(project_name, g, row) for g in groups)
         result = _operate(condition, imputed_groups)
 
         # ALL/ANY coerce to a boolean so we need to return the desired value
@@ -355,7 +359,7 @@ def _apply_mapping(db_session, redis, jobid, frame, mapping):
 
     target_choice = mapping.logic.get('target_choice') or {}
     target_value = target_choice.get('name') or None
-    target_column_name = '%s_%s' % (target_schema_name, target_attribute_name)
+    target_column_name = '_'.join(['drsc', target_schema_name, target_attribute_name])
 
     groups = mapping.logic.get('groups') or []
 
@@ -369,7 +373,7 @@ def _apply_mapping(db_session, redis, jobid, frame, mapping):
         if len(groups) > 1:
             groups = groups[0]
 
-    imputation = _compile_imputation(condition, target_value, groups)
+    imputation = _compile_imputation(mapping.study.name, condition, target_value, groups)
 
     frame[target_column_name] = frame.apply(imputation, axis=1)
 
@@ -398,7 +402,7 @@ def apply_all(db_session, redis, jobid, project_name, frame):
 
     for mapping in mappings:
 
-        if mapping.status.name == 'completed':
+        if mapping.status.name == 'approved':
             _apply_mapping(db_session, redis, jobid, frame, mapping)
         else:
             _log(redis, jobid, mapping, 'Not in approved state')

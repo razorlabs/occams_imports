@@ -2,13 +2,15 @@
 Toolset for creating a pivot table from project data files
 """
 
-import pandas as pd
-import numpy as np
 import math
 import io
 import datetime
 import shutil
 import tempfile
+
+import numpy as np
+import pandas as pd
+from sqlalchemy import orm
 
 from occams_studies import models as studies
 from occams_datastore import models as datastore
@@ -43,6 +45,7 @@ def get_uploads(db_session, project_name):
 
 
 def load_schema_frame(
+        project,
         schema,
         buffer_,
         pid_column=DEFAULT_PID_COLUMN,
@@ -77,12 +80,17 @@ def load_schema_frame(
 
     index_columns = [pid_column, visit_column, collect_date_column]
     variable_columns = [a.name for a in schema.iterleafs()]
+    all_columns = index_columns + variable_columns
 
-    frame = frame[index_columns + variable_columns]
+    # TODO: pandas will error out if any of the columns are not present
+    frame = frame[all_columns]
 
-    renamed_columns = {c: schema.name + '_' + c for c in variable_columns}
+    renamed_columns = {
+        c: '_'.join([project.name, schema.name, c])
+        for c in variable_columns
+    }
     renamed_columns[collect_date_column] = \
-        schema.name + '_' + collect_date_column
+        '_'.join([project.name, schema.name, collect_date_column])
 
     frame.rename(columns=renamed_columns, inplace=True)
 
@@ -115,8 +123,7 @@ def get_data(row, target_project_name, db_session):
             name=item.name).one()
 
         for variable in schema.iterleafs():
-            adj_variable = '{}_{}_{}'.format(
-                project.name, item.name, variable.name)
+            adj_variable = '_'.join([project.name, item.name, variable.name])
             if adj_variable in row:
                 schemas[item.name][variable.name] = row[adj_variable]
             else:
@@ -144,16 +151,28 @@ def populate_project(
     :type consolidated_frame: pandas.DataFrame
     :returns: none
     """
+
+    target_site = (
+        db_session.query(studies.Site)
+        .filter_by(name=target_project_name)
+        .one()
+    )
+
     for index, row in consolidated_frame.iterrows():
         pid = row['pid']
 
         schemas = get_data(row, target_project_name, db_session)
 
-        patient = (
-            db_session.query(studies.Patient)
-            .filter_by(pid=pid)
-            .one()
-        )
+        try:
+            patient = (
+                db_session.query(studies.Patient)
+                .filter_by(pid=pid)
+                .one()
+            )
+        except orm.exc.NoResultFound:
+            patient = studies.Patient(site=target_site, pid=pid)
+            db_session.add(patient)
+            db_session.flush()
 
         for schema in schemas:
             target_schema = (
@@ -167,6 +186,7 @@ def populate_project(
                 .one()
             )
 
+            # TODO: use collect date in the source_data?
             entity = datastore.Entity(
                 schema=target_schema,
                 collect_date=datetime.date.today().isoformat(),
@@ -228,6 +248,7 @@ def load_project_frame(
 
     subframes = iter(
         load_schema_frame(
+            upload.study,
             upload.schema,
             io.BytesIO(upload.project_file),
             pid_column=pid_column,

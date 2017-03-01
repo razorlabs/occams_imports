@@ -50,8 +50,9 @@
            data-bind="modalVisible: showUploadModal">
         <div class="modal-dialog" data-bind="if: showUploadModal">
           <div class="modal-content">
-            <h4 class="modal-header"
-                data-bind="text: modalHeaderName"></h4>
+            <h4 class="modal-header" data-bind="with: project">
+              <span data-bind="text: title">Project</span> file upload.
+            </h4>
             <div class="modal-body">
               <form
                   role="form"
@@ -90,6 +91,11 @@
                 </div>
 
                 <div class="modal-footer">
+                  <label class="text-muted">
+                    <input type="checkbox" name="add_another" data-bind="checked: addMoreUploads" />
+                    <span i18n:translate="">Add another</span>
+                  </label>
+
                   <button type="button"
                           class="btn btn-link"
                           data-bind="click: clear">Cancel</button>

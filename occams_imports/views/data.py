@@ -178,19 +178,30 @@ def apply_mappings(context, request):
     db_session = request.db_session
     project = request.matchdict['project']
 
-    records = (
-        db_session.query(models.Upload).filter(models.Upload.study.has(
-            name=project)).all()
-    )
+    task_id = six.text_type(str(uuid.uuid4()))
 
-    study = records[0].study.name
-    filename = records[0].filename
     # this is the new one
     # this will apply direct and imputation for a particular project
-    from pdb import set_trace; set_trace()
-    # tasks.apply_direct_mappings.apply_async(
-    #     args=[]
+
+    from ..importers import imputation
+    from ..importers.utils.pivot import load_project_frame, populate_project
+
+    db_session = request.db_session
+    project_name = project
+    redis = request.redis
+    jobid = task_id
+
+    frame = load_project_frame(db_session, project_name)
+    imputation.apply_all(db_session, redis, jobid, project_name, frame)
+
+    # TODO: project name is case sensitive, need to fix it
+    populate_project(db_session, project_name, 'drsc', frame)
+
+    # tasks.apply_imputation_mappings.apply_async(
+        # args=[task_id, project],
+        # task_id=task_id
     # )
+
 
     return {}
 
@@ -202,12 +213,11 @@ def apply_mappings(context, request):
     renderer='json')
 def imputation(context, request):
     """Process imputation mappings."""
-    task_id = six.text_type(str(uuid.uuid4()))
-
-    tasks.apply_imputation_mappings.apply_async(
-        args=[],
-        task_id=task_id
-    )
+    # task_id = six.text_type(str(uuid.uuid4()))
+    # tasks.apply_imputation_mappings.apply_async(
+        # args=[task_id, project_id],
+        # task_id=task_id
+    # )
 
     return {}
 
