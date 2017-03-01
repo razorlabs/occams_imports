@@ -22,15 +22,16 @@ from occams_forms.renderers import apply_data, make_form
 
 
 def get_target_value(choices_mapping, record, source_variable, source_schema):
-    """Return the target value to be mapped.
+    """
+    Return the target value to be mapped.
 
     :param choices_mapping: a list of mapping dicts ({'source': 2 'target': 3})
     :param record: an occams_imports SiteData object
     :param source_variable: string name of the source variable
     :param source_schema: an occams Schema Object
 
-    rtype: the key to be mapped if a choice to choice map or a value for all
-           other mappings
+    :returns: the key to be mapped if a choice to choice map or a value for all
+              other mappings
     """
     target_value = None
     # Source choice to target choice mapping.
@@ -63,12 +64,14 @@ def get_target_value(choices_mapping, record, source_variable, source_schema):
 
 def get_errors(db_session, target_schema,
                target_variable, target_value):
-    """Return wtforms errors.
+    """
+    Return wtforms errors.
 
     :param db_session: SQL Alchemy session
     :param target_schema: an occams Schema object
     :param target_variable: string name of the target variable
-    :rtype: list of wtforms errors
+
+    :returns: list of wtforms errors
     """
     Form = make_form(db_session, target_schema)
     validate_form = \
@@ -84,7 +87,8 @@ def get_errors(db_session, target_schema,
 
 def add_drsc_entity(db_session, patient, target_schema_name,
                     target_schema, collect_date):
-    """Add DRSC entity if required.
+    """
+    Add DRSC entity if required.
 
     If the target schema entity exists we want to add mapped data
     to the exisiting entity rather than create a new entity
@@ -94,10 +98,13 @@ def add_drsc_entity(db_session, patient, target_schema_name,
     :param patient: patient mapping will be applied to
     :param target_schema_name: name of the target schema
     :param target_schema: occams Schema object of the target schema
-    :collect_date: collect date of the entity in iso format
-    :rtype: Entity
+    :param collect_date: collect date of the entity in iso format
+
+    :rtype: occams_datastore.models.Entity
     """
+
     entity_exists = False
+
     for item in patient.entities:
         if item.schema.name == target_schema_name:
             entity = item
@@ -122,7 +129,8 @@ def add_drsc_entity(db_session, patient, target_schema_name,
 
 
 def apply_all(db_session, redis, jobid, project_name, frame):
-    """ Direct mappings pipeline.
+    """
+    Direct mappings pipeline.
 
     From a high level, this function walks the approved mappings from the
     mappings table, gets patient records matching the source schema, for
@@ -146,8 +154,9 @@ def apply_all(db_session, redis, jobid, project_name, frame):
     * Source Value to Target Value
 
     :param task: celery task object
-    :rtype: count and total is broadcast to the 'direct' redis channel,
-    currently the logs are not returned
+
+    :returns: count and total is broadcast to the 'direct' redis channel,
+              currently the logs are not returned
     """
     # Retrieve mappings in 'approved' status
 

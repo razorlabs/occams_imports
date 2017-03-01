@@ -112,12 +112,12 @@ export default class ProjectUploadListView{
   applyMappings(){
     let url = '/imports/api/projects/' + this.project.name() + '/apply'
     fetch(
-            url,
-            {
-              method: 'GET',
-              credentials: 'include'
-            }
-          )
+      url,
+      {
+        method: 'POST',
+        credentials: 'include'
+      }
+    )
   }
 }
 
