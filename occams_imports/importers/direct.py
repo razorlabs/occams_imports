@@ -5,6 +5,7 @@ Tasks in this module will be run in a separate process so the user
 can continue to use the application and view the mapping results at a
 later time.
 """
+
 import shutil
 import tempfile
 import json
@@ -18,10 +19,6 @@ from occams_studies import models as studies
 from occams_imports import models
 
 from occams_forms.renderers import apply_data, make_form
-from occams.celery import app, Session, with_transaction
-
-from .importers import imputation
-from .importers.utils.pivot import load_project_frame
 
 
 def get_target_value(choices_mapping, record, source_variable, source_schema):
@@ -124,9 +121,7 @@ def add_drsc_entity(db_session, patient, target_schema_name,
         return entity
 
 
-@app.task(name='apply_direct_mappings', ignore_result=True, bind=True)
-@with_transaction
-def apply_direct_mappings(task):
+def apply_all(db_session, redis, jobid, project_name, frame):
     """ Direct mappings pipeline.
 
     From a high level, this function walks the approved mappings from the
@@ -158,12 +153,10 @@ def apply_direct_mappings(task):
 
     # TODO filter by a particular project
     mappings = (
-        Session.query(models.Mapping)
+        db_session.query(models.Mapping)
         .filter_by(type=u'direct')
         .filter_by(status_id=3).all()
     )
-
-    redis = app.redis
 
     total_mappings = len(mappings)
     count = 0
@@ -191,7 +184,7 @@ def apply_direct_mappings(task):
 
         # Get patient sitedata records matching the source schema
         records = (
-            Session.query(models.SiteData)
+            db_session.query(models.SiteData)
             .filter(
                 models.SiteData.data['form_name'].astext == source_schema_name
             )
@@ -206,24 +199,24 @@ def apply_direct_mappings(task):
             collect_date = record.data['collect_date']
 
             patient = (
-                Session.query(studies.Patient)
+                db_session.query(studies.Patient)
                 .filter_by(pid=pid)
                 .one()
             )
 
             target_schema = (
-                Session.query(datastore.Schema)
+                db_session.query(datastore.Schema)
                 .filter_by(name=target_schema_name)
                 .filter_by(publish_date=target_schema_publish_date)
             ).one()
 
             source_schema = (
-                Session.query(datastore.Schema)
+                db_session.query(datastore.Schema)
                 .filter_by(name=source_schema_name)
                 .filter_by(publish_date=source_schema_publish_date)
             ).one()
 
-            entity = add_drsc_entity(Session, patient, target_schema_name,
+            entity = add_drsc_entity(db_session, patient, target_schema_name,
                                      target_schema, collect_date)
 
             target_value = get_target_value(mapping.logic['choices_mapping'],
@@ -231,7 +224,7 @@ def apply_direct_mappings(task):
                                             source_schema)
 
             if target_value:
-                target_has_errors = get_errors(Session, target_schema,
+                target_has_errors = get_errors(db_session, target_schema,
                                                target_variable, target_value)
 
                 if target_has_errors:
@@ -243,7 +236,7 @@ def apply_direct_mappings(task):
                 else:
                     payload = {target_variable: target_value}
                     upload_dir = tempfile.mkdtemp()
-                    apply_data(Session, entity, payload, upload_dir)
+                    apply_data(db_session, entity, payload, upload_dir)
                     shutil.rmtree(upload_dir)
 
             # No target value. This occurs if there is no target choice
@@ -261,16 +254,3 @@ def apply_direct_mappings(task):
         for key in ('count', 'total'):
             data[key] = int(data[key])
         redis.publish('direct', json.dumps(data))
-
-
-@app.task(name='apply_imputation_mappings', ignore_result=True, bind=True)
-@with_transaction
-def apply_imputation_mappings(task, jobid, project_name):
-
-    # TODO: It looks like we will be processing direct and imputations
-    #       simultaneously, so this data is what will be expected so that
-    #       both processes can continue the job. We'll figure this part out
-    #       later.
-
-    frame = load_project_frame(Session, project_name)
-    imputation.apply_all(Session, app.redis, jobid, project_name, frame)
