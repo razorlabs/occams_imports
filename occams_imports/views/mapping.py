@@ -8,6 +8,7 @@ from operator import itemgetter
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
 from pyramid.renderers import render_to_response
+from sqlalchemy import asc
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 import wtforms
@@ -542,12 +543,75 @@ def delete_mappings(context, request):
     return {}
 
 
+def convert_logic(db_session, logic):
+    """Converts server side logic to clientside logic."""
+
+    logic = dict(logic)
+    logic.pop('forms', None)
+    logic['description'] = u''
+    logic['targetChoice'] = logic.pop('target_choice')
+    logic['groupsLength'] = len(logic['groups'])
+    if logic['groupsLength'] > 1:
+        logic['hasMultipleGroups'] = True
+    else:
+        logic['hasMultipleGroups'] = False
+
+    target_schema = (
+        db_session.query(datastore.Schema)
+        .filter_by(name=logic.pop('target_schema'))
+        .order_by(asc(datastore.Schema.publish_date))
+    ).limit(1).one()
+
+    target_schema_publish_date = target_schema.publish_date.isoformat()
+    target_variable = target_schema.attributes[logic['target_variable']]
+
+    logic['target'] = {}
+    logic['target']['schema'] = {}
+    logic['target']['schema']['name'] = target_schema.name
+    logic['target']['schema']['publish_date'] = target_schema_publish_date
+
+    logic['target']['attribute'] = {}
+    logic['target']['attribute']['name'] = target_variable.name
+    logic['target']['attribute']['title'] = target_variable.title
+    logic['target']['attribute']['type'] = target_variable.type
+
+    if logic['target']['attribute']['type'] == u'choice':
+        logic['target']['attribute']['hasChoices'] = True
+    else:
+        logic['target']['attribute']['hasChoices'] = False
+
+    logic.pop('target_variable')
+
+    return logic
+
+
 @view_config(
     route_name='imports.mappings.view_mapped',
-    permission='view',
-    renderer='../templates/mapping/direct-view.pt'
+    permission='view'
 )
-def direct(context, request):
+def view_mappings(context, request):
+    """View a mapped imputation. """
+    db_session = request.db_session
+
+    mapping_id = int(request.params['id'])
+    mapping = db_session.query(models.Mapping).filter_by(id=mapping_id).one()
+
+    if request.has_permission('edit'):
+        pass
+
+    if request.has_permission('view'):
+        pass
+
+    if mapping.type == u'direct':
+        url = '../templates/mapping/direct-view.pt'
+
+        return render_to_response(url, {}, request=request)
+    else:
+        url = '../templates/mapping/imputation.pt'
+        logic = convert_logic(db_session, mapping.logic)
+
+        return render_to_response(url, logic, request=request)
+
     return {}
 
 
