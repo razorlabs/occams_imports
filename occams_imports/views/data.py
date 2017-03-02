@@ -11,9 +11,7 @@ from cgi import FieldStorage
 from pyramid.httpexceptions import HTTPOk
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
-from sqlalchemy import asc
-from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.orm.exc import MultipleResultsFound
+from sqlalchemy import orm
 
 from occams_studies import models as studies
 from occams_datastore import models as datastore
@@ -51,16 +49,19 @@ def uploads_list(context, request):
     this_url = request.route_path('imports.project_list')
     url = '{}/{}/uploads'.format(this_url, project)
 
-    files = db_session.query(models.Upload).filter(
-        models.Upload.study.has(name=project)).all()
+    files = (
+        db_session.query(models.Upload)
+        .filter(models.Upload.study.has(name=project))
+    )
 
     result = {}
     result['items'] = []
+
     for file in files:
         delete_url = '{}/{}'.format(url, file.id)
         result['items'].append({
             'filename': file.filename,
-            'uploadDate': file.modify_date.date().isoformat(),
+            'uploadDate': file.modify_date.date(),
             '$url': url,
             '$deleteUrl': delete_url
         })
@@ -93,10 +94,10 @@ def add_uploads(context, request):
     errors = []
     try:
         study = db_session.query(studies.Study).filter_by(name=project).one()
-    except MultipleResultsFound:
+    except orm.exc.MultipleResultsFound:
         errors.append('Multiple studies found in the db for: {}'.format(study))
         study = None
-    except NoResultFound:
+    except orm.exc.NoResultFound:
         errors.append('No study found in the db for: {}'.format(study))
         study = None
 
@@ -106,14 +107,14 @@ def add_uploads(context, request):
         schema = (
             db_session.query(datastore.Schema)
             .filter_by(name=schema_name)
-            .order_by(asc(datastore.Schema.publish_date))
+            .order_by(datastore.Schema.publish_date.asc())
         ).limit(1).one()
-    except MultipleResultsFound:
+    except orm.exc.MultipleResultsFound:
         msg = 'Multiple schema found with same publish date found for: {}' \
             .format(schema)
         errors.append(msg)
         study = None
-    except NoResultFound:
+    except orm.exc.NoResultFound:
         msg = 'No schema found in the db for: {}'.format(schema)
         errors.append(msg)
         study = None
@@ -170,7 +171,7 @@ def delete_upload(context, request):
 
     db_session.query(models.Upload).filter_by(id=upload_id).delete()
 
-    return {}
+    return HTTPOk()
 
 
 @view_config(

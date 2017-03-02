@@ -323,7 +323,7 @@ def _compile_imputation(project_name, condition, target_value, groups):
     return _process_row
 
 
-def _apply_mapping(db_session, redis, jobid, frame, mapping):
+def _apply_mapping(db_session, redis, jobid, frame, mapping, target_project_name):
     """
     Apply a single mapping heuristic
 
@@ -359,7 +359,9 @@ def _apply_mapping(db_session, redis, jobid, frame, mapping):
 
     target_choice = mapping.logic.get('target_choice') or {}
     target_value = target_choice.get('name') or None
-    target_column_name = '_'.join(['drsc', target_schema_name, target_attribute_name])
+    target_column_name = '_'.join([
+        target_project_name, target_schema_name, target_attribute_name
+    ])
 
     groups = mapping.logic.get('groups') or []
 
@@ -378,7 +380,7 @@ def _apply_mapping(db_session, redis, jobid, frame, mapping):
     frame[target_column_name] = frame.apply(imputation, axis=1)
 
 
-def apply_all(db_session, redis, jobid, project_name, frame):
+def apply_all(db_session, redis, jobid, source_project_name, target_project_name, frame):
     """
     Applies all completed mappings to the currently pending data set
 
@@ -393,9 +395,12 @@ def apply_all(db_session, redis, jobid, project_name, frame):
     :type project_name: str
     :param frame: The current data frame for the project
     :type frame: pandas.DataFrame
+
+    :returns: the mutated frame
+    :rtype: pandas.DataFrame
     """
 
-    mappings = _query_mappings(db_session, project_name)
+    mappings = _query_mappings(db_session, source_project_name)
     mappings_count = _count_mappings(mappings)
 
     _start(redis, jobid, mappings_count)
@@ -403,7 +408,7 @@ def apply_all(db_session, redis, jobid, project_name, frame):
     for mapping in mappings:
 
         if mapping.status.name == 'approved':
-            _apply_mapping(db_session, redis, jobid, frame, mapping)
+            _apply_mapping(db_session, redis, jobid, frame, mapping, target_project_name)
         else:
             _log(redis, jobid, mapping, 'Not in approved state')
 

@@ -23,6 +23,11 @@ def apply_mappings(task, jobid, source_project_name, target_project_name):
     mapping specifications specied. Once the data frame has been constructed
     the computed values are stored in target eCRFs for the target project.
 
+    .. note: THIS IS AN EXTREMELY LONG AND RESOURCE-HEAVY PROCESS.
+
+             It is his highly recommended this be run on a machine with
+             plenty of horsepower and memory.
+
     :param task: The anonymously-bound celery task instance
     :type task: celery.Task
     :param jobid: A unique name for this task
