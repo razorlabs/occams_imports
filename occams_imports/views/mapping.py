@@ -333,8 +333,6 @@ def mappings_imputations_map(context, request):
     check_csrf_token(request)
     db_session = request.db_session
 
-    # from pdb import set_trace; set_trace()
-
     # TODO - find a better way to obtain the site
     schema_obj = request.json['groups'][0]['conversions'][0]['value']['schema']
     study_form_name = schema_obj['name']
