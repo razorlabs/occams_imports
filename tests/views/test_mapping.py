@@ -823,3 +823,93 @@ class TestGetSchemasMapped:
         assert row['description'] == u'question'
         assert row['study'] == u'DRSC'
         assert row['type'] == u'direct'
+
+
+def test_convert_logic(db_session, schema_factory, attribute_factory):
+    """
+    Test if logic converts from server side to client-side
+    """
+    import datetime
+    from occams_imports.views.mapping import convert_logic
+
+    target_schema = schema_factory.create(
+        name=u'ARVLog',
+        publish_date=datetime.date(2014,07,13)
+    )
+
+    attribute_factory.create(
+        schema=target_schema,
+        name=u'arvname',
+        title=u'ARV',
+        type=u'choice'
+    )
+
+    server_logic = {
+        u'condition': u'ALL',
+
+
+        u'forms': [[u'Demographics', u'employment']],
+
+
+        u'groups': [{u'conversions': [{u'byValue': False,
+                                       u'byVariable': True,
+                                       u'value': {u'attribute': {u'hasChoices': True,
+                                                                 u'name': u'employment',
+                                                                 u'title': u'Employment',
+                                                                 u'type': u'choice'},
+                                                  u'schema': {u'name': u'Demographics',
+                                                              u'publish_date': u'2015-10-01'}}}],
+                      u'conversionsLength': 1,
+                      u'hasMultipleConversions': False,
+                      u'logic': {u'hasImputations': True,
+                                 u'hasMultipleImputations': False,
+                                 u'imputations': [{u'operator': u'EQ',
+                                                   u'value': u'1'}],
+                                 u'imputationsLength': 1}}],
+
+        u'target_choice': {u'name': u'1',
+                            u'title': u'Retrovir',
+                            u'toString': u'1 - Retrovir'},
+
+        u'target_schema': u'ARVLog',
+
+        u'target_variable': u'arvname'
+    }
+
+    expected_logic = {
+
+         u'condition': u'ALL',
+         u'description': u'',
+         u'groups': [{u'conversions': [{u'byValue': False,
+                                        u'byVariable': True,
+                                        u'value': {u'attribute': {u'hasChoices': True,
+                                                                  u'name': u'employment',
+                                                                  u'title': u'Employment',
+                                                                  u'type': u'choice'},
+                                                   u'schema': {u'name': u'Demographics',
+                                                               u'publish_date': u'2015-10-01'}}}],
+                      u'conversionsLength': 1,
+                      u'hasMultipleConversions': False,
+                      u'logic': {u'hasImputations': True,
+                                 u'hasMultipleImputations': False,
+                                 u'imputations': [{u'operator': u'EQ',
+                                                   u'value': u'1'}],
+                                 u'imputationsLength': 1}}],
+         u'groupsLength': 1,
+         u'hasMultipleGroups': False,
+
+
+         u'target': {u'attribute': {u'hasChoices': True,
+                                    u'name': u'arvname',
+                                    u'title': u'ARV',
+                                    u'type': u'choice'},
+                     u'schema': {u'name': u'ARVLog', u'publish_date': u'2014-07-13'}},
+
+         u'targetChoice': {u'name': u'1',
+                           u'title': u'Retrovir',
+                           u'toString': u'1 - Retrovir'}
+    }
+
+    logic = convert_logic(db_session, server_logic)
+
+    assert logic == expected_logic
