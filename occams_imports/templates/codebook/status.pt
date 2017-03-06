@@ -53,14 +53,16 @@
             <tr>
               <th>Schema Name</th>
               <th>Schema Title</th>
-              <th>Name</th>
-              <th>Title</th>
+              <th>Schema Publish Date</th>
+              <th>Var Name</th>
+              <th>Var Title</th>
               <th>Errors</th>
             </tr>
           </thead>
             <tr tal:repeat="error errors">
               <td>${error.schema_name}</td>
               <td>${error.schema_title}</td>
+              <td>${error.schema_publish_date}</td>
               <td>${error.name}</td>
               <td>${error.title}</td>
               <td class="text-danger">${error.errors}</td>
