@@ -488,6 +488,7 @@ def test_log_errors():
     record = {
         'schema_name': u'test_schema_name',
         'schema_title': u'test_schema_title',
+        'publish_date': u'2017-01-01',
         'name': u'test_name',
         'title': u'test_title'
     }

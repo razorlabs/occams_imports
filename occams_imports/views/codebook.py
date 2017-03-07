@@ -34,6 +34,7 @@ def log_errors(errors, record):
     output['errors'] = errors
     output['schema_name'] = record['schema_name']
     output['schema_title'] = record['schema_title']
+    output['schema_publish_date'] = record['publish_date']
     output['name'] = record['name']
     output['title'] = record['title']
 
@@ -74,10 +75,23 @@ def validate_populate_imports(request, records):
     """
     errors, imports, forms = ([], [], [])
     for record in records:
+        if record['publish_date'] is None:
+            publish_date = None
+            publish_date_error = {}
+            publish_date_error['errors'] = 'No publish date'
+            publish_date_error['schema_name'] = record['schema_name']
+            publish_date_error['schema_title'] = record['schema_title']
+            publish_date_error['schema_publish_date'] = None
+            publish_date_error['name'] = record['name']
+            publish_date_error['title'] = record['title']
+            errors.append(publish_date_error)
+        else:
+            publish_date = record['publish_date'].strftime('%Y-%m-%d')
+
         schema_dict = {
             'name': record['schema_name'],
             'title': record['schema_title'],
-            'publish_date': record['publish_date'].strftime('%Y-%m-%d')
+            'publish_date': publish_date
         }
 
         FormForm = FormFormFactory(context=None, request=request)
@@ -88,8 +102,9 @@ def validate_populate_imports(request, records):
             schema_error['errors'] = wtferrors(form_form)
             schema_error['schema_name'] = schema_dict['name']
             schema_error['schema_title'] = schema_dict['title']
-            schema_error['name'] = 'N/A'
-            schema_error['title'] = 'N/A'
+            schema_error['schema_publish_date'] = record['publish_date']
+            schema_error['name'] = record['name']
+            schema_error['title'] = record['title']
             errors.append(schema_error)
 
         else:
@@ -183,6 +198,7 @@ def is_duplicate_schema(forms, errors, db_session):
                 {
                     'schema_name': name,
                     'schema_title': title,
+                    'schema_publish_date': publish_date,
                     'name': u'N/A',
                     'title': u'N/A',
                     'errors': 'Duplicate schema -  already exists in the db'
@@ -235,22 +251,36 @@ def validate_delimiter(delimiter, codebook):
     errors = []
     delimiter_mismatch = False
     codebook.readline()
-    dialect = csv.Sniffer().sniff(codebook.readline())
-    sniffed_delimiter = dialect.delimiter
 
-    if delimiter != sniffed_delimiter:
+    row = codebook.readline()
+    try:
+        dialect = csv.Sniffer().sniff(row)
+    except Exception as e:
         error = {
-            'errors': u"Selected delimiter doesn't match file delimiter",
+            'errors': '{} - Row: {}'.format(e.message, row),
             'schema_name': 'N/A',
             'schema_title': 'N/A',
+            'schema_publish_date': 'N/A',
             'name': 'N/A',
             'title': 'N/A'
         }
+    else:
+        sniffed_delimiter = dialect.delimiter
 
-        delimiter_mismatch = True
-        errors.append(error)
+        if delimiter != sniffed_delimiter:
+            error = {
+                'errors': u"Selected delimiter doesn't match file delimiter",
+                'schema_name': 'N/A',
+                'schema_title': 'N/A',
+                'schema_publish_date': 'N/A',
+                'name': 'N/A',
+                'title': 'N/A'
+            }
 
-    codebook.seek(0)
+            delimiter_mismatch = True
+            errors.append(error)
+
+        codebook.seek(0)
 
     return delimiter_mismatch, errors
 
