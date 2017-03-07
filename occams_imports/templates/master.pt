@@ -111,23 +111,6 @@
                     <a  href="${url}">Upload</a>
                   </li>
 
-                  <li tal:define="
-                        factory   import:occams_imports.models.ImportFactory;
-                        resource  factory(request);
-                        url       request.route_path('imports.index');
-                        active    False;"
-
-                      tal:attributes="class python:'active' if active else ''"
-                      tal:condition="request.has_permission('import', resource)">
-                    <a href="${url}" class="dropdown-toggle" data-toggle="dropdown">Apply
-                    <span class="caret"></span></a>
-                      <ul class="dropdown-menu">
-                        <li><a href="${request.route_path('imports.apply_direct_status')}">Direct Mappings</a></li>
-                        <li><a href="${request.route_path('imports.apply_imputation_status')}">Imputation Mappings</a></li>
-                    </ul>
-                  </li>
-
-
                 </ul>
 
               <metal:navbar-user-slot define-slot="navbar-user-slot">
