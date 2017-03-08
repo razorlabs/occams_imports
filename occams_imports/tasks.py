@@ -60,7 +60,5 @@ def apply_mappings(task, jobid, source_project_name, target_project_name):
         frame
     )
 
-    # from celery.contrib import rdb; rdb.set_trace()
-
     truncate_project(Session, target_project_name)
     populate_project(Session, source_project_name, target_project_name, frame)
