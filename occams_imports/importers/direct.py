@@ -52,9 +52,6 @@ def apply_all(
             source_project_name, source_schema_name, source_variable
         ])
 
-        if source_column not in frame:
-            frame[source_column] = np.nan
-
         target_schema_name = mapping.logic['target_schema']
         target_variable = mapping.logic['target_variable']
         target_column = '_'.join([
@@ -67,6 +64,9 @@ def apply_all(
             if choice_mapping['source']
         }
 
-        frame[target_column] = frame[source_column].map(value_map)
+        if source_column not in frame:
+            frame[source_column] = np.nan
+        else:
+            frame[target_column] = frame[source_column].map(value_map)
 
     return frame
