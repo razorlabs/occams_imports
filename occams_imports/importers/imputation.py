@@ -305,7 +305,7 @@ def _impute_group(project_name, group, row):
     return imputed
 
 
-def _compile_imputation(project_name, condition, target_value, groups):
+def _compile_imputation(project_name, condition, target_column_name, target_value, groups):
     """
     Compiles impuation to process a dataframe row into a new column
     """
@@ -319,7 +319,11 @@ def _compile_imputation(project_name, condition, target_value, groups):
             if result:
                 return target_value
             else:
-                return np.nan
+                # If the criteria was not met, use the current value (i.e. omit)
+                if target_column_name in row:
+                    return row[target_column_name]
+                else:
+                    return np.nan
         else:
             return result
 
@@ -378,7 +382,11 @@ def _apply_mapping(db_session, redis, jobid, frame, mapping, target_project_name
         if len(groups) > 1:
             groups = groups[0]
 
-    imputation = _compile_imputation(mapping.study.name, condition, target_value, groups)
+    imputation = _compile_imputation(mapping.study.name, condition, target_column_name, target_value, groups)
+
+    # XXX: In hindsight, this should have built a pandas filter query to
+    # efficiently seek out matching rows and only set the target value on
+    # those rows.
 
     frame[target_column_name] = frame.apply(imputation, axis=1)
 
