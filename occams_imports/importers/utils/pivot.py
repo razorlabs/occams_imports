@@ -76,14 +76,27 @@ def load_schema_frame(
 
     """
 
-    frame = pd.read_csv(buffer_)
-
     index_columns = [pid_column, visit_column, collect_date_column]
     variable_columns = [a.name for a in schema.iterleafs()]
-    all_columns = index_columns + variable_columns
 
-    # TODO: pandas will error out if any of the columns are not present
-    frame = frame[all_columns]
+    # Load the data uninterpreted so that we can convert the columns manually
+    frame = pd.read_csv(buffer_, dtype=str)
+
+    for variable_name in variable_columns:
+
+        # Add any columns that are in the codebook but not in the source file
+        if variable_name not in frame:
+            frame[variable_name] = np.nan
+            continue
+
+        type_ = schema.attributes[variable_name].type
+
+        if type_ in ('number',):
+            frame[variable_name] = frame[variable_name].apply(pd.to_numeric, errors='coerce')
+        elif type_ in ('date', 'datetime'):
+            frame[variable_name] = frame[variable_name].apply(pd.to_datetime, errors='coerce')
+
+    frame = frame[index_columns + variable_columns]
 
     renamed_columns = {
         c: '_'.join([project.name, schema.name, c])
