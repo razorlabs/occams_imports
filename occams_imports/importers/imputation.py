@@ -228,7 +228,10 @@ def _extract_value(project_name, conversion, row):
         attribute_name = attribute.get('name')
         source_column_name = \
             '_'.join([project_name, schema_name, attribute_name])
-        source_value = row[source_column_name]
+        if source_column_name in row:
+            source_value = row[source_column_name]
+        else:
+            source_value = np.nan
         return source_value
 
     elif conversion.get('byValue'):

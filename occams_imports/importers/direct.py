@@ -6,6 +6,8 @@ can continue to use the application and view the mapping results at a
 later time.
 """
 
+import numpy as np
+
 from occams_imports import models
 
 
@@ -49,6 +51,9 @@ def apply_all(
         source_column = '_'.join([
             source_project_name, source_schema_name, source_variable
         ])
+
+        if source_column not in frame:
+            frame[source_column] = np.nan
 
         target_schema_name = mapping.logic['target_schema']
         target_variable = mapping.logic['target_variable']
