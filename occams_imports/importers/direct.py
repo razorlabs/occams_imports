@@ -10,6 +10,9 @@ import numpy as np
 
 from occams_imports import models
 
+from .utils.pivot import \
+    DEFAULT_PID_COLUMN, DEFAULT_VISIT_COLUMN, DEFAULT_COLLECT_DATE_COLUMN
+
 
 def apply_all(
         db_session,
@@ -17,7 +20,10 @@ def apply_all(
         jobid,
         source_project_name,
         target_project_name,
-        frame
+        frame,
+        pid_column=DEFAULT_PID_COLUMN,
+        visit_column=DEFAULT_VISIT_COLUMN,
+        collect_date_column=DEFAULT_COLLECT_DATE_COLUMN,
         ):
     """
     Applies all completed DIRECT mappings to the queued data set
@@ -51,11 +57,17 @@ def apply_all(
         source_column = '_'.join([
             source_project_name, source_schema_name, source_variable
         ])
+        source_collect_date = '_'.join([
+            source_project_name, source_schema_name, collect_date_column
+        ])
 
         target_schema_name = mapping.logic['target_schema']
         target_variable = mapping.logic['target_variable']
         target_column = '_'.join([
             target_project_name, target_schema_name, target_variable
+        ])
+        target_collect_date = '_'.join([
+            target_project_name, target_schema_name, collect_date_column
         ])
 
         value_map = {
@@ -63,6 +75,9 @@ def apply_all(
             for choice_mapping in (mapping.logic.get('choices_mapping') or [])
             if choice_mapping['source']
         }
+
+        if source_collect_date in frame and target_collect_date not in frame:
+            frame[target_collect_date] = frame[source_collect_date]
 
         if source_column not in frame:
             frame[source_column] = np.nan

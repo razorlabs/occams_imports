@@ -5,14 +5,12 @@ Toolset for creating a pivot table from project data files
 import math
 import io
 import numbers
-import datetime
 import shutil
 import tempfile
 
 import numpy as np
 import pandas as pd
 from sqlalchemy import orm
-import six
 
 from occams_studies import models as studies
 from occams_datastore import models as datastore
@@ -84,6 +82,8 @@ def load_schema_frame(
     # Load the data uninterpreted so that we can convert the columns manually
     frame = pd.read_csv(buffer_, dtype=str)
 
+    frame[collect_date_column].apply(pd.to_datetime)
+
     for variable_name in variable_columns:
 
         # Add any columns that are in the codebook but not in the source file
@@ -94,9 +94,11 @@ def load_schema_frame(
         type_ = schema.attributes[variable_name].type
 
         if type_ in ('number',):
-            frame[variable_name] = frame[variable_name].apply(pd.to_numeric, errors='coerce')
+            frame[variable_name] = \
+                frame[variable_name].apply(pd.to_numeric, errors='coerce')
         elif type_ in ('date', 'datetime'):
-            frame[variable_name] = frame[variable_name].apply(pd.to_datetime, errors='coerce')
+            frame[variable_name] = \
+                frame[variable_name].apply(pd.to_datetime, errors='coerce')
 
     frame = frame[index_columns + variable_columns]
 
@@ -112,71 +114,41 @@ def load_schema_frame(
     return frame
 
 
-def get_data(row, target_project_name, db_session):
-    """Get data from a row for all variables for a  particular project.
-
-    Sample return type:
-
-    {u'architecto4': {'gender': 0.0, 'collect_date': '2017-01-01'}}
-
-    :param row: Row from consolidated pandas dataframe
-    :type row: pandas.Dataframe.itterrows
-    :param target_project_name study name to filter bvy
-    :type target_project_name: str
-    :param db_session: Current database transaction session
-    :type db_session: sqlalchemy.orm.session.Session
-    :returns: A dict of schemas, including var names and values
-    :rtype: dict
-    """
-    project = db_session.query(studies.Study).filter_by(
-        name=target_project_name).one()
-
-    schemas = {}
-    for item in project.schemata:
-        schemas[item.name] = {}
-        schema = db_session.query(datastore.Schema).filter_by(
-            name=item.name).one()
-
-        for variable in schema.iterleafs():
-            adj_variable = '_'.join([project.name, item.name, variable.name])
-            if adj_variable in row:
-                schemas[item.name][variable.name] = row[adj_variable]
-            else:
-                schemas[item.name][variable.name] = np.nan
-
-    return schemas
-
-
 def populate_project(
         db_session,
-        source_project_name,
-        target_project_name,
-        consolidated_frame):
+        project_name,
+        consolidated_frame,
+        pid_column=DEFAULT_PID_COLUMN,
+        visit_column=DEFAULT_VISIT_COLUMN,
+        collect_date_column=DEFAULT_COLLECT_DATE_COLUMN,
+        ):
     """
     Processes a final dataframe (i.e. a frame after mappings have been applied)
     and creates entities for the target project.
 
     :param db_session: Current database transaction session
     :type db_session: sqlalchemy.orm.session.Session
-    :param source_project_name: source study being processed
-    :type source_project_name: str
-    :param target_project_name: study where entities will be applied
-    :type target_project_name: str
+    :param project_name : study where entities will be applied
+    :type project_name: str
     :param consolidated_frame: dataframe populated with mapped variables
     :type consolidated_frame: pandas.DataFrame
     :returns: none
     """
 
-    target_site = (
-        db_session.query(studies.Site)
-        .filter_by(name=target_project_name)
+    site = db_session.query(studies.Site).filter_by(name=project_name).one()
+    project = (
+        db_session.query(studies.Study)
+        .filter_by(name=project_name)
+        .one()
+    )
+    default_state = (
+        db_session.query(datastore.State)
+        .filter_by(name='pending-entry')
         .one()
     )
 
     for index, row in consolidated_frame.iterrows():
         pid = row['pid']
-
-        schemas = get_data(row, target_project_name, db_session)
 
         try:
             patient = (
@@ -185,36 +157,45 @@ def populate_project(
                 .one()
             )
         except orm.exc.NoResultFound:
-            patient = studies.Patient(site=target_site, pid=pid)
+            patient = studies.Patient(site=site, pid=pid)
             db_session.add(patient)
             db_session.flush()
 
-        for schema in schemas:
-            target_schema = (
-                db_session.query(datastore.Schema)
-                .filter_by(name=schema)
-            ).one()
+        for schema in project.schemata:
 
-            default_state = (
-                db_session.query(datastore.State)
-                .filter_by(name='pending-entry')
-                .one()
-            )
+            payload = {}
 
-            # TODO: use collect date in the source_data?
+            for attribute in schema.iterleafs():
+                column_name = '_'.join([
+                    project.name, schema.name, attribute.name
+                ])
+
+                if column_name not in row:
+                    continue
+
+                value = row[column_name]
+
+                if isinstance(value, numbers.Number) and math.isnan(value):
+                    continue
+
+                payload[attribute.name] = value
+
+            # Avoid creating empty records
+            if not payload:
+                continue
+
+            calculated_collect_date_column = '_'.join([
+                project.name, schema.name, collect_date_column
+            ])
+            collect_date = row[calculated_collect_date_column]
+
             entity = datastore.Entity(
-                schema=target_schema,
-                collect_date=datetime.date.today().isoformat(),
+                schema=schema,
+                collect_date=collect_date,
                 state=default_state
             )
 
             patient.entities.add(entity)
-
-            payload = {
-                field: value
-                for field, value in six.iteritems(schemas[schema])
-                if not (isinstance(value, numbers.Number) and math.isnan(value))
-            }
 
             upload_dir = tempfile.mkdtemp()
             apply_data(db_session, entity, payload, upload_dir)
@@ -234,20 +215,21 @@ def truncate_project(db_session, project_name):
 
     context_subquery = (
         db_session.query(datastore.Context.id)
-        .join(studies.Patient,
+        .join(
+            studies.Patient,
             (studies.Patient.id == datastore.Context.key) &
-            (datastore.Context.external == 'patient'))
-
+            (datastore.Context.external == 'patient')
+        )
         .subquery()
     )
 
-    entities_deleted = (
+    (
         db_session.query(datastore.Context)
         .filter(datastore.Context.id.in_(context_subquery))
         .delete(synchronize_session=False)
     )
 
-    patients_deleted = (
+    (
         db_session.query(studies.Patient)
         .filter(studies.Patient.site.has(name=project_name))
         .delete(synchronize_session=False)

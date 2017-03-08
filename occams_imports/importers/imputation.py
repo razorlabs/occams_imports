@@ -38,6 +38,10 @@ from sqlalchemy import orm
 from occams_datastore import models as datastore
 from occams_imports import models
 
+from .utils.pivot import \
+    DEFAULT_PID_COLUMN, DEFAULT_VISIT_COLUMN, DEFAULT_COLLECT_DATE_COLUMN
+
+
 PUBLISH_NAME = 'imputation'
 
 OPERATORS = {
@@ -305,13 +309,22 @@ def _impute_group(project_name, group, row):
     return imputed
 
 
-def _compile_imputation(project_name, condition, target_column_name, target_value, groups):
+def _compile_imputation(
+        project_name,
+        condition,
+        target_column_name,
+        target_value,
+        groups
+        ):
     """
     Compiles impuation to process a dataframe row into a new column
     """
 
     def _process_row(row):
-        imputed_groups = iter(_impute_group(project_name, g, row) for g in groups)
+        imputed_groups = iter(
+            _impute_group(project_name, g, row) for g in groups
+        )
+
         result = _operate(condition, imputed_groups)
 
         # ALL/ANY coerce to a boolean so we need to return the desired value
@@ -319,7 +332,7 @@ def _compile_imputation(project_name, condition, target_column_name, target_valu
             if result:
                 return target_value
             else:
-                # If the criteria was not met, use the current value (i.e. omit)
+                # If the criteria was not met, omit by using the existing value
                 if target_column_name in row:
                     return row[target_column_name]
                 else:
@@ -330,10 +343,20 @@ def _compile_imputation(project_name, condition, target_column_name, target_valu
     return _process_row
 
 
-def _apply_mapping(db_session, redis, jobid, frame, mapping, target_project_name):
+def _apply_mapping(
+        db_session,
+        redis,
+        jobid,
+        frame,
+        mapping,
+        source_project_name,
+        target_project_name,
+        pid_column=DEFAULT_PID_COLUMN,
+        visit_column=DEFAULT_VISIT_COLUMN,
+        collect_date_column=DEFAULT_COLLECT_DATE_COLUMN,
+        ):
     """
     Apply a single mapping heuristic
-
 
     Imputation mapping logic is structured as follows:
 
@@ -343,8 +366,14 @@ def _apply_mapping(db_session, redis, jobid, frame, mapping, target_project_name
         "target_choice": None or {"name": str, "title": str},
         "condition": "ANY" or "ALL"
         "groups": group[]
+        "forms": [ [str, str] ]
     }
 
+    To the set the collect date in the target form, the earliest
+    collect date in the source forms are used. To avoid situations
+    where difference source forms are used for different target fields,
+    the existing target collect date is also used as a candidate for
+    determining the earliest collect date.
 
     :param db_session: Application database session
     :type db_session: sqlalchemy.orm.Session
@@ -369,6 +398,9 @@ def _apply_mapping(db_session, redis, jobid, frame, mapping, target_project_name
     target_column_name = '_'.join([
         target_project_name, target_schema_name, target_attribute_name
     ])
+    target_collect_date = '_'.join([
+        target_project_name, target_schema_name, collect_date_column
+    ])
 
     groups = mapping.logic.get('groups') or []
 
@@ -382,16 +414,45 @@ def _apply_mapping(db_session, redis, jobid, frame, mapping, target_project_name
         if len(groups) > 1:
             groups = groups[0]
 
-    imputation = _compile_imputation(mapping.study.name, condition, target_column_name, target_value, groups)
-
     # XXX: In hindsight, this should have built a pandas filter query to
     # efficiently seek out matching rows and only set the target value on
     # those rows.
 
+    imputation = _compile_imputation(
+        mapping.study.name,
+        condition,
+        target_column_name,
+        target_value,
+        groups
+    )
     frame[target_column_name] = frame.apply(imputation, axis=1)
 
+    # Re-calculate the collect dates (including the current one)
+    # to use the earliest collect_date
+    collect_date_columns = [
+        '_'.join([
+            source_project_name, schema_name, collect_date_column
+        ])
+        for schema_name, attribute_name in (mapping.logic.get('forms') or [])
+    ]
 
-def apply_all(db_session, redis, jobid, source_project_name, target_project_name, frame):
+    if target_collect_date in frame:
+        collect_date_columns.append(target_collect_date)
+
+    frame[target_collect_date] = frame.loc[:, collect_date_columns].min(axis=1)
+
+
+def apply_all(
+        db_session,
+        redis,
+        jobid,
+        source_project_name,
+        target_project_name,
+        frame,
+        pid_column=DEFAULT_PID_COLUMN,
+        visit_column=DEFAULT_VISIT_COLUMN,
+        collect_date_column=DEFAULT_COLLECT_DATE_COLUMN,
+        ):
     """
     Applies all completed mappings to the currently pending data set
 
@@ -419,7 +480,18 @@ def apply_all(db_session, redis, jobid, source_project_name, target_project_name
     for mapping in mappings:
 
         if mapping.status.name == 'approved':
-            _apply_mapping(db_session, redis, jobid, frame, mapping, target_project_name)
+            _apply_mapping(
+                db_session,
+                redis,
+                jobid,
+                frame,
+                mapping,
+                source_project_name,
+                target_project_name,
+                pid_column,
+                visit_column,
+                collect_date_column
+            )
         else:
             _log(redis, jobid, mapping, 'Not in approved state')
 

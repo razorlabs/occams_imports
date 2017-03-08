@@ -61,4 +61,4 @@ def apply_mappings(task, jobid, source_project_name, target_project_name):
     )
 
     truncate_project(Session, target_project_name)
-    populate_project(Session, source_project_name, target_project_name, frame)
+    populate_project(Session, target_project_name, frame)
