@@ -9,7 +9,8 @@ later time.
 from occams.celery import app, Session, with_transaction
 
 from .importers import imputation, direct
-from .importers.utils.pivot import load_project_frame, populate_project
+from .importers.utils.pivot import \
+    load_project_frame, populate_project, truncate_project
 
 
 @app.task(name='apply_mappings', ignore_result=True, bind=True)
@@ -41,7 +42,25 @@ def apply_mappings(task, jobid, source_project_name, target_project_name):
 
     frame = load_project_frame(Session, source_project_name)
 
-    direct.apply_all(Session, app.redis, jobid, source_project_name, frame)
-    imputation.apply_all(Session, app.redis, jobid, source_project_name, frame)
+    direct.apply_all(
+        Session,
+        app.redis,
+        jobid,
+        source_project_name,
+        target_project_name,
+        frame
+    )
 
+    imputation.apply_all(
+        Session,
+        app.redis,
+        jobid,
+        source_project_name,
+        target_project_name,
+        frame
+    )
+
+    # from celery.contrib import rdb; rdb.set_trace()
+
+    truncate_project(Session, target_project_name)
     populate_project(Session, source_project_name, target_project_name, frame)

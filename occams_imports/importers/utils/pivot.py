@@ -221,6 +221,38 @@ def populate_project(
                     shutil.rmtree(upload_dir)
 
 
+def truncate_project(db_session, project_name):
+    """
+    Truncates all of the data for a project
+
+    :param db_session: Current database transaction session
+    :type db_session: sqlalchemy.orm.session.Session
+    :param project_name: Project whose data will be removed
+    :type project_name: str
+    """
+
+    context_subquery = (
+        db_session.query(datastore.Context.id)
+        .join(studies.Patient,
+            (studies.Patient.id == datastore.Context.key) &
+            (datastore.Context.external == 'patient'))
+
+        .subquery()
+    )
+
+    entities_deleted = (
+        db_session.query(datastore.Context)
+        .filter(datastore.Context.id.in_(context_subquery))
+        .delete(synchronize_session=False)
+    )
+
+    patients_deleted = (
+        db_session.query(studies.Patient)
+        .filter(studies.Patient.site.has(name=project_name))
+        .delete(synchronize_session=False)
+    )
+
+
 def load_project_frame(
         db_session,
         project_name,
