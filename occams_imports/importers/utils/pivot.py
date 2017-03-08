@@ -4,6 +4,7 @@ Toolset for creating a pivot table from project data files
 
 import math
 import io
+import numbers
 import datetime
 import shutil
 import tempfile
@@ -11,6 +12,7 @@ import tempfile
 import numpy as np
 import pandas as pd
 from sqlalchemy import orm
+import six
 
 from occams_studies import models as studies
 from occams_datastore import models as datastore
@@ -208,17 +210,16 @@ def populate_project(
 
             patient.entities.add(entity)
 
-            for variable in schemas[schema]:
-                target_value = schemas[schema][variable]
-                is_number = isinstance(target_value, (int, long, float))
-                is_nan = False
-                if is_number:
-                    is_nan = math.isnan(target_value)
-                if not is_number or (is_number and not is_nan):
-                    payload = {variable: schemas[schema][variable]}
-                    upload_dir = tempfile.mkdtemp()
-                    apply_data(db_session, entity, payload, upload_dir)
-                    shutil.rmtree(upload_dir)
+            payload = {
+                field: value
+                for field, value in six.iteritems(schemas[schema])
+                if not (isinstance(value, numbers.Number) and math.isnan(value))
+            }
+
+            upload_dir = tempfile.mkdtemp()
+            apply_data(db_session, entity, payload, upload_dir)
+            shutil.rmtree(upload_dir)
+            db_session.flush()
 
 
 def truncate_project(db_session, project_name):
