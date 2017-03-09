@@ -56,11 +56,14 @@ def test_extract_value_by_variable():
 
     conversion = {
         'byVariable': True,
-        'schema': {'name': 'some_schema'},
-        'attribute': {'name': 'some_variable'}
+        'value': {
+            'schema': {'name': 'some_schema'},
+            'attribute': {'name': 'some_variable'}
+        }
     }
-    row = pd.Series({'some_schema_some_variable': 420})
-    result = _extract_value(conversion, row)
+    project_name = 'some_project'
+    row = pd.Series({project_name + '_some_schema_some_variable': 420})
+    result = _extract_value(project_name, conversion, row)
 
     assert result == 420
 
@@ -74,8 +77,9 @@ def test_extract_value_by_value():
     from occams_imports.importers.imputation import _extract_value
 
     conversion = {'byValue': True, 'value': 420}
+    project_name = 'some_project'
     row = pd.Series()
-    result = _extract_value(conversion, row)
+    result = _extract_value(project_name, conversion, row)
 
     assert result == conversion['value']
 
@@ -89,11 +93,11 @@ def test_extract_value_by_unknown():
     import numpy as np
     from occams_imports.importers.imputation import _extract_value
 
-    row = pd.DataFrame()
+    row = pd.Series()
 
     conversion = {'byValue': False, 'byVariable': False, 'value': 420}
-
-    result = _extract_value(conversion, row)
+    project_name = 'some_project'
+    result = _extract_value(project_name, conversion, row)
 
     assert result is np.nan
 
@@ -109,7 +113,8 @@ def test_impute_group_require_conversions():
 
     row = pd.Series()
     group = {}
-    result = _impute_group(group, row)
+    project_name = 'some_project'
+    result = _impute_group(project_name, group, row)
 
     assert result is np.nan
 
@@ -123,13 +128,16 @@ def test_impute_group_single_conversion():
         'conversions': [
             {
                 'byVariable': True,
-                'schema': {'name': 'some_schema'},
-                'attribute': {'name': 'some_variable'}
+                'value': {
+                    'schema': {'name': 'some_schema'},
+                    'attribute': {'name': 'some_variable'}
+                }
             }
         ]
     }
-    row = pd.Series({'some_schema_some_variable': 420})
-    result = _impute_group(group, row)
+    project_name = 'some_project'
+    row = pd.Series({project_name + '_some_schema_some_variable': 420})
+    result = _impute_group(project_name, group, row)
 
     assert result == 420
 
@@ -152,8 +160,10 @@ def test_impute_group_operation(operator, op1, op2, expected):
         'conversions': [
             {
                 'byVariable': True,
-                'schema': {'name': 'some_schema'},
-                'attribute': {'name': 'some_variable'}
+                'value': {
+                    'schema': {'name': 'some_schema'},
+                    'attribute': {'name': 'some_variable'}
+                }
             },
             {
                 'byValue': True,
@@ -162,8 +172,10 @@ def test_impute_group_operation(operator, op1, op2, expected):
             }
         ]
     }
-    row = pd.Series({'some_schema_some_variable': op1})
-    result = _impute_group(group, row)
+
+    project_name = 'some_project'
+    row = pd.Series({project_name + '_some_schema_some_variable': op1})
+    result = _impute_group(project_name, group, row)
 
     assert result == expected
 
@@ -197,8 +209,10 @@ def test_impute_group_imputation(operator, op1, op2, expected):
         'conversions': [
             {
                 'byVariable': True,
-                'schema': {'name': 'some_schema'},
-                'attribute': {'name': 'some_variable'}
+                'value': {
+                    'schema': {'name': 'some_schema'},
+                    'attribute': {'name': 'some_variable'}
+                }
             },
         ],
         'logic': {
@@ -211,8 +225,9 @@ def test_impute_group_imputation(operator, op1, op2, expected):
             ]
         }
     }
-    row = pd.Series({'some_schema_some_variable': op1})
-    result = _impute_group(group, row)
+    project_name = 'some_project'
+    row = pd.Series({project_name + '_some_schema_some_variable': op1})
+    result = _impute_group(project_name, group, row)
 
     assert result is expected
 
@@ -244,7 +259,17 @@ def test_compile_imputation_choice(
 
     dummy_groups = [{}]
     row = pd.Series()
-    result = _compile_imputation(operator, target_value, dummy_groups)(row)
+    project_name = None
+    target_column_name = None
+    callback = _compile_imputation(
+        project_name,
+        operator,
+        target_column_name,
+        target_value,
+        dummy_groups
+    )
+
+    result = callback(row)
 
     assert result is expected
 
@@ -269,7 +294,16 @@ def test_compile_imputation_computed(
 
     dummy_groups = [{}]
     row = pd.Series()
-    result = _compile_imputation(operator, target_value, dummy_groups)(row)
+    project_name = None
+    target_column_name = None
+    callback = _compile_imputation(
+        project_name,
+        operator,
+        target_column_name,
+        target_value,
+        dummy_groups
+    )
+    result = callback(row)
 
     assert result == expected
 
@@ -307,10 +341,26 @@ def test_apply_mapping_with_target_choice(
     frame = pd.DataFrame({'source': [1]})
     redis = None
     jobid = '123'
-    module._apply_mapping(db_session, redis, jobid, frame, mapping)
+    source_project_name = mapping.study.name
+    target_project_name = 'target_project'
+    module._apply_mapping(
+        db_session,
+        redis,
+        jobid,
+        frame,
+        mapping,
+        source_project_name,
+        target_project_name
+    )
 
     module._compile_imputation.assert_called_with(
-        operator, target_value, groups)
+        source_project_name,
+        operator,
+        '_'.join([
+            target_project_name, target_schema.name, target_attribute.name]),
+        target_value,
+        groups
+    )
 
 
 def test_apply_mapping_with_computed_scalar(
@@ -348,6 +398,24 @@ def test_apply_mapping_with_computed_scalar(
     frame = pd.DataFrame({'source': [1]})
     redis = None
     jobid = '123'
-    module._apply_mapping(db_session, redis, jobid, frame, mapping)
+    source_project_name = mapping.study.name
+    target_project_name = 'target_project'
 
-    module._compile_imputation.assert_called_with('ID', None, group_1)
+    module._apply_mapping(
+        db_session,
+        redis,
+        jobid,
+        frame,
+        mapping,
+        source_project_name,
+        target_project_name
+    )
+
+    module._compile_imputation.assert_called_with(
+        mapping.study.name,
+        'ID',
+        '_'.join([
+            target_project_name, target_schema.name, target_attribute.name]),
+        None,
+        group_1
+    )
