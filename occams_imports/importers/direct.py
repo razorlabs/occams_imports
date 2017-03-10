@@ -70,18 +70,24 @@ def apply_all(
             target_project_name, target_schema_name, collect_date_column
         ])
 
-        value_map = {
-            choice_mapping['source']: choice_mapping['target']
-            for choice_mapping in (mapping.logic.get('choices_mapping') or [])
-            if choice_mapping['source']
-        }
-
         if source_collect_date in frame and target_collect_date not in frame:
             frame[target_collect_date] = frame[source_collect_date]
 
+        choices_mapping = mapping.logic.get('choices_mapping') or []
+
+        # TODO: Regresssion, we need to fetch the target attribute label
+        #       to use as the value for a choice -> value direct mapping
+
         if source_column not in frame:
             frame[source_column] = np.nan
-        else:
+        elif choices_mapping:
+            value_map = {
+                choice_mapping['source']: choice_mapping['target']
+                for choice_mapping in choices_mapping
+                if choice_mapping['source']
+            }
             frame[target_column] = frame[source_column].map(value_map)
+        else:
+            frame[target_column] = frame[source_column]
 
     return frame
