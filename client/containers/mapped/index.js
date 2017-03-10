@@ -25,7 +25,7 @@ class MappingView {
       switch( this.selectedStatus() ) {
         case 'review':       return 'label-warning'
         case 'in-progress':  return 'label-primary'
-        case 'approved':     return 'label-approved'
+        case 'approved':     return 'label-success'
         case 'rejected':     return 'label-danger'
         default:             return 'label-default'
       }
