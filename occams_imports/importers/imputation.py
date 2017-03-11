@@ -27,9 +27,12 @@ Additional Notes:
 
 """
 
+import math
+import numbers
 import json
 import operator as py
 
+import pandas as pd
 import numpy as np
 
 import sqlalchemy as sa
@@ -226,6 +229,8 @@ def _extract_value(project_name, conversion, row):
     :rtype: int or `pd.nan`
     """
 
+    value = np.nan
+
     if conversion.get('byVariable'):
         schema_name = conversion.get('value', {}).get('schema', {}).get('name')
         attribute = conversion.get('value', {}).get('attribute', {})
@@ -233,18 +238,21 @@ def _extract_value(project_name, conversion, row):
         source_column_name = \
             '_'.join([project_name, schema_name, attribute_name])
         if source_column_name in row:
-            source_value = row[source_column_name]
-        else:
-            source_value = np.nan
-        return source_value
+            value = row[source_column_name]
 
     elif conversion.get('byValue'):
         # XXX: Making an assumption that all conversions are by integer
         #      values as that is the the UI currently allows
-        return int(conversion.get('value'))
+        value = int(conversion.get('value'))
 
-    else:
-        return np.nan
+    if isinstance(value, numbers.Number) and math.isnan(value):
+        raise HasNan
+
+    return value
+
+
+class HasNan(Exception):
+    pass
 
 
 def _impute_group(project_name, group, row):
@@ -321,22 +329,30 @@ def _compile_imputation(
     """
 
     def _process_row(row):
+
+        try:
+            existing_value = row[target_column_name]
+        except KeyError:
+            pass
+        else:
+            if not pd.isnull(existing_value):
+                return existing_value
+
         imputed_groups = iter(
             _impute_group(project_name, g, row) for g in groups
         )
 
-        result = _operate(condition, imputed_groups)
+        try:
+            result = _operate(condition, imputed_groups)
+        except HasNan:
+            return np.nan
 
         # ALL/ANY coerce to a boolean so we need to return the desired value
         if condition in ('ANY', 'ALL'):
             if result:
                 return target_value
             else:
-                # If the criteria was not met, omit by using the existing value
-                if target_column_name in row:
-                    return row[target_column_name]
-                else:
-                    return np.nan
+                return np.nan
         else:
             return result
 
