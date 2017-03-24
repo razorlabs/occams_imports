@@ -1,0 +1,16 @@
+<div data-bind="css: { 'alert': true, 'alert-success': isSuccess, 'alert-info': isInfo }">
+  <span data-bind="text: msg"></span>
+</div>
+<h3>Direct Mappings Applied Progress</h3>
+<hr>
+<div class="panel panel-default">
+  <div class="panel-heading">Mappings Progress</div>
+  <div class="panel-body">
+    <div class="progress">
+      <div class="progress-bar progress-bar-info progress-bar-striped"
+           role="progressbar"
+           data-bind="text: statusPercentageLabel, style: { width: widthPercentage } ">
+      </div>
+    </div>
+  </div>
+</div>

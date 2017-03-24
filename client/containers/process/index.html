@@ -1,0 +1,48 @@
+<div class="row" data-bind="if: isProcessing">
+  <h3 class="text-muted">Mappings processed</h3>
+  <div class="progress">
+    <div class="progress-bar"
+         role="progressbar"
+         aria-valuenow="60"
+         aria-valuemin="0"
+         aria-valuemax="100"
+         style="width: 0%;">
+      60%
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-5">
+    <h3>Uploads</h3>
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" data-bind="foreach: projects" role="tablist">
+      <li data-bind="css: { active: $parent.selectedProject() === $data }">
+        <a href="#"
+           aria-controls="sites"
+           role="tab"
+           data-bind="click: $parent.selectedProject">
+           <span data-bind="text: title"></span>
+        </a>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content" data-bind="foreach: projects">
+      <div class="tab-pane" data-bind="css: { active: $parent.selectedProject() === $data }">
+        <rl-project-upload-list params="project: $data"></rl-project-upload-list>
+      </div>
+    </div>
+
+  </div>
+  <div class="col-sm-7">
+    <h3>System Status</h3>
+
+    <div class="well">
+      No processes at this time.
+    </div>
+  </div>
+  <hr>
+
+
+</div> <!-- End Row -->

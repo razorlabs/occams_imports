@@ -8,9 +8,36 @@ later time.
 
 from occams.celery import app, Session, with_transaction
 
+from . import models
 from .importers import imputation, direct
+from .importers.utils.pubsub import ImportStatusChannel
 from .importers.utils.pivot import \
     load_project_frame, populate_project, truncate_project
+
+
+def _query_mappings(db_session, project_name):
+    """
+    Generates a listing of the mappings
+
+    :param db_session: Application database session
+    :type db_session: sqlalchemy.orm.Session
+    :param project_name: Project Name
+    :type project_name: str
+
+    :returns: An iterable query object that contains all of the mappins
+    :rtype: sqlalchemy.orm.query.Query[ occams_imports.models.Mapping ]
+    """
+    query = (
+        db_session.query(models.Mapping)
+        .filter(models.Mapping.study.has(name=project_name))
+    )
+    return query
+
+
+def _count_mappings(mappings):
+    """
+    """
+    return mappings.count()
 
 
 @app.task(name='apply_mappings', ignore_result=True, bind=True)
@@ -40,25 +67,43 @@ def apply_mappings(task, jobid, source_project_name, target_project_name):
 
     """
 
-    frame = load_project_frame(Session, source_project_name)
+    redis = app.redis
+    db_session = Session
 
-    direct.apply_all(
-        Session,
-        app.redis,
-        jobid,
-        source_project_name,
-        target_project_name,
-        frame
-    )
+    frame = load_project_frame(db_session, source_project_name)
 
-    imputation.apply_all(
-        Session,
-        app.redis,
-        jobid,
-        source_project_name,
-        target_project_name,
-        frame
-    )
+    mappings = _query_mappings(db_session, source_project_name)
+    mappings_count = _count_mappings(mappings)
+
+    channel = ImportStatusChannel(redis, jobid)
+    channel.send_reset(mappings_count)
+
+    for mapping in mappings:
+
+        if mapping.status.name != 'approved':
+            channel.send_message(mapping, 'Not in approved state')
+            continue
+
+        if mapping.type == 'direct':
+            mapper = direct.apply_mapping
+        elif mapping.type == 'imputation':
+            mapper = imputation.apply_mapping
+        else:
+            message = 'Unsupported mapping type: %s' % mapping.type
+            channel.send_message(mapping, message)
+            continue
+
+        mapper(
+            Session,
+            channel,
+            source_project_name,
+            target_project_name,
+            frame,
+            mapping
+        )
+
+        channel.send_progress()
+        channel.send_message(mapping, 'Mapping complete')
 
     truncate_project(Session, target_project_name)
     populate_project(Session, target_project_name, frame)

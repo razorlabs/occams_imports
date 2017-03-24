@@ -110,21 +110,12 @@ export default class ProjectUploadListView{
   }
 
   applyMappings(){
-    let url = '/imports/api/projects/' + this.project.name() + '/apply'
-    fetch(
-      url,
-      {
-        method: 'POST',
-        credentials: 'include'
-      }
-    )
+    let url = '/imports/api/process/' + this.project.name()
+    fetch(url, {method: 'POST', credentials: 'include'})
   }
 }
 
-ko.components.register(
-  'rl-project-upload-list',
-  {
-    template: template,
-    viewModel: ProjectUploadListView
-  }
-)
+ko.components.register('rl-project-upload-list', {
+  viewModel: ProjectUploadListView,
+  template: template,
+})

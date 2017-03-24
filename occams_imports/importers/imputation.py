@@ -27,9 +27,6 @@ Additional Notes:
 
 """
 
-import math
-import numbers
-import json
 import operator as py
 
 import pandas as pd
@@ -39,13 +36,10 @@ import sqlalchemy as sa
 from sqlalchemy import orm
 
 from occams_datastore import models as datastore
-from occams_imports import models
 
 from .utils.pivot import \
     DEFAULT_PID_COLUMN, DEFAULT_VISIT_COLUMN, DEFAULT_COLLECT_DATE_COLUMN
 
-
-PUBLISH_NAME = 'imputation'
 
 OPERATORS = {
     'EQ': py.eq,
@@ -62,58 +56,6 @@ OPERATORS = {
     'ALL': all,
     'ID': (lambda operand: next(operand)),  # Identity operator
 }
-
-
-def _start(redis, jobid, total):
-    redis.hmset(jobid, {'count': 0, 'total': total})
-
-
-def _progress(redis, jobid):
-    redis.hincrby(jobid, 'count')
-
-
-def _publish(redis, jobid):
-    raw = redis.hgetall(jobid)
-    # redis-py returns everything as string, so we need to clean it
-    data = {'count': int(raw['count']), 'total': int(raw['total'])}
-    redis.publish(PUBLISH_NAME, json.dumps(data))
-
-
-def _log(redis, jobid, mapping, message):
-    data = {
-        'schema': mapping.logic.get('target_schema'),
-        'variable': mapping.logic.get('target_variable'),
-        'message': message.format(mappings=mapping)
-    }
-    redis.publish(PUBLISH_NAME, json.dumps(data))
-
-
-def _query_mappings(db_session, project_name):
-    """
-    Generates a listing of the mappings
-
-    :param db_session: Application database session
-    :type db_session: sqlalchemy.orm.Session
-    :param project_name: Project Name
-    :type project_name: str
-
-    :returns: An iterable query object that contains all of the mappins
-    :rtype: sqlalchemy.orm.query.Query[ occams_imports.models.Mapping ]
-    """
-    query = (
-        db_session.query(models.Mapping)
-        .filter(
-            (models.Mapping.study.has(name=project_name)) &
-            (models.Mapping.type == u'imputation')
-        )
-    )
-    return query
-
-
-def _count_mappings(mappings):
-    """
-    """
-    return mappings.count()
 
 
 def _get_schema(db_session, schema_name):
@@ -245,7 +187,7 @@ def _extract_value(project_name, conversion, row):
         #      values as that is the the UI currently allows
         value = int(conversion.get('value'))
 
-    if isinstance(value, numbers.Number) and math.isnan(value):
+    if pd.isnull(value):
         raise HasNan
 
     return value
@@ -359,14 +301,13 @@ def _compile_imputation(
     return _process_row
 
 
-def _apply_mapping(
+def apply_mapping(
         db_session,
-        redis,
-        jobid,
-        frame,
-        mapping,
+        channel,
         source_project_name,
         target_project_name,
+        frame,
+        mapping,
         pid_column=DEFAULT_PID_COLUMN,
         visit_column=DEFAULT_VISIT_COLUMN,
         collect_date_column=DEFAULT_COLLECT_DATE_COLUMN,
@@ -393,8 +334,8 @@ def _apply_mapping(
 
     :param db_session: Application database session
     :type db_session: sqlalchemy.orm.Session
-    :param redis: Application redis session for broadcasting events
-    :type redis: redis.Redis
+    :param channel: Application redis session for broadcasting events
+    :type channel: occams_imports.importers.utils.pubsub.ImportStatusChannel
     :param jobid: Job number assigend to this pipeline
     :type jobid: str
     :param mapping: The current mapping being processed
@@ -456,62 +397,3 @@ def _apply_mapping(
         collect_date_columns.append(target_collect_date)
 
     frame[target_collect_date] = frame.loc[:, collect_date_columns].min(axis=1)
-
-
-def apply_all(
-        db_session,
-        redis,
-        jobid,
-        source_project_name,
-        target_project_name,
-        frame,
-        pid_column=DEFAULT_PID_COLUMN,
-        visit_column=DEFAULT_VISIT_COLUMN,
-        collect_date_column=DEFAULT_COLLECT_DATE_COLUMN,
-        ):
-    """
-    Applies all completed mappings to the currently pending data set
-
-    This public method will apply all completed mappings in the system
-    by traversing the current data stored in `occams_imports.models.SiteData`.
-
-    :param db_session: Application database session
-    :type db_session: sqlalchemy.orm.Session
-    :param redis: Application redis session for broadcasting events
-    :type redis: redis.Redis
-    :param project_name: Apply impuations only for the specified project
-    :type project_name: str
-    :param frame: The current data frame for the project
-    :type frame: pandas.DataFrame
-
-    :returns: the mutated frame
-    :rtype: pandas.DataFrame
-    """
-
-    mappings = _query_mappings(db_session, source_project_name)
-    mappings_count = _count_mappings(mappings)
-
-    _start(redis, jobid, mappings_count)
-
-    for mapping in mappings:
-
-        if mapping.status.name == 'approved':
-            _apply_mapping(
-                db_session,
-                redis,
-                jobid,
-                frame,
-                mapping,
-                source_project_name,
-                target_project_name,
-                pid_column,
-                visit_column,
-                collect_date_column
-            )
-        else:
-            _log(redis, jobid, mapping, 'Not in approved state')
-
-        _progress(redis, jobid)
-        _publish(redis, jobid)
-
-    return frame

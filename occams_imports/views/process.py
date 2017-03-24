@@ -19,9 +19,9 @@ from occams_imports import models as models, tasks, log
 
 
 @view_config(
-    route_name='imports.upload',
+    route_name='imports.process_app',
     permission='import',
-    renderer='../templates/data/upload.pt'
+    renderer='../templates/process/index.pt'
 )
 def index(context, request):
     """
@@ -32,12 +32,12 @@ def index(context, request):
 
 
 @view_config(
-    route_name='imports.uploads_list',
+    route_name='imports.upload_list',
     request_method='GET',
     permission='add',
     renderer='json'
 )
-def uploads_list(context, request):
+def upload_list(context, request):
     """
     Return the uploads for a particular project.
     """
@@ -70,12 +70,12 @@ def uploads_list(context, request):
 
 
 @view_config(
-    route_name='imports.uploads_list',
+    route_name='imports.upload_list',
     request_method='POST',
     permission='add',
     renderer='json'
 )
-def add_uploads(context, request):
+def upload_add(context, request):
     """
     Return the uploads for a particular project.
     """
@@ -155,12 +155,12 @@ def add_uploads(context, request):
 
 
 @view_config(
-    route_name='imports.uploads_detail',
+    route_name='imports.upload_detail',
     request_method='DELETE',
     permission='add',
     renderer='json'
 )
-def delete_upload(context, request):
+def upload_delete(context, request):
     """
     Return the uploads for a particular project.
     """
@@ -175,12 +175,12 @@ def delete_upload(context, request):
 
 
 @view_config(
-    route_name='imports.apply',
+    route_name='imports.process_project',
     request_method='POST',
     permission='add',
     renderer='json'
 )
-def apply_mappings(context, request):
+def process(context, request):
     """
     Dispatches mapping pipeline for the target project
     """
@@ -198,10 +198,10 @@ def apply_mappings(context, request):
 
 
 @view_config(
-    route_name='imports.direct_notifications',
+    route_name='imports.process_status',
     permission='view'
 )
-def notifications(context, request):
+def status(context, request):
     """
     Mapping status notifications
 
