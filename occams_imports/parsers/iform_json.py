@@ -155,14 +155,16 @@ def convert(codebook):
 
     for pages in jdata['assets_map']['pages']:
         page = jdata['assets_map']['pages'][pages]['elements']
-        schema_name = jdata['assets_map']['pages'][pages]['page_level']['name']
-        schema_title = schema_name
+
+        raw_name = jdata['assets_map']['pages'][pages]['page_level']['name']
+        schema_name, __, __ = raw_name.rpartition('_')
+        base_name = '_'.join(raw_name.split('_')[2:-1])
         publish_date = jdata['assets_map']['pages'][pages]['page_level']['created_date'][0:10]
 
         for question in page:
             row = {
                 u'schema_name': schema_name,
-                u'schema_title': schema_title,
+                u'schema_title': raw_name,
                 u'publish_date': publish_date,
                 u'title': question[u'label'],
                 u'description': u'',
@@ -190,8 +192,7 @@ def convert(codebook):
             # prepend schema name to variable
             # excluding version number
             # this provides meaningful var names as opposed to q1, etc.
-            base_string = '_'.join(schema_name.split('_')[2:-1])
-            row['variable'] = '{}_{}'.format(base_string, question[u'name'])
+            row['variable'] = '{}_{}'.format(base_name, question[u'name'])
 
             if optionlist_id:
                 choices = populate_options(options, optionlist_id)
