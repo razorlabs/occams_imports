@@ -2,6 +2,12 @@
 
 """
 This script consolidates iForm data dictionaries into single version eCRFs
+
+NOTE: This is a python 2 script and depents on occams_imports
+
+Sample usage:
+
+python iform2occams.py --src ~/Documents/files/ --dst ~/Documents/output.csv
 """
 
 import os
