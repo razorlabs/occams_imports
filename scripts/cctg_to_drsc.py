@@ -1,4 +1,4 @@
-"""Process cctg export files to a csv that's within the data sharing agreement.
+"""Process OCCAMS export files to a csv that's within the DRSC data agreement.
 
 Note: This is a PYTHON 3 script.
 
