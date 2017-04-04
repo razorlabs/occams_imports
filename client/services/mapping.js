@@ -1,5 +1,6 @@
 import ko from 'knockout'
 
+import Choice from './choice'
 import Conversion from './conversion'
 import Group from './group'
 import ImputationList from './condition'
@@ -8,7 +9,8 @@ import Variable from './variable'
 export default class Mapping {
 
   constructor(data) {
-    this.description = ko.observable('')
+    this.id = null
+    this.description = ko.observable()
 
     this.target = ko.observable()
     this.targetChoice = ko.observable()
@@ -53,7 +55,10 @@ export default class Mapping {
 
   update (data) {
     data = data || {}
+    this.id = data.id
+    this.description(data.description)
     this.target(new Variable(data.target))
+    this.targetChoice(data.targetChoice ? new Choice(data.targetChoice) : null)
     this.condition(data.condition)
     this.groups((data.groups || []).map(function(value){
       return new Group(value)

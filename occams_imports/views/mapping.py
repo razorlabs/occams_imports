@@ -375,15 +375,22 @@ def mappings_imputations_map(context, request):
     # add default review status to mapping
     status = db_session.query(models.Status).filter_by(name='review').one()
 
-    mapped_obj = models.Mapping(
-        study=study,
-        type='imputation',
-        status=status,
-        description=request.json['description'],
-        logic=logic
-    )
+    mapping_id = request.json.get('id')
 
-    db_session.add(mapped_obj)
+    if mapping_id:
+        mapped_obj = db_session.query(models.Mapping).get(mapping_id)
+    else:
+        mapped_obj = models.Mapping(
+            study=study,
+            type='imputation',
+            status=status,
+        )
+
+        db_session.add(mapped_obj)
+
+    mapped_obj.description = request.json['description']
+    mapped_obj.logic = logic
+
     db_session.flush()
 
     return {'__next__': request.route_path('imports.index')}
@@ -613,6 +620,33 @@ def view_mappings(context, request):
         return render_to_response(url, logic, request=request)
 
     return {}
+
+
+@view_config(
+    route_name='imports.mappings.view_mapped',
+    permission='view',
+    xhr=True,
+    request_method='GET',
+    renderer='json'
+)
+def view_imputation(context, request):
+    """View a mapped imputation. """
+    db_session = request.db_session
+
+    mapping_id = int(request.params['id'])
+    mapping = db_session.query(models.Mapping).filter_by(id=mapping_id).one()
+
+    if request.has_permission('edit'):
+        pass
+
+    if request.has_permission('view'):
+        pass
+
+    logic = convert_logic(db_session, mapping.logic)
+    logic['id'] = mapping_id
+    logic['description'] = mapping.description
+
+    return logic
 
 
 @view_config(
