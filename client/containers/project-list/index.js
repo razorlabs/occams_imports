@@ -28,9 +28,6 @@ export default class ProjectListView {
     this.selectedProject(project)
   }
 
-  addProject () {
-  }
-
 }
 
 
