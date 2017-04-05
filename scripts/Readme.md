@@ -19,6 +19,7 @@ Therefore the files need to be processed through two different scripts.
 Run the following scripts on iForm codebook data in the following order:
 
 * iform2occams.py
+* remove_versions_and_sp.py
 * merge_ecrf_versions.py
 
 ## OCCAMS Site Data

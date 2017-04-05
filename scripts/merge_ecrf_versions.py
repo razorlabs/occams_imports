@@ -14,13 +14,23 @@ Note: This is a PYTHON 3 script.
 
 Sample usage:
 
-python occams_merge_publish_dates.py input.csv output.csv
+python merge_ecrf_versions.py input.csv output.csv
 """
 import sys
 import csv
 import re
 import click
 from datetime import datetime
+
+
+def parse_date(date_string):
+    """Parse date in multiple formats."""
+    for format_ in ('%Y-%m-%d', '%m/%d/%y'):
+        try:
+            return datetime.strptime(date_string, format_)
+        except ValueError:
+            pass
+    raise ValueError('No valid date format found')
 
 
 def merge_choices(variables):
@@ -66,8 +76,7 @@ def get_file_output(reader, forms):
             output.append(row)
             continue
 
-        publish_date = datetime.strptime(
-            row['publish_date'], '%m/%d/%y')
+        publish_date = parse_date(row['publish_date'])
         publish_date = publish_date.date()
         form = row['form']
         variable = row['field']
@@ -96,7 +105,7 @@ def get_forms(reader):
         if form == u'':
             continue
 
-        publish_date = datetime.strptime(row['publish_date'], '%m/%d/%y')
+        publish_date = parse_date(row['publish_date'])
         row['publish_date'] = publish_date.date()
 
         if form not in forms:
