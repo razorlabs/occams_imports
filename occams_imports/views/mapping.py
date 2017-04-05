@@ -372,22 +372,23 @@ def mappings_imputations_map(context, request):
                 variable = conversion['value']['attribute']['name']
                 logic['forms'].append([form_name, variable])
 
-    # add default review status to mapping
-    status = db_session.query(models.Status).filter_by(name='review').one()
-
     mapping_id = request.json.get('id')
+
+    if mapping_id:
+        status_name = request.json['status']
+    else:
+        status_name = 'review'
+
+    # add default review status to mapping
+    status = db_session.query(models.Status).filter_by(name=status_name).one()
 
     if mapping_id:
         mapped_obj = db_session.query(models.Mapping).get(mapping_id)
     else:
-        mapped_obj = models.Mapping(
-            study=study,
-            type='imputation',
-            status=status,
-        )
-
+        mapped_obj = models.Mapping(study=study, type='imputation')
         db_session.add(mapped_obj)
 
+    mapped_obj.status = status
     mapped_obj.description = request.json['description']
     mapped_obj.logic = logic
 
@@ -645,6 +646,7 @@ def view_imputation(context, request):
     logic = convert_logic(db_session, mapping.logic)
     logic['id'] = mapping_id
     logic['description'] = mapping.description
+    logic['status'] = mapping.status.name
 
     return logic
 

@@ -281,6 +281,28 @@
 
       <hr />
 
+      <!-- ko if: id -->
+        <div class="row">
+          <div class="form-group">
+            <label class="control-label col-sm-2"
+                   for="status">Change Status: </label>
+            <div class="col-sm-2">
+              <select class="form-control"
+                      data-bind="value: status, select2: {}"
+                      data-placeholder="Update status...">
+                <option value="review">review</option>
+                <option value="in-progress">in-progress</option>
+                <option value="approved">approved</option>
+                <option value="rejected">rejected</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <br />
+      <!-- /ko -->
+
+
       <div class="form-group">
         <label class="control-label col-sm-2"
                for="description">Description</label>

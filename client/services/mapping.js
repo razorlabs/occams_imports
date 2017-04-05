@@ -12,6 +12,7 @@ export default class Mapping {
     this.id = null
     this.description = ko.observable()
 
+    this.status = ko.observable()
     this.target = ko.observable()
     this.targetChoice = ko.observable()
     this.condition = ko.observable('ALL')
@@ -56,6 +57,7 @@ export default class Mapping {
   update (data) {
     data = data || {}
     this.id = data.id
+    this.status(data.status)
     this.description(data.description)
     this.target(new Variable(data.target))
     this.targetChoice(data.targetChoice ? new Choice(data.targetChoice) : null)
