@@ -214,9 +214,9 @@ def status(context, request):
 
     def listener():
         pubsub = request.redis.pubsub()
-        pubsub.subscribe('mappings')
+        pubsub.subscribe('mapping')
 
-        sse_payload = 'id:{0}\nevent: progress\ndata:{1}\n\n'
+        sse_payload = 'id:{0}\nevent: {1}\ndata:{2}\n\n'
 
         # emit subsequent progress
         for message in pubsub.listen():
@@ -226,8 +226,10 @@ def status(context, request):
 
             data = json.loads(message['data'])
 
-            log.debug(data)
-            yield sse_payload.format(str(uuid.uuid4()), json.dumps(data))
+            id_ = str(uuid.uuid4())
+            event = data['event']
+            payload = json.dumps(data)
+            yield sse_payload.format(id_, event, payload)
 
     response = request.response
     response.content_type = 'text/event-stream'

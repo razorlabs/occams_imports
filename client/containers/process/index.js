@@ -7,7 +7,6 @@ import checkStatus from 'utilities/fetch/checkStatus'
 
 import template from './index.html'
 
-const CHANNEL = 'mapping'
 const PROCESS_URI = '/imports/api/process'
 const STATUS_URI = '/imports/api/process/status'
 
@@ -44,6 +43,8 @@ export default class ProcessView {
       return Math.ceil((this.count() / this.total()) * 100)
     }).extend({throttle: 1})
 
+    this.progressWidth = ko.pureComputed( () => `${this.progress()}%` )
+
     this.isProcessing = ko.pureComputed( () => this.progress() < 100 )
 
     this.progressStatus = ko.pureComputed(() => {
@@ -51,17 +52,21 @@ export default class ProcessView {
     })
 
     this.pubsub = new EventSource(STATUS_URI)
-    this.pubsub.addEventListener(CHANNEL, event => {
+
+    this.pubsub.addEventListener('progress', event => {
       let data = JSON.parse(event.data)
       this.count(data['count'])
       this.total(data['total'])
+      console.log(this.progress())
+    })
+
+    this.pubsub.addEventListener('message', event => {
+      let {variable, message} = JSON.parse(event.data)
+      console.log(message)
+      this.notifications.push(`${variable} -- ${message}`)
     })
 
     this.notifications.push('Sending request to process mappings.')
-
-    fetch(PROCESS_URI, {credentials: 'include'})
-    .then(checkStatus)
-    .then(response => this.notifiations.push('Mappings in progress.'))
 
     Project.query()
       .then( projects => {

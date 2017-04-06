@@ -25,9 +25,12 @@ class ImportStatusChannel(object):
 
         # redis-py returns everything as string, so we need to clean it
         raw = redis.hgetall(jobid)
-        data = {'count': int(raw['count']), 'total': int(raw['total'])}
+        data = {
+            'event': 'progress',
+            'count': int(raw['count']),
+            'total': int(raw['total'])
+        }
         notification = json.dumps(data)
-        print(notification)
         redis.publish(channel, notification)
 
     def send_message(self, mapping, message):
@@ -35,11 +38,11 @@ class ImportStatusChannel(object):
         channel = self._channel
 
         data = {
+            'event': 'message',
             'schema': mapping.logic.get('target_schema'),
             'variable': mapping.logic.get('target_variable'),
             'message': message.format(mappings=mapping)
         }
 
         notification = json.dumps(data)
-        print(notification)
         redis.publish(channel, notification)

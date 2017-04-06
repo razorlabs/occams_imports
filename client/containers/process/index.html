@@ -6,6 +6,9 @@
          aria-valuenow="60"
          aria-valuemin="0"
          aria-valuemax="100"
+         data-bind="
+            style: {width: progressWidth},
+            text: progressWidth"
          style="width: 0%;">
       60%
     </div>
@@ -38,8 +41,8 @@
   <div class="col-sm-7">
     <h3>System Status</h3>
 
-    <div class="well">
-      No processes at this time.
+    <div class="well" data-bind="foreach: notifications">
+      <div data-bind="text: $data"></div>
     </div>
   </div>
   <hr>
