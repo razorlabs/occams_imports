@@ -179,3 +179,46 @@ How do I reset the database and start over again?
     > docker-compose up -d
     > docker-compose run app occams_initdb develop.ini
 
+Common Non-Docker Tasks 
+"""""""""""""""""""""""
+
+Bundle/Build the clientside files:
+''''''''''''''''''''''''''''''''''
+
+::
+ 
+  > npm start
+  
+Run the serverside tests:
+'''''''''''''''''''''''''
+
+::
+ 
+  > py.test --db=postgresql://USER:PASS@/yourtestdb tests/
+
+Run the clientside tests:
+'''''''''''''''''''''''''
+
+::
+ 
+  > npm test
+
+Serverside coverage:
+''''''''''''''''''''
+
+Navigate to and open: occams_imports/htmlcov/index.html
+
+
+Run celery:
+'''''''''''
+
+::
+ 
+  > celery worker --autoreload --app occams --loglevel INFO --without-gossip --ini your_config.ini
+  
+Serve the app:
+''''''''''''''
+
+::
+ 
+  > gunicorn --paste your_config.ini
