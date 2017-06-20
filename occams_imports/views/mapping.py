@@ -703,7 +703,7 @@ def get_schemas_mapped(context, request):
             mapped_value = u''
             mapped_label = u''
             for row in mapping.logic['choices_mapping']:
-                if choice.name in row['source']:
+                if choice.name == row['source']:
                     mapped_value = row['target']
                     for target in target_variable.iterchoices():
                         if target.name == mapped_value:
