@@ -1,3 +1,5 @@
+"""Model definitions for site data uploades."""
+
 import sqlalchemy as sa
 from sqlalchemy import orm
 from sqlalchemy.dialects.postgresql import JSONB
@@ -9,7 +11,15 @@ from .meta import Base
 
 
 class SiteData(Base, datastore.Referenceable, datastore.Modifiable):
-    """Table to store patient site data."""
+    """Table to store patient site data.
+
+    :param Base: SQLAlchemy Base class
+    :param datastore.Referenceable: SQLAlchemy mixin...adds primary key id
+                                    columns to tables.
+    :param datastore.Modifiable: SQLAlchemy mixin...adds user edit
+                                 modification meta data for lifecycle tracking.
+
+    """
 
     __tablename__ = 'sitedata'
 

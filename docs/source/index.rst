@@ -14,10 +14,11 @@ Contents:
    narr/codebook_parsing
    narr/data_upload
    narr/mapping_variables
-   narr/roster_translation
-
+   narr/models
 
 .. include:: ../../README.rst
+
+
 
 Indices and tables
 ==================

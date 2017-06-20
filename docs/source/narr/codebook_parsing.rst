@@ -1,5 +1,11 @@
 Codebook Parsing
 ================
 
+.. automodule:: parsers.convert_qds_to_occams
+   :members:
 
-asfasfsasf
+.. automodule:: parsers.iform_json
+   :members:
+
+.. automodule:: parsers.parse
+   :members:

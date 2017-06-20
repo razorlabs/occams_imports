@@ -60,20 +60,21 @@ def parse_choice_string(row):
 
 def get_choices(raw_choices):
     """
-    sample input = [[u'0', label], [u'1': label2]]
+    Sample input = [[u'0', label], [u'1': label2]]
 
-    sample output = {
+    Sample output = {
         u'0': models.Choice(
             name=u'1',
             title=u'label',
             order=0
             )
+
         u'1': models.Choice(
             name=u'1',
             title=u'label2',
             order=1
             )
-    }
+            }
 
     :param raw_choices: a dict of choices...key is option, value is label
 

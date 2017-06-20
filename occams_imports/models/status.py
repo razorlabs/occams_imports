@@ -1,3 +1,5 @@
+"""Model definitions to store mapping statuses."""
+
 from sqlalchemy import event
 
 from .meta import Base
@@ -9,7 +11,16 @@ class Status(Base,
              datastore.Describeable,
              datastore.Referenceable,
              datastore.Modifiable):
-    """Stats to track approval state of mappings."""
+    """Stats to track approval state of mappings.
+
+    :param Base: SQLAlchemy Base class
+    :param datastore.Describeable: SQLAlchemy mixin...adds standard content
+                                   properties to tables.
+    :param datastore.Referenceable: SQLAlchemy mixin...adds primary key id
+                                    columns to tables.
+    :param datastore.Modifiable: SQLAlchemy mixin...adds user edit
+                                 modification meta data for lifecycle tracking.
+    """
 
     __tablename__ = 'status'
 
