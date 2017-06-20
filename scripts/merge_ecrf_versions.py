@@ -45,7 +45,7 @@ def merge_choices(variables):
     )
 
     choices = [row['choices'] for row in sorted_variables]
-    choices = [re.compile(';(?=\d=)').split(choice) for choice in choices]
+    choices = [re.compile(';(?=\d+=)').split(choice) for choice in choices]
     converted_choices = []
     for choice in choices:
         choice_dict = {}
@@ -58,6 +58,9 @@ def merge_choices(variables):
 
     for choice in converted_choices:
         merged.update(choice)
+
+    # convert keys to integers
+    merged = {int(k): v for k, v in merged.items()}
 
     # convert merged dict into OCCAMS choices string
     merged_choices = ';'.join('{}={}'.format(
@@ -72,7 +75,7 @@ def get_file_output(reader, forms):
     for row in reader:
         # no form means it's a system variable and should be included in the
         # output
-        if row['form'] == u'':
+        if row['form'] == u'' or row['table'] == u'':
             output.append(row)
             continue
 
@@ -99,10 +102,10 @@ def get_forms(reader):
 
     reader.fieldnames
     for row in reader:
-        form = row['form']
+        form = row['table']
         variable = row['field']
         # if there is no form, it is a system record, we need to bypass
-        if form == u'':
+        if row['form'] == u'':
             continue
 
         publish_date = parse_date(row['publish_date'])
@@ -151,7 +154,7 @@ def merge_forms(forms):
 @click.argument('source_file', type=click.Path(exists=True))
 @click.argument('target_file')
 def process(source_file, target_file):
-    """Process the inpug file.
+    """Process the input file.
 
     Example of the forms data structure:
 
@@ -164,6 +167,23 @@ def process(source_file, target_file):
     }
     }
     """
+    headers = [
+        'table',
+        'form',
+        'publish_date',
+        'field',
+        'title',
+        'description',
+        'is_required',
+        'is_system',
+        'is_collection',
+        'is_private',
+        'type',
+        'decimal_places',
+        'choices',
+        'order'
+    ]
+
     with open(source_file, 'r', encoding="utf-8") as _in:
         reader = csv.DictReader(_in)
 
@@ -173,16 +193,55 @@ def process(source_file, target_file):
 
     with open(source_file, 'r', encoding="utf-8") as _in:
         reader = csv.DictReader(_in)
-        headers = reader.fieldnames
 
         with open(target_file, 'w', encoding="utf-8") as out:
-            writer = csv.DictWriter(out, fieldnames=headers)
-            writer.writeheader()
+            writer = csv.writer(out)
+            writer.writerow(headers)
 
-            output = get_file_output(reader, forms)
+            for form in forms:
+                order_numbers = []
+                for var in [var[0] for var in sorted(
+                        forms[form].items(), key=lambda var: int(var[1][0]['order']))]:
+                            order_numbers.append(forms[form][var][0]['order'])
 
-            for row in output:
-                writer.writerow(row)
+                # test if there is an order number collision
+                if len(order_numbers) != len(set(order_numbers)):
+                    # assign new sequential order numbers
+                    order = 0
+                    for var in forms[form]:
+                        forms[form][var][0]['order'] = str(order)
+                        order += 1
+
+            for form in forms:
+                variables = [var for var in forms[form]]
+                dates = []
+                for variable in variables:
+                    dates.append(forms[form][variable][0]['publish_date'])
+                max_date = max(dates)
+                # list of variables by form sorted by order
+                for var in [var[0] for var in sorted(
+                        forms[form].items(), key=lambda var: int(var[1][0]['order'])
+                )]:
+                    data = forms[form][var][0]
+                    row = [
+                        data['table'],
+                        data['form'],
+                        max_date.isoformat(),
+                        data['field'],
+                        data['title'],
+                        data['description'],
+                        data['is_required'],
+                        data['is_system'],
+                        data['is_collection'],
+                        data['is_private'],
+                        data['type'],
+                        data['decimal_places'] if 'decimal_places' in data else '',
+                        data['choices'],
+                        data['order']
+                    ]
+
+                    writer.writerow(row)
+
 
 if __name__ == '__main__':
     sys.exit(process())

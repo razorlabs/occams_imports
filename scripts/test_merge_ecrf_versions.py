@@ -8,7 +8,7 @@ import datetime
 
 def test_merge_choices():
     """Test that choices string merges correctly."""
-    from occams_merge_publish_dates import merge_choices
+    from merge_ecrf_versions import merge_choices
 
     variables = [
         {
@@ -72,7 +72,7 @@ def test_merge_choices():
 
 def test_get_file_output():
     """Test the correct output is filtered."""
-    from occams_merge_publish_dates import get_file_output
+    from merge_ecrf_versions import get_file_output
 
     forms = {
         'Antibiotic, Diet, and Supplement Intake Survey':
@@ -128,7 +128,7 @@ def test_get_file_output():
 
 def test_get_forms():
     """Test the correct output is filtered."""
-    from occams_merge_publish_dates import get_forms
+    from merge_ecrf_versions import get_forms
 
     output = io.StringIO()
     output.write('table,form,publish_date,field,title,description,'
@@ -156,16 +156,16 @@ def test_get_forms():
     output.close()
 
     assert len(actual) == 1
-    assert actual['Antibiotic, Diet, and Supplement Intake Survey'] \
+    assert actual['AntibioticDietAndSupplementIntakeSurvey'] \
                  ['antibiotic'][0] \
                  ['publish_date'] == datetime.date(2013, 2, 28)
-    assert actual['Antibiotic, Diet, and Supplement Intake Survey'] \
+    assert actual['AntibioticDietAndSupplementIntakeSurvey'] \
                  ['antibiotic'][1]['publish_date'] == datetime.date(2013, 3, 1)
 
 
 def test_merge_forms():
     """Test the correct output is filtered."""
-    from occams_merge_publish_dates import merge_forms
+    from merge_ecrf_versions import merge_forms
 
     forms = {
         'Antibiotic, Diet, and Supplement Intake Survey':
