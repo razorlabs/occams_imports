@@ -1,3 +1,6 @@
+"""Model definitions to store file imports."""
+
+
 from pyramid.security import Allow, Authenticated
 import sqlalchemy as sa
 from sqlalchemy import orm
@@ -27,7 +30,14 @@ class ImportFactory(dict):
 
 
 class Import(Base, datastore.Referenceable, datastore.Modifiable):
-    """Record imports and track by study and schema."""
+    """Record imports and track by study and schema.
+
+    :param Base: SQLAlchemy Base class
+    :param datastore.Referenceable: SQLAlchemy mixin...adds primary key id
+                                    columns to tables.
+    :param datastore.Modifiable: SQLAlchemy mixin...adds user edit
+                                 modification meta data for lifecycle tracking.
+    """
 
     __tablename__ = 'import'
 

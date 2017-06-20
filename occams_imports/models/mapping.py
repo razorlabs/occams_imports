@@ -1,3 +1,5 @@
+"""Model definitions for data mapping."""
+
 import sqlalchemy as sa
 from sqlalchemy import orm
 from sqlalchemy.dialects.postgresql import JSONB
@@ -10,7 +12,14 @@ from .status import Status
 
 
 class Mapping(Base, datastore.Referenceable, datastore.Modifiable):
-    """Table to store direct and imputation mappings."""
+    """Table to store direct and imputation mappings.
+
+    :param Base: SQLAlchemy Base class
+    :param datastore.Referenceable: SQLAlchemy mixin...adds primary key id
+                                    columns to tables.
+    :param datastore.Modifiable: SQLAlchemy mixin...adds user edit
+                                 modification meta data for lifecycle tracking.
+    """
 
     __tablename__ = 'mapping'
 

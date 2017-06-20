@@ -313,18 +313,16 @@ def apply_mapping(
         collect_date_column=DEFAULT_COLLECT_DATE_COLUMN,
         ):
     """
-    Apply a single mapping heuristic
+    Apply a single mapping heuristic.
 
     Imputation mapping logic is structured as follows:
 
-    {
-        "target_schema": {"name": str, "title": str},
-        "target_variable": {"name", str, "title", str},
-        "target_choice": None or {"name": str, "title": str},
-        "condition": "ANY" or "ALL"
-        "groups": group[]
-        "forms": [ [str, str] ]
-    }
+    {"target_schema": {"name": str, "title": str},
+    "target_variable": {"name": str, "title": str},
+    "target_choice": None or {"name": str, "title": str},
+    "condition": "ANY" or "ALL",
+    "groups": group[],
+    "forms": [ [str, str] ]}
 
     To the set the collect date in the target form, the earliest
     collect date in the source forms are used. To avoid situations

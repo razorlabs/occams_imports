@@ -15,7 +15,7 @@ from sqlalchemy import orm
 from occams_studies import models as studies
 from occams_datastore import models as datastore
 from occams_forms.renderers import apply_data
-from ... import models
+from occams_imports import models
 
 
 DEFAULT_PID_COLUMN = 'pid'
@@ -128,7 +128,7 @@ def populate_project(
 
     :param db_session: Current database transaction session
     :type db_session: sqlalchemy.orm.session.Session
-    :param project_name : study where entities will be applied
+    :param project_name: study where entities will be applied
     :type project_name: str
     :param consolidated_frame: dataframe populated with mapped variables
     :type consolidated_frame: pandas.DataFrame

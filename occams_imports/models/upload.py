@@ -1,3 +1,5 @@
+"""Model definitions to for uploads."""
+
 import sqlalchemy as sa
 from sqlalchemy import orm, String
 from sqlalchemy.dialects.postgresql import BYTEA
@@ -9,7 +11,14 @@ from .meta import Base
 
 
 class Upload(Base, datastore.Referenceable, datastore.Modifiable):
-    """Table to store project source data."""
+    """Table to store project source data.
+
+    :param Base: SQLAlchemy Base class
+    :param datastore.Referenceable: SQLAlchemy mixin...adds primary key id
+                                    columns to tables.
+    :param datastore.Modifiable: SQLAlchemy mixin...adds user edit
+                                 modification meta data for lifecycle tracking.
+    """
 
     __tablename__ = 'upload'
 
