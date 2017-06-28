@@ -3,13 +3,14 @@ import Cookies from 'js-cookie'
 
 import template from './index.html'
 
-function imputationFormsModel(form, variable){
+function imputationFormsModel(form, variable, mappedId){
   'use strict'
 
   var self = this;
 
   self.form = ko.observable(form);
   self.variable = ko.observable(variable);
+  self.url = '/imports/mappings/view_mapped?id=' + mappedId;
 }
 
 function mappedModel(targetForm, targetVariable, study, studyForm,
@@ -256,9 +257,10 @@ function formListViewModel(){
         //objects need to be instantiated
         //this supports multi line forms and variables in the view
         if (this.forms){
+          var mappedId = this.mapped_id;
           $.each(this.forms, function(index, formData) {
             row.imputationForms.push(
-              new imputationFormsModel(formData[0], formData[1]));
+              new imputationFormsModel(formData[0], formData[1], mappedId));
           });
         }
         self.mapped.push(row);
