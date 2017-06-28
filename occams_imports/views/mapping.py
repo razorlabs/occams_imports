@@ -389,7 +389,7 @@ def mappings_imputations_map(context, request):
         db_session.add(mapped_obj)
 
     mapped_obj.status = status
-    mapped_obj.description = request.json['description']
+    mapped_obj.description = request.json.get('description', '')
     mapped_obj.logic = logic
 
     db_session.flush()
