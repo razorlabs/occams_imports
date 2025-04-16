@@ -10,7 +10,7 @@ colander~>1.7.0
 cssmin==0.2.*                               # CSS asset compression
 filemagic==1.6.*                            # File input validation
 gevent==~> 23.9.0                           # Enables usage of SSE on gunicorn
-gunicorn~>22.0.0                            # WSGI server
+gunicorn~>23.0.0                            # WSGI server
 humanize==0.5.*                             # human readable units of measurement
 jsmin==2.2.*                                # Javascript asset copression
 ldap3==1.*
